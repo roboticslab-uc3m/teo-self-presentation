@@ -1,0 +1,21 @@
+<application>
+<name>teo-self-presentation_spanish_App</name>
+    <module>
+        <name>dialogueManager</name>
+        <parameters>--language spanish</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>bodyExecution</name>
+        <node>localhost</node>
+    </module>
+
+    <connection>
+        <from>/dialogueManager/tts/rpc:c</from>
+        <to>/tts/rpc:s</to>
+    </connection>
+
+
+</application>
+
