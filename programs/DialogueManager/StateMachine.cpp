@@ -20,9 +20,15 @@ bool StateMachine::threadInit() {
 void StateMachine::run() {
 
     yarp::os::Time::delay(0.5);
+    yarp::os::Bottle cmd;
 
     ttsSay( presentation_01 );
+    cmd.addVocab(VOCAB_STATE_SALUTE);
+    outCmdMovementsPort->write(cmd);
+    cmd.addVocab(VOCAB_STOP);
+    outCmdMovementsPort->write(cmd);
     ttsSay( presentation_02 );
+    cmd.addVocab(VOCAB_STATE_EXPLANATION_1);
     ttsSay( composition_01 );
     ttsSay( composition_02 );
     ttsSay( composition_03 );
@@ -44,11 +50,6 @@ void StateMachine::run() {
 /************************************************************************/
 
 void StateMachine::ttsSay(const yarp::os::ConstString& sayConstString) {
-    /*yarp::os::Bottle bOutStop, bResStop;
-    bOutStop.addString("stop");
-    outTtsPort->write(bOutStop,bResStop);
-
-    yarp::os::Time::delay(0.5);*/
 
     yarp::os::Bottle bOut, bRes;
     bOut.addString("say");
@@ -70,6 +71,12 @@ int StateMachine::getMachineState() {
 
 void StateMachine::setOutTtsPort(yarp::os::RpcClient* outTtsPort) {
     this->outTtsPort = outTtsPort;
+}
+
+/************************************************************************/
+
+void StateMachine::setOutCmdMovementsPort(yarp::os::RpcClient* outCmdMovePort) {
+    this->outCmdMovementsPort = outCmdMovePort;
 }
 
 /************************************************************************/
