@@ -25,8 +25,10 @@ bool DialogueManager::configure(yarp::os::ResourceFinder &rf) {
 
     //-----------------OPEN LOCAL PORTS------------//
     outTtsPort.open("/dialogueManager/tts/rpc:c");
+    outCmdMovementsPort.open("/dialogueManager/movements/rpc:c");
 
     stateMachine.setOutTtsPort(&outTtsPort);
+    stateMachine.setOutCmdMovementsPort(&outCmdMovementsPort);
 
     while(1){
         if(outTtsPort.getOutputCount() > 0) break;
@@ -76,8 +78,10 @@ bool DialogueManager::updateModule() {
 bool DialogueManager::interruptModule() {
     printf("DialogueManager closing...\n");
     outTtsPort.interrupt();
+    outCmdMovementsPort.interrupt();
     stateMachine.stop();
     outTtsPort.close();
+    outCmdMovementsPort.close();
     return true;
 }
 
