@@ -14,14 +14,14 @@ endif(COMMAND cmake_policy)
 project(TEO-SELF-PRESENTATION)
 
 ### options: cpp libraries
-option(ENABLE_ExampleLibrary "Choose if you want to compile ExampleLibrary" TRUE)
+#option(ENABLE_ExampleLibrary "Choose if you want to compile ExampleLibrary" TRUE)
 
 ### options: cpp programs
 option(ENABLE_dialogueManager "Choose if you want to compile dialogueManager" TRUE)
-option(ENABLE_bodyExecution "Choose if you want to compile dialogueManager" TRUE)
+option(ENABLE_bodyExecution "Choose if you want to compile bodyExecution" TRUE)
 
 ### options: force default
-option(ENABLE_exampleExtraOption "Enable/disable option exampleExtraOption" TRUE)
+# option(ENABLE_exampleExtraOption "Enable/disable option exampleExtraOption" TRUE)
 
 if(MSVC)
   MESSAGE(STATUS "Running on windows")    
