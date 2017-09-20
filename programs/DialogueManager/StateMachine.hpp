@@ -8,16 +8,28 @@
 #include <yarp/os/RpcClient.h>
 #include <yarp/os/Time.h>
 
-//#include <yarp/dev/PolyDriver.h>
-//#include <yarp/dev/CartesianControl.h>
-//#include <yarp/dev/ControlBoardInterfaces.h>
+#include <yarp/dev/ControlBoardInterfaces.h>
+
+#define VOCAB_STATE_SALUTE VOCAB4('s','a','l','u')
+#define VOCAB_STATE_HOME VOCAB4('h','o','m','e')
+#define VOCAB_STATE_EXPLANATION_1 VOCAB4('e','x','p','1')
+#define VOCAB_STATE_EXPLANATION_2 VOCAB4('e','x','p','2')
+#define VOCAB_STATE_EXPLANATION_3 VOCAB4('e','x','p','3')
+#define VOCAB_STATE_EXPLANATION_4 VOCAB4('e','x','p','4')
+#define VOCAB_STATE_EXPLANATION_HEAD VOCAB4('e','x','h','e')
+#define VOCAB_STATE_EXPLANATION_PC_RIGHT VOCAB4('e','p','c','r')
+#define VOCAB_STATE_EXPLANATION_PC_LEFT VOCAB4('e','p','c','l')
+#define VOCAB_STATE_EXPLANATION_PC_INSIDE VOCAB4('e','p','c','i')
+#define VOCAB_STATE_EXPLANATION_HDD VOCAB4('e','x','h','d')
+#define VOCAB_STATE_EXPLANATION_SENSOR VOCAB4('e','x','s','e')
+
 
 
 namespace teo
 {
 
 /**
- * @ingroup followMeDialogueManager
+ * @ingroup dialogueManager
  *
  * @brief implements a specific state machine for dialogueManager.
  */
@@ -25,7 +37,7 @@ class StateMachine : public yarp::os::Thread {
 protected:
 
     yarp::os::BufferedPort<yarp::os::Bottle> *inSrPort;
-    yarp::os::RpcClient *outCmdBodyPort;
+    yarp::os::RpcClient *outCmdMovementsPort;
     yarp::os::RpcClient *outTtsPort;
 
     std::string _language;
@@ -78,6 +90,9 @@ public:
 
     /** Register an output Port for tts. */
     void setOutTtsPort(yarp::os::RpcClient* outTtsPort);
+
+    /** Register an output Port for [BODY MOVEMENTS] commands. */
+    void setOutCmdMovementsPort(yarp::os::RpcClient* outCmdMovePort);
 
 };
 
