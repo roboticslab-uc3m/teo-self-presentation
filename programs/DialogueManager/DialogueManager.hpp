@@ -8,13 +8,13 @@
 
 #include "StateMachine.hpp"
 
-#define DEFAULT_LANGUAGE "english"
+#define DEFAULT_LANGUAGE "spanish"
 
 namespace teo
 {
 
 /**
- * @ingroup DialogueManager_programs
+ * @ingroup teo-self-presentation_programs
  *
  * @brief Dialogue Manager.
  */
@@ -22,6 +22,7 @@ class DialogueManager : public yarp::os::RFModule {
   private:
     StateMachine stateMachine;
     yarp::os::RpcClient outTtsPort; // tts port
+    yarp::os::RpcClient outCmdMovementsPort; // robot movements
 
     bool interruptModule();
     double getPeriod();
