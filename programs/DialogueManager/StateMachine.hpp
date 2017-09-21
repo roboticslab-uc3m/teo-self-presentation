@@ -51,7 +51,9 @@ protected:
     std::string composition_02;
     std::string composition_03;
     std::string composition_04;
-    std::string composition_05;
+    std::string composition_05_01;
+    std::string composition_05_02;
+    std::string composition_05_03;
     std::string composition_06;
     std::string composition_07;
     std::string composition_08;

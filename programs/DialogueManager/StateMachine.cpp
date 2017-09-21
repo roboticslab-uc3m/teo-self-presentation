@@ -18,32 +18,94 @@ bool StateMachine::threadInit() {
 /************************************************************************/
 
 void StateMachine::run() {
+    {
 
-    yarp::os::Time::delay(0.5);
-    yarp::os::Bottle cmd;
+        yarp::os::Bottle cmd;
+        cmd.addVocab(VOCAB_STATE_SALUTE);
+        outCmdMovementsPort->write(cmd);
+        ttsSay( presentation_01 );
+        yarp::os::Time::delay(2);
+        ttsSay( presentation_02 );
+        printf("end....\n");
 
-    ttsSay( presentation_01 );
-    cmd.addVocab(VOCAB_STATE_SALUTE);
-    outCmdMovementsPort->write(cmd);
-    cmd.addVocab(VOCAB_STOP);
-    outCmdMovementsPort->write(cmd);
-    ttsSay( presentation_02 );
-    cmd.addVocab(VOCAB_STATE_EXPLANATION_1);
-    ttsSay( composition_01 );
-    ttsSay( composition_02 );
-    ttsSay( composition_03 );
-    ttsSay( composition_04 );
-    ttsSay( composition_05 );
-    ttsSay( composition_06 );
-    ttsSay( composition_07 );
-    ttsSay( composition_08 );
-    ttsSay( finality_01 );
-    ttsSay( ending_01 );
+    }
 
+    yarp::os::Time::delay(30);
+    {
+        yarp::os::Bottle cmd;
+        cmd.addVocab(VOCAB_STATE_EXPLANATION_1);
+        outCmdMovementsPort->write(cmd);
+        ttsSay( composition_01 );
+        yarp::os::Time::delay(2);
+        ttsSay( composition_02 );
+    }    
+    yarp::os::Time::delay(30);
+    {
+        yarp::os::Bottle cmd;
+        cmd.addVocab(VOCAB_STATE_EXPLANATION_HEAD);
+        outCmdMovementsPort->write(cmd);
+        ttsSay( composition_03 );
+    }
+    yarp::os::Time::delay(30);
+    {
+        yarp::os::Bottle cmd;
+        cmd.addVocab(VOCAB_STATE_EXPLANATION_PC_RIGHT);
+        outCmdMovementsPort->write(cmd);
+        ttsSay( composition_04 );
+        ttsSay( composition_05_01 );
+    }
+    yarp::os::Time::delay(10);
+    {
+        yarp::os::Bottle cmd;
+        cmd.addVocab(VOCAB_STATE_EXPLANATION_PC_LEFT);
+        outCmdMovementsPort->write(cmd);
+        ttsSay( composition_05_02 );
+    }
+    yarp::os::Time::delay(10);
+    {
+        yarp::os::Bottle cmd;
+        cmd.addVocab(VOCAB_STATE_EXPLANATION_PC_INSIDE);
+        outCmdMovementsPort->write(cmd);
+        ttsSay( composition_05_03 );
+    }
 
-    //yarp::os::Bottle cmd;
-    //cmd.addVocab(VOCAB_STATE_SALUTE);
-    //outCmdArmPort->write(cmd);
+    {
+        yarp::os::Bottle cmd;
+        cmd.addVocab(VOCAB_STATE_EXPLANATION_HDD);
+        outCmdMovementsPort->write(cmd);
+        ttsSay( composition_06 );
+    }
+
+    yarp::os::Time::delay(5);
+    {
+        yarp::os::Bottle cmd;
+        cmd.addVocab(VOCAB_STATE_EXPLANATION_2); // mal
+        outCmdMovementsPort->write(cmd);
+        ttsSay( composition_07 );
+    }
+
+    yarp::os::Time::delay(10);
+    {
+        yarp::os::Bottle cmd;
+        cmd.addVocab(VOCAB_STATE_EXPLANATION_SENSOR);
+        outCmdMovementsPort->write(cmd);
+        ttsSay( composition_08 );
+    }
+
+    yarp::os::Time::delay(10);
+    {
+        yarp::os::Bottle cmd;
+        cmd.addVocab(VOCAB_STATE_EXPLANATION_1);
+        outCmdMovementsPort->write(cmd);
+        ttsSay( finality_01 );
+    }
+    yarp::os::Time::delay(10);
+    {
+        yarp::os::Bottle cmd;
+        cmd.addVocab(VOCAB_STATE_HOME);
+        outCmdMovementsPort->write(cmd);
+        ttsSay( ending_01 );
+    }
 
 }
 
@@ -100,7 +162,9 @@ bool StateMachine::setSpeakLanguage(std::string language) {
         composition_02 = std::string("Dispongo de 28 grados de libertad que me permiten moverme con soltura, siendo capaz de hacer tareas tan humanas como andar, cogrer, manipular objetos, realizar tareas del hogar, planchar, servir de camarero, etcetera");
         composition_03 = std::string("En mi cabeza tengo implementadas 2 camaras con las cuales puedo detectar objetos y caras humanas, asi como detectar la distancia y profundidad a la que se encuentran.");
         composition_04 = std::string("Como podeis ver, dispongo en el pecho de 2 ordenadores y un tercero escondido debajo.");
-        composition_05 = std::string("El ordenador de mi derecha me sirve para procesar todas las tareas grelacionadas con manipulacion de objetos, asi como mi propio equilibrio, mientras que el de mi izquierda esta dedicado a las tareas de locomocion. El ordenador que esta situado justo debajo de este, es el mas potente de todos y se encuentra dedicado al procesamiento de vision. De esta forma, cada ordenador se dedica a procesar una parte de la tarea que voy a grealizar.");
+        composition_05_01 = std::string("El ordenador de mi derecha me sirve para procesar todas las tareas grelacionadas con manipulacion de objetos, asi como mi propio equilibrio");
+        composition_05_02 = std::string("mientras que el de mi izquierda esta dedicado a las tareas de locomocion.");
+        composition_05_03 = std::string("El ordenador que esta situado justo debajo de este, es el mas potente de todos y se encuentra dedicado al procesamiento de vision. De esta forma, cada ordenador se dedica a procesar una parte de la tarea que voy a grealizar.");
         composition_06 = std::string("Mas abajo, se encuentran situados los discos duros ese ese de, que son la memoria principal donde almaceno todas las tareas y programas que me permiten realizar todas mis funciones.");
         composition_07 = std::string("Tanto el ordenador de manipulacion como el de locomocion, estan conectados a una gred de comunicacion iamada can bus, que envia todas las seniales de movimiento, a cada uno de mis motores");
         composition_08 = std::string("Tambien poseo sensores de movimiento, inerciales y de fuerza par que me permiten detectar  el peso y la presion ejercida en mis articulaciones. Estos sensores permiten por ejemplo que pueda mantenerme en equilibrio mientras ando o estoy de pie.");
