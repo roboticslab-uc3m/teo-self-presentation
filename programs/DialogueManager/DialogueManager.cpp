@@ -27,8 +27,8 @@ bool DialogueManager::configure(yarp::os::ResourceFinder &rf) {
     outTtsPort.open("/dialogueManager/tts/rpc:c");
     outCmdMovementsPort.open("/dialogueManager/movements/rpc:c");
 
-    stateMachine.setOutTtsPort(&outTtsPort);
-    stateMachine.setOutCmdMovementsPort(&outCmdMovementsPort);
+    scriptManager.setOutTtsPort(&outTtsPort);
+    scriptManager.setOutCmdMovementsPort(&outCmdMovementsPort);
 
     while(1){
         if(outTtsPort.getOutputCount() > 0) break;
@@ -56,9 +56,9 @@ bool DialogueManager::configure(yarp::os::ResourceFinder &rf) {
 
     outTtsPort.write(bConf);
 
-    stateMachine.setSpeakLanguage(language);
+    scriptManager.setSpeakLanguage(language);
 
-    stateMachine.start();
+    scriptManager.start();
     return true;
 }
 
@@ -69,7 +69,7 @@ double DialogueManager::getPeriod() {
 
 /************************************************************************/
 bool DialogueManager::updateModule() {
-    printf("StateMachine in state [%d]. DialogueManager alive...\n", stateMachine.getMachineState());
+    //printf("StateMachine in state [%d]. DialogueManager alive...\n", scriptManager.getMachineState());
     return true;
 }
 
@@ -79,7 +79,7 @@ bool DialogueManager::interruptModule() {
     printf("DialogueManager closing...\n");
     outTtsPort.interrupt();
     outCmdMovementsPort.interrupt();
-    stateMachine.stop();
+    //scriptManager.stop();
     outTtsPort.close();
     outCmdMovementsPort.close();
     return true;

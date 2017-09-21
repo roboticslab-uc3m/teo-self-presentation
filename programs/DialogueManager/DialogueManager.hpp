@@ -6,7 +6,7 @@
 #include <yarp/os/all.h>
 #include <stdlib.h>
 
-#include "StateMachine.hpp"
+#include "ScriptManager.hpp"
 
 #define DEFAULT_LANGUAGE "spanish"
 
@@ -20,7 +20,7 @@ namespace teo
  */
 class DialogueManager : public yarp::os::RFModule {
   private:
-    StateMachine stateMachine;
+    ScriptManager scriptManager;
     yarp::os::RpcClient outTtsPort; // tts port
     yarp::os::RpcClient outCmdMovementsPort; // robot movements
 

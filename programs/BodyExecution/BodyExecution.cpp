@@ -116,7 +116,8 @@ bool BodyExecution::armJointsMoveAndWait(std::vector<double>& leftArmQ, std::vec
     leftArmIPositionControl->positionMove( leftArmQ.data() );
 
 
-    //printf("Waiting for right arm.");    
+    //printf("Waiting for right arm.");
+
     bool doneRight = false;
     bool doneLeft = false;
     while((!doneRight)&&(!Thread::isStopping()))

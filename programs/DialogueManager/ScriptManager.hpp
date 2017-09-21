@@ -29,11 +29,11 @@ namespace teo
 {
 
 /**
- * @ingroup dialogueManager
+ * @ingroup scriptManager
  *
- * @brief implements a specific state machine for dialogueManager.
+ * @brief implements a specific state machine for scriptManager.
  */
-class StateMachine : public yarp::os::Thread {
+class ScriptManager {
 protected:
 
     yarp::os::BufferedPort<yarp::os::Bottle> *inSrPort;
@@ -64,28 +64,12 @@ protected:
 
 public:
 
-    /**
-     * Initialization method. The thread executes this function
-     * when it starts and before "run". This is a good place to 
-     * perform initialization tasks that need to be done by the 
-     * thread itself (device drivers initialization, memory 
-     * allocation etc). If the function returns false the thread 
-     * quits and never calls "run". The return value of threadInit()
-     * is notified to the class and passed as a parameter 
-     * to afterStart(). Note that afterStart() is called by the 
-     * same thread that is executing the "start" method.
-     */
-    bool threadInit();
+
 
     /**
-     * Loop function. This is the thread itself.
+     * Main script function. This start of all robot actions.
      */
-    void run();
-
-    /**
-     * Get its state.
-     */
-    int getMachineState();
+    void start();
 
     /** set language for speaking */
     bool setSpeakLanguage(std::string language);

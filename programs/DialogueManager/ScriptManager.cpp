@@ -1,25 +1,15 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#include "StateMachine.hpp"
+#include "ScriptManager.hpp"
 
 namespace teo
 {
 
 /************************************************************************/
 
-bool StateMachine::threadInit() {
-    //_machineState = 3;
-    //sentence = 'a';
-    printf("Starting SELF PRESENTATION...\n");
-    yarp::os::Time::delay(1);
-    return true;
-}
+void ScriptManager::start() {
 
-/************************************************************************/
-
-void StateMachine::run() {
     {
-
         yarp::os::Bottle cmd;
         cmd.addVocab(VOCAB_STATE_SALUTE);
         outCmdMovementsPort->write(cmd);
@@ -111,7 +101,7 @@ void StateMachine::run() {
 
 /************************************************************************/
 
-void StateMachine::ttsSay(const yarp::os::ConstString& sayConstString) {
+void ScriptManager::ttsSay(const yarp::os::ConstString& sayConstString) {
 
     yarp::os::Bottle bOut, bRes;
     bOut.addString("say");
@@ -122,28 +112,22 @@ void StateMachine::ttsSay(const yarp::os::ConstString& sayConstString) {
     return;
 }
 
-/************************************************************************/
-
-int StateMachine::getMachineState() {
-    return _machineState;
-}
-
 
 /************************************************************************/
 
-void StateMachine::setOutTtsPort(yarp::os::RpcClient* outTtsPort) {
+void ScriptManager::setOutTtsPort(yarp::os::RpcClient* outTtsPort) {
     this->outTtsPort = outTtsPort;
 }
 
 /************************************************************************/
 
-void StateMachine::setOutCmdMovementsPort(yarp::os::RpcClient* outCmdMovePort) {
+void ScriptManager::setOutCmdMovementsPort(yarp::os::RpcClient* outCmdMovePort) {
     this->outCmdMovementsPort = outCmdMovePort;
 }
 
 /************************************************************************/
 
-bool StateMachine::setSpeakLanguage(std::string language) {
+bool ScriptManager::setSpeakLanguage(std::string language) {
 
     if("english" == language)
     {
