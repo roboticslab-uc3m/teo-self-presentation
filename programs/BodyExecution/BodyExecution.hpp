@@ -6,7 +6,7 @@
 #include <yarp/os/all.h>
 #include <yarp/dev/all.h>
 
-#define DEFAULT_ROBOT "/teo" // teo or teoSim
+#define DEFAULT_ROBOT "/teoSim" // teo or teoSim
 
 #define VOCAB_STATE_SALUTE VOCAB4('s','a','l','u')
 #define VOCAB_STATE_HOME VOCAB4('h','o','m','e')
@@ -77,7 +77,7 @@ private:
 
 
      /** Arm Joints Move And Wait */
-     bool armJointsMoveAndWait(std::vector<double>& leftArmQ, std::vector<double>& rightArmQ);
+     bool jointsMoveAndWait(std::vector<double>& leftArm, std::vector<double>& rightArm, std::vector<double> &head);
 
      /** State */
      int state;
