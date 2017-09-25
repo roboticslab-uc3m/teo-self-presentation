@@ -16,11 +16,12 @@ void ScriptManager::start() {
         ttsSay( presentation_01 );
         yarp::os::Time::delay(2);
         ttsSay( presentation_02 );
-        printf("end....\n");
+        cmd.addVocab(VOCAB_STOP);
+        outCmdMovementsPort->write(cmd);
 
     }
-
     yarp::os::Time::delay(30);
+
     {
         yarp::os::Bottle cmd;
         cmd.addVocab(VOCAB_STATE_EXPLANATION_1);
@@ -28,13 +29,19 @@ void ScriptManager::start() {
         ttsSay( composition_01 );
         yarp::os::Time::delay(2);
         ttsSay( composition_02 );
+        cmd.addVocab(VOCAB_STOP);
+        outCmdMovementsPort->write(cmd);
     }    
+
     yarp::os::Time::delay(30);
+
     {
         yarp::os::Bottle cmd;
         cmd.addVocab(VOCAB_STATE_EXPLANATION_HEAD);
         outCmdMovementsPort->write(cmd);
         ttsSay( composition_03 );
+        cmd.addVocab(VOCAB_STOP);
+        outCmdMovementsPort->write(cmd);
     }
     yarp::os::Time::delay(30);
     {
@@ -57,6 +64,8 @@ void ScriptManager::start() {
         cmd.addVocab(VOCAB_STATE_EXPLANATION_PC_INSIDE);
         outCmdMovementsPort->write(cmd);
         ttsSay( composition_05_03 );
+        cmd.addVocab(VOCAB_STOP);
+        outCmdMovementsPort->write(cmd);
     }
 
     {
@@ -64,6 +73,8 @@ void ScriptManager::start() {
         cmd.addVocab(VOCAB_STATE_EXPLANATION_HDD);
         outCmdMovementsPort->write(cmd);
         ttsSay( composition_06 );
+        cmd.addVocab(VOCAB_STOP);
+        outCmdMovementsPort->write(cmd);
     }
 
     yarp::os::Time::delay(5);
@@ -72,6 +83,8 @@ void ScriptManager::start() {
         cmd.addVocab(VOCAB_STATE_EXPLANATION_2); // mal
         outCmdMovementsPort->write(cmd);
         ttsSay( composition_07 );
+        cmd.addVocab(VOCAB_STOP);
+        outCmdMovementsPort->write(cmd);
     }
 
     yarp::os::Time::delay(10);
@@ -80,12 +93,13 @@ void ScriptManager::start() {
         cmd.addVocab(VOCAB_STATE_EXPLANATION_SENSOR);
         outCmdMovementsPort->write(cmd);
         ttsSay( composition_08 );
+
     }
 
     yarp::os::Time::delay(10);
     {
         yarp::os::Bottle cmd;
-        cmd.addVocab(VOCAB_STATE_EXPLANATION_1);
+        cmd.addVocab(VOCAB_STATE_EXPLANATION_2);
         outCmdMovementsPort->write(cmd);
         ttsSay( finality_01 );
     }
