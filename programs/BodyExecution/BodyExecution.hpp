@@ -20,9 +20,9 @@
 #define VOCAB_STATE_EXPLANATION_PC_INSIDE VOCAB4('e','p','c','i')
 #define VOCAB_STATE_EXPLANATION_HDD VOCAB4('e','x','h','d')
 #define VOCAB_STATE_EXPLANATION_SENSOR VOCAB4('e','x','s','e')
+#define VOCAB_RETURN_MOVEMENT_STATE VOCAB4('r','e','t','m')
 
-
-
+using namespace yarp::os;
 
 namespace teo
 {
@@ -81,6 +81,9 @@ private:
 
      /** State */
      int state;
+
+     /** movement finished */
+     bool done;
 
      /** Input port from dialogue manager */
      yarp::os::RpcServer inDialogPort;
