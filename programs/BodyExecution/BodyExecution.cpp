@@ -163,10 +163,24 @@ bool BodyExecution::jointsMoveAndWait(std::vector<double>& leftArm, std::vector<
 
 bool BodyExecution::read(yarp::os::ConnectionReader& connection)
 {
-     yarp::os::Bottle b;
-     b.read(connection);
-     // process data in b
-     state = b.get(0).asVocab();
+     yarp::os::Bottle in, out; // in: the VOCAB_STATE, out: boolean to check if the movement has finished
+     bool ok = in.read(connection);
+     //if (!ok) return false;
+
+     state = in.get(0).asVocab();
+
+     if(state == VOCAB_RETURN_MOVEMENT_STATE){
+
+         // -- Gets a way to reply to the message, if possible.
+         ConnectionWriter *returnToSender = connection.getWriter();
+
+         if(done) {
+             out.addInt(1); // done = 1 (true)
+         }
+         if (returnToSender!=NULL)
+             out.write(*returnToSender);
+
+     }
 
      return true;
 }
@@ -191,8 +205,8 @@ void BodyExecution::run()
             }
             {
                 double rightArmPoss[7] = {45, 0.0, -20.0, 80, 0.0, 0.0, 0.0};
-                std::vector<double> leftArm(7,0.0);
-                std::vector<double> rightArm(7,0.0);
+                std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+6); //teoSim (+6) teo (+7)
+                std::vector<double> leftArm(7,0.0);                
                 std::vector<double> head(2,0.0);               
                 jointsMoveAndWait(leftArm,rightArm,head);
             }
@@ -204,7 +218,7 @@ void BodyExecution::run()
                 jointsMoveAndWait(leftArm,rightArm,head);
 
             }
-            state = VOCAB_STATE_HOME;
+            state = VOCAB_STATE_HOME;            
             break;     
 
         case VOCAB_STATE_HOME:
@@ -215,6 +229,8 @@ void BodyExecution::run()
                 std::vector<double> head(2,0.0);
                 jointsMoveAndWait(leftArm,rightArm,head);
             }
+            done = true;
+            state = 0; //default
             break;
 
         case VOCAB_STATE_EXPLANATION_1:
@@ -242,7 +258,8 @@ void BodyExecution::run()
                 std::vector<double> head(2,0.0);
                 jointsMoveAndWait(leftArm,rightArm,head);
             }
-            state = VOCAB_STATE_HOME;
+            done = true;
+            state = 0; //default
             break;
 
         case VOCAB_STATE_EXPLANATION_2:
@@ -263,6 +280,8 @@ void BodyExecution::run()
                 std::vector<double> head(2,0.0);
                 jointsMoveAndWait(leftArm,rightArm,head);
             }
+            done = true;
+            state = 0; //default
             break;
 
        case VOCAB_STATE_EXPLANATION_HEAD:
@@ -275,8 +294,9 @@ void BodyExecution::run()
                 std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+6);
                 std::vector<double> head(&headPoss[0], &headPoss[0]+2);
                 jointsMoveAndWait(leftArm,rightArm,head);
-            }
-            //state = VOCAB_STATE_HOME;
+            }          
+            done = true;
+            state = 0; //default
             break;
 
        case VOCAB_STATE_EXPLANATION_PC_RIGHT:
@@ -289,6 +309,8 @@ void BodyExecution::run()
                 std::vector<double> head(&headPoss[0], &headPoss[0]+2);
                 jointsMoveAndWait(leftArm,rightArm,head);
             }
+            done = true;
+            state = 0; //default
             break;
 
        case VOCAB_STATE_EXPLANATION_PC_LEFT:
@@ -300,7 +322,9 @@ void BodyExecution::run()
                 std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+6); //teoSim (+6) teo (+7)
                 std::vector<double> head(&headPoss[0], &headPoss[0]+2);
                 jointsMoveAndWait(leftArm,rightArm,head);
-            }
+            }            
+            done = true;
+            state = 0; //default
             break;
 
        case VOCAB_STATE_EXPLANATION_PC_INSIDE:
@@ -313,6 +337,8 @@ void BodyExecution::run()
                 std::vector<double> head(&headPoss[0], &headPoss[0]+2);
                 jointsMoveAndWait(leftArm,rightArm,head);
             }
+            done = true;
+            state = 0; //default
             break;
 
        case VOCAB_STATE_EXPLANATION_HDD:
@@ -325,7 +351,10 @@ void BodyExecution::run()
             std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+6);
             std::vector<double> head(&headPoss[0], &headPoss[0]+2);
             jointsMoveAndWait(leftArm,rightArm,head);
-        }
+        }            
+            done = true;
+            state = 0; //default
+            break;
 
         case VOCAB_STATE_EXPLANATION_SENSOR:
              printf("Explanation Sensors \n");
@@ -366,11 +395,14 @@ void BodyExecution::run()
             std::vector<double> head(&headPoss[0], &headPoss[0]+2);
             jointsMoveAndWait(leftArm,rightArm,head);
         }
-            //state = VOCAB_STATE_HOME;
+            done = true;
+            state = 0; //default
             break;
 
         default:
+            yarp::os::Time::delay(1);
             printf("Doing nothing....\n");
+            done = false;
             break;
         }
 
