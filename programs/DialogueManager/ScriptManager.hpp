@@ -22,6 +22,7 @@
 #define VOCAB_STATE_EXPLANATION_PC_INSIDE VOCAB4('e','p','c','i')
 #define VOCAB_STATE_EXPLANATION_HDD VOCAB4('e','x','h','d')
 #define VOCAB_STATE_EXPLANATION_SENSOR VOCAB4('e','x','s','e')
+#define VOCAB_RETURN_MOVEMENT_STATE VOCAB4('r','e','t','m')
 
 
 
@@ -60,7 +61,11 @@ protected:
     std::string finality_01;
     std::string ending_01;
 
+    // function for speaking
     void ttsSay(const yarp::os::ConstString& sayConstString);
+
+    // function for wait the movement
+    void waitForMovement();
 
 public:
 
