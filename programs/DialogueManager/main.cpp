@@ -11,14 +11,14 @@
  *
  * Copyright: 2017 (C) Universidad Carlos III de Madrid
  *
- * Author: <a href="-------------------------">Raul de Santos Rico</a>
+ * Author: <a href="http://roboticslab.uc3m.es/roboticslab/people/r-de-santos">Raul de Santos Rico</a>
  *
  * CopyPolicy: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License 3.0 or later
  *
  * <hr>
  *
- * This file can be edited at dialogueManager
+ * This file can be edited at DialogueManager
  *
  */
 
