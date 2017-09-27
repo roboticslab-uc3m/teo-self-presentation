@@ -14,11 +14,18 @@ void ScriptManager::start() {
         cmd.addVocab(VOCAB_STATE_SALUTE);
         outCmdMovementsPort->write(cmd);
         ttsSay( presentation_01 );
-        yarp::os::Time::delay(2);
+    }
+
+    yarp::os::Time::delay(2);
+
+    {
+        yarp::os::Bottle cmd;
+        cmd.addVocab(VOCAB_STATE_EXPLANATION_2);
+        outCmdMovementsPort->write(cmd);
         ttsSay( presentation_02 );
     }
 
-    this->waitForMovement();
+    //this->waitForMovement();
 
     {
         yarp::os::Bottle cmd;
@@ -31,7 +38,7 @@ void ScriptManager::start() {
         outCmdMovementsPort->write(cmd);
     }    
 
-    this->waitForMovement();
+    //this->waitForMovement();
 
     {
         yarp::os::Bottle cmd;
@@ -42,7 +49,7 @@ void ScriptManager::start() {
         outCmdMovementsPort->write(cmd);
     }
 
-    this->waitForMovement();
+    //this->waitForMovement();
 
     {
         yarp::os::Bottle cmd;
@@ -52,7 +59,7 @@ void ScriptManager::start() {
         ttsSay( composition_05_01 );
     }
 
-    this->waitForMovement();
+    // it doesn't need to wait
 
     {
         yarp::os::Bottle cmd;
@@ -61,7 +68,7 @@ void ScriptManager::start() {
         ttsSay( composition_05_02 );
     }
 
-    this->waitForMovement();
+    //this->waitForMovement();
 
     {
         yarp::os::Bottle cmd;
@@ -72,7 +79,7 @@ void ScriptManager::start() {
         outCmdMovementsPort->write(cmd);
     }
 
-    this->waitForMovement();
+    //this->waitForMovement();
 
     {
         yarp::os::Bottle cmd;
@@ -83,7 +90,7 @@ void ScriptManager::start() {
         outCmdMovementsPort->write(cmd);
     }
 
-    this->waitForMovement();
+    //this->waitForMovement();
 
     {
         yarp::os::Bottle cmd;
@@ -94,7 +101,7 @@ void ScriptManager::start() {
         outCmdMovementsPort->write(cmd);
     }
 
-    this->waitForMovement();
+    //this->waitForMovement();
 
     {
         yarp::os::Bottle cmd;
@@ -104,7 +111,7 @@ void ScriptManager::start() {
 
     }
 
-    this->waitForMovement();
+    //this->waitForMovement();
 
     {
         yarp::os::Bottle cmd;
@@ -113,7 +120,7 @@ void ScriptManager::start() {
         ttsSay( finality_01 );
     }
 
-    this->waitForMovement();
+    //this->waitForMovement();
 
     {
         yarp::os::Bottle cmd;
@@ -178,7 +185,7 @@ bool ScriptManager::setSpeakLanguage(std::string language) {
     else if("spanish" == language)
     {
         //-- speak sentences
-        presentation_01 = std::string("Hola. Me iamo TEO y soy un drobot humanoide diseniado por ingenieros de la Universidad Carlos Tercero de Madrid. Mi edad es de 5 anios. Mido 1 62. y peso 70 kilos. ");
+        presentation_01 = std::string("Hola. Me iamo TEO y soy un drobot humanoide diseniado por ingenieros de la Universidad Carlos Tercero de Madrid. Tengo 5 anios. Mido 1 62. y peso 70 kilos. ");
         presentation_02 = std::string("He sido diseniado con el proposito de ayudar a la investigacion y a conseguir nuevos logros y descubrimientos dentro del area de la drobotica. ");
         composition_01 = std::string("Mis piezas estan construidas principalmente de aluminio y fibra de carbono.");
         composition_02 = std::string("Dispongo de 28 grados de libertad que me permiten moverme con soltura, siendo capaz de hacer tareas tan humanas como andar, cogrer, manipular objetos, realizar tareas del hogar, planchar, servir de camarero, etcetera");
