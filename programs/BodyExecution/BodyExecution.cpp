@@ -20,11 +20,8 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
         ::exit(0);
     }
 
-    //state = VOCAB_STATE_HOME;
 
     std::string bodyExecutionStr("/bodyExecution");
-
-
 
     yarp::os::Property leftArmOptions;
     leftArmOptions.put("device","remote_controlboard");
@@ -92,8 +89,10 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
 bool BodyExecution::interruptModule()
 {
     this->stop();
-    //inDialogPort.interrupt();
+    inDialogPort.interrupt();
+    rightArmDevice.close();
     leftArmDevice.close();
+    headDevice.close();
     return true;
 }
 
@@ -186,9 +185,7 @@ bool BodyExecution::read(yarp::os::ConnectionReader& connection)
          }
          if (returnToSender!=NULL)
              out.write(*returnToSender);
-
      }
-
      return true;
 }
 
