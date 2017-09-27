@@ -177,9 +177,8 @@ bool ScriptManager::setSpeakLanguage(std::string language) {
     if("english" == language)
     {
         //-- speak sentences
-
-
-        return true;
+        printf("error! Please, configure the aplication in spanish: dialogueManager --language spanish\n");
+        return false;
 
     }
     else if("spanish" == language)
@@ -199,6 +198,8 @@ bool ScriptManager::setSpeakLanguage(std::string language) {
         composition_08 = std::string("Tambien poseo sensores de movimiento, inerciales y de fuerza par que me permiten detectar  el peso y la presion ejercida en mis articulaciones. Estos sensores permiten por ejemplo que pueda mantenerme en equilibrio mientras ando o estoy de pie.");
         finality_01 = std::string("Todos los componentes que conforman todo lo que soy, asi como los programas que me permiten grealizar todas estas tareas, han sido diseniadas por tecnicos ingenieros, estudiantes y doctores. La mision principal es poder descubrir y avanzar juntos en el campo de la grobotica. Por ahora, tan solo soy un prototipo dedicado a la investigacion, por lo que no puedo ser vendido en ninguna tienda. Ademas, mi precio seria demasiado caro para ser comprado.");
         ending_01 = std::string("Aqui termina mi presentacion. Espero que os haya gustado y si quereis, podeis haceros una foto conmigo.");
+
+        return true;
     }
     else
     {
