@@ -28,6 +28,7 @@
 int main(int argc, char **argv) {
 
     yarp::os::ResourceFinder rf;
+    bool exit;
     rf.setVerbose(true);
     rf.setDefaultContext("dialogueManager");
     rf.setDefaultConfigFile("dialogueManager.ini");
@@ -48,5 +49,6 @@ int main(int argc, char **argv) {
     } else printf("[ok]\n");
 
     return mod.runModule(rf);
+
 }
 

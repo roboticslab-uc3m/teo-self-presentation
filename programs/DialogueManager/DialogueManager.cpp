@@ -87,4 +87,16 @@ bool DialogueManager::interruptModule() {
 
 /************************************************************************/
 
+bool DialogueManager::close() {
+    printf("DialogueManager closing...\n");
+    outTtsPort.interrupt();
+    outCmdMovementsPort.interrupt();
+    //scriptManager.stop();
+    outTtsPort.close();
+    outCmdMovementsPort.close();
+    return true;
+}
+
+/************************************************************************/
+
 }  // namespace teo
