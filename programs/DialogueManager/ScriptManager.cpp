@@ -128,7 +128,7 @@ void ScriptManager::start() {
         ttsSay( finality_02 );
     }
 
-    // it doesn't need to wait
+    yarp::os::Time::delay(2); // wait forced two seconds
 
     {
         yarp::os::Bottle cmd;

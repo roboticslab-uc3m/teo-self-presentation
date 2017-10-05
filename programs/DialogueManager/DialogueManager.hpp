@@ -30,6 +30,8 @@ class DialogueManager : public yarp::os::RFModule {
 
   public:
     bool configure(yarp::os::ResourceFinder &rf);
+    bool close();
+
 };
 
 }  // namespace teo
