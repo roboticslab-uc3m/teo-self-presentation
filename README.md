@@ -8,7 +8,7 @@
  
  ## Installation
 
-Installation instructions for installing from source can be found [here]( /doc/FALTA_POR_COMPLETAR).
+Installation instructions for installing from source can be found [here]( /doc/teo-self-presentation-install.md).
 
 ## Contributing
 
