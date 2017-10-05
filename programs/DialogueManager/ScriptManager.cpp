@@ -16,7 +16,8 @@ void ScriptManager::start() {
         ttsSay( presentation_01 );
     }
 
-    yarp::os::Time::delay(2);
+    if (_language == "english") yarp::os::Time::delay(3); // -- in english, we've to wait for the speech
+    else this->waitForMovement();                         // -- in spanish (shorter speech) we've to wait for movements
 
     {
         yarp::os::Bottle cmd;
@@ -25,7 +26,7 @@ void ScriptManager::start() {
         ttsSay( presentation_02 );
     }
 
-    //this->waitForMovement();
+    this->waitForMovement();
 
     {
         yarp::os::Bottle cmd;
@@ -38,7 +39,7 @@ void ScriptManager::start() {
         outCmdMovementsPort->write(cmd);
     }    
 
-    //this->waitForMovement();
+    // it doesn't need to wait
 
     {
         yarp::os::Bottle cmd;
@@ -49,7 +50,7 @@ void ScriptManager::start() {
         outCmdMovementsPort->write(cmd);
     }
 
-    //this->waitForMovement();
+    // it doesn't need to wait
 
     {
         yarp::os::Bottle cmd;
@@ -68,7 +69,7 @@ void ScriptManager::start() {
         ttsSay( composition_05_02 );
     }
 
-    //this->waitForMovement();
+    // it doesn't need to wait
 
     {
         yarp::os::Bottle cmd;
@@ -79,7 +80,7 @@ void ScriptManager::start() {
         outCmdMovementsPort->write(cmd);
     }
 
-    //this->waitForMovement();
+    // it doesn't need to wait
 
     {
         yarp::os::Bottle cmd;
@@ -90,7 +91,7 @@ void ScriptManager::start() {
         outCmdMovementsPort->write(cmd);
     }
 
-    //this->waitForMovement();
+    // it doesn't need to wait
 
     {
         yarp::os::Bottle cmd;
@@ -101,7 +102,7 @@ void ScriptManager::start() {
         outCmdMovementsPort->write(cmd);
     }
 
-    //this->waitForMovement();
+    // it doesn't need to wait
 
     {
         yarp::os::Bottle cmd;
@@ -111,7 +112,7 @@ void ScriptManager::start() {
 
     }
 
-    //this->waitForMovement();
+    // it doesn't need to wait
 
     {
         yarp::os::Bottle cmd;
@@ -120,7 +121,14 @@ void ScriptManager::start() {
         ttsSay( finality_01 );
     }
 
-    //this->waitForMovement();
+    {
+        yarp::os::Bottle cmd;
+        cmd.addVocab(VOCAB_STATE_EXPLANATION_3);
+        outCmdMovementsPort->write(cmd);
+        ttsSay( finality_02 );
+    }
+
+    // it doesn't need to wait
 
     {
         yarp::os::Bottle cmd;
@@ -174,10 +182,28 @@ void ScriptManager::setOutCmdMovementsPort(yarp::os::RpcClient* outCmdMovePort) 
 
 bool ScriptManager::setSpeakLanguage(std::string language) {
 
+    _language = language;
+
     if("english" == language)
     {
         //-- speak sentences
-        printf("error! Please, configure the aplication in spanish: dialogueManager --language spanish\n");
+        //printf("error! Please, configure the aplication in spanish: dialogueManager --language spanish\n");
+        presentation_01 = std::string("Hi. My name is TEO. I am, an humanoid robot, designed by engineers, of the university Carlos tercero, of Madrid. I am 5 years old. My size, is 1 62 meters, and my weight, is 70 kilograms");
+        presentation_02 = std::string("my purpose, is to help to researchs, and to get new hits, and discoveries, within the robotics area. ");
+        composition_01 = std::string("I am mainly built, of aluminum, and carbon fiber");
+        composition_02 = std::string("I have 28 degrees, of freedom, that allow me to move freely, being able to do, such human tasks as walking, running, manipulating objects, doing household chores, ironing, serving as a waiter, etc.");
+        composition_03 = std::string("in my head, I have implemented two cameras, with which, I can detect objects, and human faces. Also, I can detect the distance, and the depth, in which they are");
+        composition_04 = std::string("As you can see, I have two computers, in the chest, and a third, hidden underneath.");
+        composition_05_01 = std::string("The computer on my right, serves me, to process all the tasks, related to object manipulation, as well, as my own, balance");
+        composition_05_02 = std::string("while, the one on my left, is dedicated, to the tasks of, locomotion");
+        composition_05_03 = std::string("The computer that is located, just below this, is the most powerful of all, and is dedicated, to the processing of vision. In this way, each computer, is dedicated to processing a part of the task, that I will do.");
+        composition_06 = std::string("Below, are located the hard disks, S, S, D, which are the main memory, where I store, all the tasks and programs, that allow me to perform, all my functions");
+        composition_07 = std::string("Both of them, the manipulation computer, and the locomotion computer, are connected to a communication network called, CAN, BUS, which sends all movement signals, to each of my motors");
+        composition_08 = std::string("I also have movement, inertial, and force sensors, that allow me to detect the weight, and pressure exerted, on my joints. These sensors allow, for example, to keep me in balance, while walking or standing up");
+        finality_01 = std::string("All the components that make up everything I am, as well as the programs, that allow me to perform all these tasks, have been designed by technical engineers, students and doctors. The main mission, is to discover and advance together, in the field, of robotics.");
+        finality_02 = std::string("For now, I am only a prototype, dedicated to research, so, I can not be sold, in any store. Also, my price would be too expensive, to be bought.");
+        ending_01 = std::string("these, is the end, of my presentation. I hope you liked it, and if you want, you can take a picture with me. Nice to meet you");
+
         return false;
 
     }
@@ -196,7 +222,8 @@ bool ScriptManager::setSpeakLanguage(std::string language) {
         composition_06 = std::string("Mas abajo, se encuentran situados los discos duros ese ese de, que son la memoria principal donde almaceno todas las tareas y programas que me permiten realizar todas mis funciones.");
         composition_07 = std::string("Tanto el ordenador de manipulacion como el de locomocion, estan conectados a una gred de comunicacion iamada can bus, que envia todas las seniales de movimiento, a cada uno de mis motores");
         composition_08 = std::string("Tambien poseo sensores de movimiento, inerciales y de fuerza par que me permiten detectar  el peso y la presion ejercida en mis articulaciones. Estos sensores permiten por ejemplo que pueda mantenerme en equilibrio mientras ando o estoy de pie.");
-        finality_01 = std::string("Todos los componentes que conforman todo lo que soy, asi como los programas que me permiten grealizar todas estas tareas, han sido diseniadas por tecnicos ingenieros, estudiantes y doctores. La mision principal es poder descubrir y avanzar juntos en el campo de la grobotica. Por ahora, tan solo soy un prototipo dedicado a la investigacion, por lo que no puedo ser vendido en ninguna tienda. Ademas, mi precio seria demasiado caro para ser comprado.");
+        finality_01 = std::string("Todos los componentes que conforman todo lo que soy, asi como los programas que me permiten grealizar todas estas tareas, han sido diseniadas por tecnicos ingenieros, estudiantes y doctores. La mision principal es poder descubrir y avanzar juntos en el campo de la grobotica. ");
+        finality_02 = std::string("Por ahora, tan solo soy un prototipo dedicado a la investigacion, por lo que no puedo ser vendido en ninguna tienda. Ademas, mi precio seria demasiado caro para ser comprado.");
         ending_01 = std::string("Aqui termina mi presentacion. Espero que os haya gustado y si quereis, podeis haceros una foto conmigo.");
 
         return true;
