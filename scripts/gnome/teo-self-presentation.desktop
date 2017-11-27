@@ -5,5 +5,5 @@ MimeType=application/vnd.ms-htmlhelp;
 Exec=yarpmanager
 NoDisplay=true
 StartupNotify=true
-Icon=/home/teo/repos/rsantos88/teo-self-presentation/doc/fig/presentation_robot.png
-Path=/home/teo/repos/rsantos88/teo-self-presentation/share
+Icon=/home/teo/repos/teo-self-presentation/doc/fig/presentation_robot.png
+Path=/home/teo/repos/teo-self-presentation/share
