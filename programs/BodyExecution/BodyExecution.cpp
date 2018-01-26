@@ -39,7 +39,6 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
         printf("[warning] Problems acquiring leftArmPos interface\n");
         return false;
     } else printf("[success] Acquired leftArmPos interface\n");
-    leftArmIPositionControl->setPositionMode();
 
     yarp::os::Property rightArmOptions;
     rightArmOptions.put("device","remote_controlboard");
@@ -57,7 +56,6 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
         printf("[warning] Problems acquiring rightArmPos interface\n");
         return false;
     } else printf("[success] Acquired rightArmPos interface\n");
-    rightArmIPositionControl->setPositionMode();
 
     yarp::os::Property headOptions;
     headOptions.put("device","remote_controlboard");
@@ -75,7 +73,6 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
         printf("[warning] Problems acquiring head interface\n");
         return false;
     } else printf("[success] Acquired head interface\n");
-    headIPositionControl->setPositionMode();
 
 
     inDialogPort.open("/bodyExecution/rpc:s");
