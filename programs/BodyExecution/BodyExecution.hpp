@@ -47,33 +47,44 @@ private:
 
      /** Left Arm Device */
      yarp::dev::PolyDriver leftArmDevice;
-     /** Left Arm Position Interface */
-     yarp::dev::IPositionControl *leftArmIPositionControl;
+     /** Left Arm ControlMode2 Interface */
+     yarp::dev::IControlMode2 *leftArmIControlMode2;
+    /** Left Arm PositionControl2 Interface */
+     yarp::dev::IPositionControl2 *leftArmIPositionControl2;
 
      /** Right Arm Device */
      yarp::dev::PolyDriver rightArmDevice;
-     /** Right Arm Position Interface */
-     yarp::dev::IPositionControl *rightArmIPositionControl;
+     /** Right Arm ControlMode2 Interface */
+     yarp::dev::IControlMode2 *rightArmIControlMode2;
+     /** Right Arm PositionControl2 Interface */
+      yarp::dev::IPositionControl2 *rightArmIPositionControl2;
 
      /** Head Device */
      yarp::dev::PolyDriver headDevice;
-     /** Head Position Interface */
-     yarp::dev::IPositionControl *headIPositionControl;
+     /** Head ControlMode2 Interface */
+     yarp::dev::IControlMode2 *headIControlMode2;
+     /** Head PositionControl2 Interface */
+     yarp::dev::IPositionControl2 *headIPositionControl2;
 
      /** Trunk Device */
      yarp::dev::PolyDriver trunkDevice;
-     /** Trunk Position Interface */
-     yarp::dev::IPositionControl *trunkIPositionControl;
+     /** Trunk ControlMode2 Interface */
+     yarp::dev::IControlMode2 *trunkIControlMode2;
+     /** Trunk PositionControl2 Interface */
+     yarp::dev::IPositionControl2 *trunkIPositionControl2;
 
+     // -- Not used at this moment --
+     // -----------------------------
      /** Left Leg Device */
      yarp::dev::PolyDriver leftLegDevice;
      /** Left Leg Position Interface */
-     yarp::dev::IPositionControl *leftLegIPositionControl;
+     yarp::dev::IControlMode2 *leftLegIControlMode2;
 
      /** Right Leg Device */
      yarp::dev::PolyDriver rightLegDevice;
      /** Right Leg Position Interface */
-     yarp::dev::IPositionControl *rightLegIPositionControl;
+     yarp::dev::IControlMode2 *rightLegIControlMode2;
+     // -----------------------------
 
 
      /** Arm Joints Move And Wait */
