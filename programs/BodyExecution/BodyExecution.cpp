@@ -107,7 +107,7 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
     int leftArmAxes;
     leftArmIPositionControl2->getAxes(&leftArmAxes);
     std::vector<int> leftArmControlModes(leftArmAxes,VOCAB_CM_POSITION);
-    if(! leftArmIControlMode2->setControlModes( leftArmControlModes.data() ){
+    if(! leftArmIControlMode2->setControlModes( leftArmControlModes.data() )){
         printf("[warning] Problems setting position control mode of: left-arm\n");
         return false;
     }
