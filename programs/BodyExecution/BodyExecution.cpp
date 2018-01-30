@@ -41,13 +41,6 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
         return false;
     } else printf("[success] Acquired headIControlMode2 interface\n");
 
-    for(int i=0; i<2; i++){
-        if(! headIControlMode2->setControlMode(i,VOCAB_CM_POSITION )){
-            printf("[warning] Problems setting position control mode of: head (joint %d)\n", i);
-            return false;
-        }
-    }
-
     if (!headDevice.view(headIPositionControl2) ) { // connecting our device with "position control 2" interface (configuring our device: speed, acceleration... and sending joint positions)
         printf("[warning] Problems acquiring headIPositionControl2 interface\n");
         return false;
@@ -71,13 +64,6 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
         printf("[warning] Problems acquiring leftArmPos interface\n");
         return false;
     } else printf("[success] Acquired leftArmPos interface\n");
-
-    for(int i=0; i<7; i++){
-        if(! leftArmIControlMode2->setControlMode(i,VOCAB_CM_POSITION )){
-            printf("[warning] Problems setting position control mode of: left-arm (joint %d)\n", i);
-            return false;
-        }
-    }
 
     if (!leftArmDevice.view(leftArmIPositionControl2) ) { // connecting our device with "position control 2" interface (configuring our device: speed, acceleration... and sending joint positions)
         printf("[warning] Problems acquiring leftArmIControlMode2 interface\n");
@@ -103,20 +89,36 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
         return false;
     } else printf("[success] Acquired rightArmPos interface\n");
 
-    for(int i=0; i<7; i++){
-        if(! rightArmIControlMode2->setControlMode(i,VOCAB_CM_POSITION )){
-            printf("[warning] Problems setting position control mode of: right-arm (joint %d)\n", i);
-            return false;
-        }
-    }
 
     if (!rightArmDevice.view(rightArmIPositionControl2) ) { // connecting our device with "position control 2" interface (configuring our device: speed, acceleration... and sending joint positions)
         printf("[warning] Problems acquiring rightArmIControlMode2 interface\n");
         return false;
     } else printf("[success] Acquired rightArmIControlMode2 interface\n");
 
+    //-- Set control modes
+    int headAxes;
+    headIPositionControl2->getAxes(&headAxes);
+    std::vector<int> headControlModes(headAxes,VOCAB_CM_POSITION);
+    if(! headIControlMode2->setControlModes( headControlModes.data() )){
+        printf("[warning] Problems setting position control mode of: head\n");
+        return false;
+    }
+    
+    int leftArmAxes;
+    leftArmIPositionControl2->getAxes(&leftArmAxes);
+    std::vector<int> leftArmControlModes(leftArmAxes,VOCAB_CM_POSITION);
+    if(! leftArmIControlMode2->setControlModes( leftArmControlModes.data() )){
+        printf("[warning] Problems setting position control mode of: left-arm\n");
+        return false;
+    }
 
-
+    int rightArmAxes;
+    rightArmIPositionControl2->getAxes(&rightArmAxes);
+    std::vector<int> rightArmControlModes(rightArmAxes,VOCAB_CM_POSITION);
+    if(! rightArmIControlMode2->setControlModes(rightArmControlModes.data())){
+        printf("[warning] Problems setting position control mode of: right-arm\n");
+        return false;
+    }
 
     // -- Configuring ports
     inDialogPort.open("/bodyExecution/rpc:s");
