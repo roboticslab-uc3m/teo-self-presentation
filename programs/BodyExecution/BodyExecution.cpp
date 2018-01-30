@@ -96,25 +96,22 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
     } else printf("[success] Acquired rightArmIControlMode2 interface\n");
 
     //-- Set control modes
-    for(int i=0; i<2; i++){
-        if(! headIControlMode2->setControlMode(i,VOCAB_CM_POSITION )){
-            printf("[warning] Problems setting position control mode of: head (joint %d)\n", i);
-            return false;
-        }
+    std::vector<int> headControlModes(2,VOCAB_CM_POSITION);
+    if(! headIControlMode2->setControlModes( headControlModes.data() )){
+        printf("[warning] Problems setting position control mode of: head\n");
+        return false;
     }
     
-    for(int i=0; i<7; i++){
-        if(! leftArmIControlMode2->setControlMode(i,VOCAB_CM_POSITION )){
-            printf("[warning] Problems setting position control mode of: left-arm (joint %d)\n", i);
-            return false;
-        }
+    std::vector<int> leftArmControlModes(7,VOCAB_CM_POSITION);
+    if(! leftArmIControlMode2->setControlModes(leftArmControlModes)){
+        printf("[warning] Problems setting position control mode of: left-arm\n");
+        return false;
     }
 
-    for(int i=0; i<7; i++){
-        if(! rightArmIControlMode2->setControlMode(i,VOCAB_CM_POSITION )){
-            printf("[warning] Problems setting position control mode of: right-arm (joint %d)\n", i);
-            return false;
-        }
+    std::vector<int> rightArmControlModes(7,VOCAB_CM_POSITION);
+    if(! rightArmIControlMode2->setControlModes(rightArmControlModes)){
+        printf("[warning] Problems setting position control mode of: right-arm\n");
+        return false;
     }
 
     // -- Configuring ports
