@@ -219,14 +219,14 @@ bool BodyExecution::jointsMoveAndWait(std::vector<double>& leftArm, std::vector<
 
     while(!doneRight)
     {
-        rightArmIPositionControl2->checkMotionDone(&doneRight);
         yarp::os::Time::delay(0.1);
+        rightArmIPositionControl2->checkMotionDone(&doneRight);
     }
 
     while(!doneLeft)
     {
-         leftArmIPositionControl2->checkMotionDone(&doneLeft);
          yarp::os::Time::delay(0.1);
+         leftArmIPositionControl2->checkMotionDone(&doneLeft);         
     }    
 
     while(!doneHead)
@@ -344,7 +344,7 @@ void BodyExecution::run()
             printf("Explanation 2\n");
             {
                 double rightArmPoss[7] = {39.12303, -3.598853, 5.90115, 64.952431, -29.75017, 56.955845, 0.0};
-                double lefArmPoss[7] = {-39.462073, -0.496053, -5.092714, -58.080423, 29.750108, -71.453443, 0.0};
+                double lefArmPoss[7] = {-39.462073, -0.496053, -5.092714, -58.080423, 29.750108, -52.803162, 0.0};
                 std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
                 std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
                 std::vector<double> head(2,0.0);
@@ -367,7 +367,7 @@ void BodyExecution::run()
             printf("Explanation 3\n");
             {
                 double rightArmPoss[7] = {39.12303, -3.598853, 5.90115, 64.952431, -29.75017, 56.955845, 0.0};
-                double lefArmPoss[7] = {-39.462073, -0.496053, -5.092714, -58.080423, 29.750108, -71.453443, 0.0};
+                double lefArmPoss[7] = {-39.462073, -0.496053, -5.092714, -58.080423, 29.750108, -52.803162, 0.0};
                 std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
                 std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
                 std::vector<double> head(2,0.0);
@@ -408,7 +408,7 @@ void BodyExecution::run()
             printf("Explanation Head\n");
             {
 
-                double lefArmPoss[7] = {-70.896301, -1.300537, 48.506149, -93.040436, 8.963093, -55.518463, 0.0};
+                double lefArmPoss[7] = {-70.896301, -1.300537, 48.506149, -93.040436, 8.963093, -52.803162, 0.0};
                 double headPoss[2] = {20.0, 10.0};
                 std::vector<double> rightArm(7,0.0);
                 std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
@@ -450,7 +450,7 @@ void BodyExecution::run()
        case VOCAB_STATE_EXPLANATION_PC_INSIDE:
             printf("Explanation PC 1 \n");
             {
-                double lefArmPoss[7] = {-37.957572, 15.479351, 29.750346, -94.636667, 20.312505, -79.961016, 0.0};
+                double lefArmPoss[7] = {-37.957572, 15.479351, 29.750346, -94.636667, 20.312505, -52.803162, 0.0}; // without plate (wrist = -79.961016)
                 double headPoss[2] = {20.0, 10.0};
                 std::vector<double> rightArm(7,0.0);
                 std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
@@ -465,7 +465,7 @@ void BodyExecution::run()
             printf("Explanation HDD \n");
         {
             double rightArmPoss[7] = {42.706501, -8.418274, -30.826019, 81.370827, -68.787354, 93.673111, 0.0};
-            double lefArmPoss[7] = {-36.801422, 14.850615, 37.961334, -85.834808, 60.720562, -80.298767, 0.0};
+            double lefArmPoss[7] = {-36.801422, 14.850615, 37.961334, -85.834808, 60.720562, -52.803162, 0.0};
             double headPoss[2] = {0.0, 10.0};
             std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
             std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
@@ -489,7 +489,7 @@ void BodyExecution::run()
          }
          {
              double rightArmPoss[7] = {42.003513, 5.975395, -38.031647, 76.97715, -48.927948, 36.203865, 0.0};
-             double lefArmPoss[7] = {-44.797882, 14.323374, 9.314587, -79.947266, 44.639717, -54.024597, 0.0};
+             double lefArmPoss[7] = {-44.797882, 14.323374, 9.314587, -79.947266, 44.639717, -52.803162, 0.0};
              double headPoss[2] = {15, 10.0};
              std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
              std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
@@ -498,7 +498,7 @@ void BodyExecution::run()
          }
             {
                 double rightArmPoss[7] = {64.323372, 13.70826, -38.119507, 76.97715, -48.840088, 43.14587, 0.0};
-                double lefArmPoss[7] = {-44.797882, 14.323374, 9.314587, -79.947266, 44.639717, -54.024597, 0.0};
+                double lefArmPoss[7] = {-44.797882, 14.323374, 9.314587, -79.947266, 44.639717, -52.803162, 0.0};
                 double headPoss[2] = {15, 10.0};
                 std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
                 std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
@@ -508,7 +508,7 @@ void BodyExecution::run()
 
         {
             double rightArmPoss[7] = {65.465729, 14.850615, -36.449921, 76.97715, -21.335693, 56.151142, 0.0};
-            double lefArmPoss[7] = {-62.108978, -3.497375, 28.910368, -66.678375, 55.272408, -62.6362, 0.0};
+            double lefArmPoss[7] = {-62.108978, -3.497375, 28.910368, -66.678375, 55.272408, -52.803162, 0.0};
             double headPoss[2] = {-15, 10.0};
             std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
             std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
