@@ -219,20 +219,20 @@ bool BodyExecution::jointsMoveAndWait(std::vector<double>& leftArm, std::vector<
 
     while(!doneRight)
     {
-        rightArmIPositionControl2->checkMotionDone(&doneRight);
         yarp::os::Time::delay(0.1);
+        rightArmIPositionControl2->checkMotionDone(&doneRight);        
     }
 
     while(!doneLeft)
     {
-         leftArmIPositionControl2->checkMotionDone(&doneLeft);
-         yarp::os::Time::delay(0.1);
+        yarp::os::Time::delay(0.1);
+        leftArmIPositionControl2->checkMotionDone(&doneLeft);        
     }    
 
     while(!doneHead)
     {
-         headIPositionControl2->checkMotionDone(&doneHead);
-         yarp::os::Time::delay(0.1);
+        yarp::os::Time::delay(0.1);
+        headIPositionControl2->checkMotionDone(&doneHead);         
     }
 
     //printf("\n");
