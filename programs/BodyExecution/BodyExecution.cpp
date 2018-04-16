@@ -61,14 +61,14 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
     }
 
     if (!leftArmDevice.view(leftArmIControlMode2) ) { // connecting our device with "control mode 2" interface, initializing which control mode we want (position)
-        printf("[warning] Problems acquiring leftArmPos interface\n");
-        return false;
-    } else printf("[success] Acquired leftArmPos interface\n");
-
-    if (!leftArmDevice.view(leftArmIPositionControl2) ) { // connecting our device with "position control 2" interface (configuring our device: speed, acceleration... and sending joint positions)
         printf("[warning] Problems acquiring leftArmIControlMode2 interface\n");
         return false;
     } else printf("[success] Acquired leftArmIControlMode2 interface\n");
+
+    if (!leftArmDevice.view(leftArmIPositionControl2) ) { // connecting our device with "position control 2" interface (configuring our device: speed, acceleration... and sending joint positions)
+        printf("[warning] Problems acquiring leftArmIPositionControl2 interface\n");
+        return false;
+    } else printf("[success] Acquired leftArmIPositionControl2 interface\n");
 
 
     // ------ RIGHT ARM -------
@@ -85,15 +85,15 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
     }
 
     if (!rightArmDevice.view(rightArmIControlMode2) ) { // connecting our device with "control mode 2" interface, initializing which control mode we want (position)
-        printf("[warning] Problems acquiring rightArmPos interface\n");
-        return false;
-    } else printf("[success] Acquired rightArmPos interface\n");
-
-
-    if (!rightArmDevice.view(rightArmIPositionControl2) ) { // connecting our device with "position control 2" interface (configuring our device: speed, acceleration... and sending joint positions)
         printf("[warning] Problems acquiring rightArmIControlMode2 interface\n");
         return false;
     } else printf("[success] Acquired rightArmIControlMode2 interface\n");
+
+
+    if (!rightArmDevice.view(rightArmIPositionControl2) ) { // connecting our device with "position control 2" interface (configuring our device: speed, acceleration... and sending joint positions)
+        printf("[warning] Problems acquiring rightArmIPositionControl2 interface\n");
+        return false;
+    } else printf("[success] Acquired rightArmIPositionControl2 interface\n");
 
     //-- Set control modes
     int headAxes;
