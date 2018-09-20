@@ -22,8 +22,6 @@
 #define VOCAB_STATE_EXPLANATION_SENSOR VOCAB4('e','x','s','e')
 #define VOCAB_RETURN_MOVEMENT_STATE VOCAB4('r','e','t','m')
 
-using namespace yarp::os;
-
 namespace teo
 {
 

@@ -7,137 +7,127 @@ namespace teo
 
 /************************************************************************/
 
-void ScriptManager::start() {
-
+void ScriptManager::run() {
+    while( !isStopping() )
     {
-        yarp::os::Bottle cmd;
-        cmd.addVocab(VOCAB_STATE_SALUTE);
-        outCmdMovementsPort->write(cmd);
-        ttsSay( presentation_01 );
+        {
+            yarp::os::Bottle cmd;
+            cmd.addVocab(VOCAB_STATE_SALUTE);
+            outCmdMovementsPort->write(cmd);
+            ttsSay( presentation_01 );
+            if (_language=="spanish") yarp::os::Time::delay(7);
+            else yarp::os::Time::delay(1);
+        }
+
+        {
+            yarp::os::Bottle cmd;
+            cmd.addVocab(VOCAB_STATE_EXPLANATION_2);
+            outCmdMovementsPort->write(cmd);
+            ttsSay( presentation_02 );
+            yarp::os::Time::delay(1);
+        }
+
+        {
+            yarp::os::Bottle cmd;
+            cmd.addVocab(VOCAB_STATE_EXPLANATION_1);
+            outCmdMovementsPort->write(cmd);
+            ttsSay( composition_01 );
+            yarp::os::Time::delay(2);
+            ttsSay( composition_02 );
+            cmd.addVocab(VOCAB_STOP);
+            outCmdMovementsPort->write(cmd);
+
+        }
+
+        {
+            yarp::os::Bottle cmd;
+            cmd.addVocab(VOCAB_STATE_EXPLANATION_HEAD);
+            outCmdMovementsPort->write(cmd);
+            ttsSay( composition_03 );
+            cmd.addVocab(VOCAB_STOP);
+            outCmdMovementsPort->write(cmd);
+        }
+
+        {
+            yarp::os::Bottle cmd;
+            cmd.addVocab(VOCAB_STATE_EXPLANATION_PC_RIGHT);
+            outCmdMovementsPort->write(cmd);
+            ttsSay( composition_04 );
+            ttsSay( composition_05_01 );
+        }
+
+        {
+            yarp::os::Bottle cmd;
+            cmd.addVocab(VOCAB_STATE_EXPLANATION_PC_LEFT);
+            outCmdMovementsPort->write(cmd);
+            ttsSay( composition_05_02 );
+        }
+
+        {
+            yarp::os::Bottle cmd;
+            cmd.addVocab(VOCAB_STATE_EXPLANATION_PC_INSIDE);
+            outCmdMovementsPort->write(cmd);
+            ttsSay( composition_05_03 );
+            cmd.addVocab(VOCAB_STOP);
+            outCmdMovementsPort->write(cmd);
+        }
+
+        {
+            yarp::os::Bottle cmd;
+            cmd.addVocab(VOCAB_STATE_EXPLANATION_HDD);
+            outCmdMovementsPort->write(cmd);
+            ttsSay( composition_06 );
+            cmd.addVocab(VOCAB_STOP);
+            outCmdMovementsPort->write(cmd);
+        }
+
+        {
+            yarp::os::Bottle cmd;
+            cmd.addVocab(VOCAB_STATE_EXPLANATION_2);
+            outCmdMovementsPort->write(cmd);
+            ttsSay( composition_07 );
+            cmd.addVocab(VOCAB_STOP);
+            outCmdMovementsPort->write(cmd);
+        }
+
+        {
+            yarp::os::Bottle cmd;
+            cmd.addVocab(VOCAB_STATE_EXPLANATION_SENSOR);
+            outCmdMovementsPort->write(cmd);
+            ttsSay( composition_08 );
+            yarp::os::Time::delay(1);
+
+        }
+
+        {
+            yarp::os::Bottle cmd;
+            cmd.addVocab(VOCAB_STATE_EXPLANATION_1);
+            outCmdMovementsPort->write(cmd);
+            ttsSay( finality_01 );
+            yarp::os::Time::delay(1);
+        }
+
+        {
+            yarp::os::Bottle cmd;
+            cmd.addVocab(VOCAB_STATE_EXPLANATION_3);
+            outCmdMovementsPort->write(cmd);
+            ttsSay( finality_02 );
+        }
+
+        yarp::os::Time::delay(2); // wait forced two seconds
+
+        {
+            yarp::os::Bottle cmd;
+            cmd.addVocab(VOCAB_STATE_HOME);
+            outCmdMovementsPort->write(cmd);
+            ttsSay( ending_01 );
+        }
+
+        // stop the thread
+        this->stop();
     }
-
-    if (_language == "english") yarp::os::Time::delay(3); // -- in english, we've to wait for the speech
-    else this->waitForMovement();                         // -- in spanish (shorter speech) we've to wait for movements
-
-    {
-        yarp::os::Bottle cmd;
-        cmd.addVocab(VOCAB_STATE_EXPLANATION_2);
-        outCmdMovementsPort->write(cmd);
-        ttsSay( presentation_02 );
-    }
-
-    this->waitForMovement();
-
-    {
-        yarp::os::Bottle cmd;
-        cmd.addVocab(VOCAB_STATE_EXPLANATION_1);
-        outCmdMovementsPort->write(cmd);
-        ttsSay( composition_01 );
-        yarp::os::Time::delay(2);
-        ttsSay( composition_02 );
-        cmd.addVocab(VOCAB_STOP);
-        outCmdMovementsPort->write(cmd);
-    }    
-
-    // it doesn't need to wait
-
-    {
-        yarp::os::Bottle cmd;
-        cmd.addVocab(VOCAB_STATE_EXPLANATION_HEAD);
-        outCmdMovementsPort->write(cmd);
-        ttsSay( composition_03 );
-        cmd.addVocab(VOCAB_STOP);
-        outCmdMovementsPort->write(cmd);
-    }
-
-    // it doesn't need to wait
-
-    {
-        yarp::os::Bottle cmd;
-        cmd.addVocab(VOCAB_STATE_EXPLANATION_PC_RIGHT);
-        outCmdMovementsPort->write(cmd);
-        ttsSay( composition_04 );
-        ttsSay( composition_05_01 );
-    }
-
-    // it doesn't need to wait
-
-    {
-        yarp::os::Bottle cmd;
-        cmd.addVocab(VOCAB_STATE_EXPLANATION_PC_LEFT);
-        outCmdMovementsPort->write(cmd);
-        ttsSay( composition_05_02 );
-    }
-
-    // it doesn't need to wait
-
-    {
-        yarp::os::Bottle cmd;
-        cmd.addVocab(VOCAB_STATE_EXPLANATION_PC_INSIDE);
-        outCmdMovementsPort->write(cmd);
-        ttsSay( composition_05_03 );
-        cmd.addVocab(VOCAB_STOP);
-        outCmdMovementsPort->write(cmd);
-    }
-
-    // it doesn't need to wait
-
-    {
-        yarp::os::Bottle cmd;
-        cmd.addVocab(VOCAB_STATE_EXPLANATION_HDD);
-        outCmdMovementsPort->write(cmd);
-        ttsSay( composition_06 );
-        cmd.addVocab(VOCAB_STOP);
-        outCmdMovementsPort->write(cmd);
-    }
-
-    // it doesn't need to wait
-
-    {
-        yarp::os::Bottle cmd;
-        cmd.addVocab(VOCAB_STATE_EXPLANATION_2); // mal
-        outCmdMovementsPort->write(cmd);
-        ttsSay( composition_07 );
-        cmd.addVocab(VOCAB_STOP);
-        outCmdMovementsPort->write(cmd);
-    }
-
-    // it doesn't need to wait
-
-    {
-        yarp::os::Bottle cmd;
-        cmd.addVocab(VOCAB_STATE_EXPLANATION_SENSOR);
-        outCmdMovementsPort->write(cmd);
-        ttsSay( composition_08 );
-
-    }
-
-    // it doesn't need to wait
-
-    {
-        yarp::os::Bottle cmd;
-        cmd.addVocab(VOCAB_STATE_EXPLANATION_1);
-        outCmdMovementsPort->write(cmd);
-        ttsSay( finality_01 );
-    }
-
-    {
-        yarp::os::Bottle cmd;
-        cmd.addVocab(VOCAB_STATE_EXPLANATION_3);
-        outCmdMovementsPort->write(cmd);
-        ttsSay( finality_02 );
-    }
-
-    yarp::os::Time::delay(2); // wait forced two seconds
-
-    {
-        yarp::os::Bottle cmd;
-        cmd.addVocab(VOCAB_STATE_HOME);
-        outCmdMovementsPort->write(cmd);
-        ttsSay( ending_01 );
-    }
-
 }
+
 
 /************************************************************************/
 
@@ -150,20 +140,6 @@ void ScriptManager::ttsSay(const yarp::os::ConstString& sayConstString) {
     printf("[StateMachine] Said: %s [%s]\n", sayConstString.c_str(), bRes.toString().c_str());
     yarp::os::Time::delay(0.5);
     return;
-}
-
-/************************************************************************/
-
-void ScriptManager::waitForMovement(){
-    yarp::os::Bottle cmd;
-    yarp::os::Bottle done;
-    while(!done.get(0).asInt()){
-        cmd.addVocab(VOCAB_RETURN_MOVEMENT_STATE);
-        outCmdMovementsPort->write(cmd,done);
-        yarp::os::Time::delay(0.1);
-        printf("doing movement...\n");
-    }
-    printf("movement done :)\n");
 }
 
 /************************************************************************/

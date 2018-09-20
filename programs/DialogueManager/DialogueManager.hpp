@@ -18,19 +18,19 @@ namespace teo
  *
  * @brief Dialogue Manager.
  */
-class DialogueManager : public yarp::os::RFModule {
-  private:
-    ScriptManager scriptManager;
-    yarp::os::RpcClient outTtsPort; // tts port
-    yarp::os::RpcClient outCmdMovementsPort; // robot movements
+class DialogueManager : public yarp::os::RFModule
+{
+    public:
+      virtual bool configure(yarp::os::ResourceFinder &rf);
+      virtual bool close();
+      ScriptManager scriptManager;
+    private:
+        yarp::os::RpcClient outTtsPort; // tts port
+        yarp::os::RpcClient outCmdMovementsPort; // robot movements
 
-    bool interruptModule();
-    double getPeriod();
-    bool updateModule();
-
-  public:
-    bool configure(yarp::os::ResourceFinder &rf);
-    bool close();
+        virtual bool interruptModule();
+        virtual double getPeriod();
+        virtual bool updateModule();
 
 };
 

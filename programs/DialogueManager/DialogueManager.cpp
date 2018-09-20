@@ -37,16 +37,37 @@ bool DialogueManager::configure(yarp::os::ResourceFinder &rf) {
     }    
 
     yarp::os::Bottle bConf;
+    bConf.clear();
 
-    bConf.addString("setLanguage");
-
+    //-- speech configuration
     if( language == "english" )
     {
-        bConf.addString("mb-en1");
+
+        bConf.addString("setLanguage");
+        bConf.addString("mb-us2");
+        outTtsPort.write(bConf);
+        printf("[info] Configured bottle: %s\n", bConf.toString().c_str());
+        bConf.clear();
+
+        bConf.addString("setSpeed");
+        bConf.addInt(150);
+        outTtsPort.write(bConf);
+        printf("[info] Configured bottle: %s\n", bConf.toString().c_str());
+        bConf.clear();
     }
     else if ( language == "spanish" )
     {
+        bConf.addString("setLanguage");
         bConf.addString("mb-es1");
+        outTtsPort.write(bConf);
+        printf("[info] Configured bottle: %s\n", bConf.toString().c_str());
+        bConf.clear();
+
+        bConf.addString("setSpeed");
+        bConf.addInt(170);
+        outTtsPort.write(bConf);
+        printf("[info] Configured bottle: %s\n", bConf.toString().c_str());
+        bConf.clear();
     }
     else
     {
@@ -54,12 +75,8 @@ bool DialogueManager::configure(yarp::os::ResourceFinder &rf) {
         return false;
     }
 
-    outTtsPort.write(bConf);
-
     scriptManager.setSpeakLanguage(language);
-
-    scriptManager.start();
-    return true;
+    scriptManager.start();  //-- Start the thread (calls run).
 }
 
 /************************************************************************/
@@ -79,7 +96,7 @@ bool DialogueManager::interruptModule() {
     printf("DialogueManager closing...\n");
     outTtsPort.interrupt();
     outCmdMovementsPort.interrupt();
-    //scriptManager.stop();
+    scriptManager.stop();
     outTtsPort.close();
     outCmdMovementsPort.close();
     return true;
@@ -91,7 +108,7 @@ bool DialogueManager::close() {
     printf("DialogueManager closing...\n");
     outTtsPort.interrupt();
     outCmdMovementsPort.interrupt();
-    //scriptManager.stop();
+    scriptManager.stop();
     outTtsPort.close();
     outCmdMovementsPort.close();
     return true;

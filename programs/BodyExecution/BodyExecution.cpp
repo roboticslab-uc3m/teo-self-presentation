@@ -196,12 +196,13 @@ bool BodyExecution::jointsMoveAndWait(std::vector<double>& leftArm, std::vector<
         return false;
     }
 
-
     // -- move to position
+
     if(!headIPositionControl2->positionMove( head.data() )){
             printf("[Error: positionMove] Problems setting new reference point for head axes.\n");
             return false;
     }
+
     if(!rightArmIPositionControl2->positionMove( rightArm.data() )){
         printf("[Error: positionMove] Problems setting new reference point for right-arm axes.\n");
         return false;
@@ -229,13 +230,14 @@ bool BodyExecution::jointsMoveAndWait(std::vector<double>& leftArm, std::vector<
         leftArmIPositionControl2->checkMotionDone(&doneLeft);
     }    
 
-/*  // to avoid problems, we have commented checkMotionDone for the head
+  // to avoid problems, we have commented checkMotionDone for the head
+    /*
     while(!doneHead)
     {
         yarp::os::Time::delay(0.1);
         headIPositionControl2->checkMotionDone(&doneHead);
     }
-*/
+    */
     //printf("\n");
     return true;
 }
@@ -246,14 +248,15 @@ bool BodyExecution::read(yarp::os::ConnectionReader& connection)
 {
      yarp::os::Bottle in, out; // in: the VOCAB_STATE, out: boolean to check if the movement has finished
      bool ok = in.read(connection);
-     //if (!ok) return false;
+     if (!ok) return false;
 
      state = in.get(0).asVocab();
+     printf("state received: %s\n", in.toString().c_str());
 
      if(state == VOCAB_RETURN_MOVEMENT_STATE){
 
          // -- Gets a way to reply to the message, if possible.
-         ConnectionWriter *returnToSender = connection.getWriter();
+         yarp::os::ConnectionWriter *returnToSender = connection.getWriter();
 
          if(done) {
              out.addInt(1); // done = 1 (true)
