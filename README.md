@@ -27,7 +27,7 @@ Installation instructions for installing from source can be found [here]( /doc/t
 
 ## Status
 
-[![Build Status (Linux/OSX)](https://travis-ci.org/roboticslab-uc3m/teo-self-presentation.svg?branch=develop)](https://travis-ci.org/roboticslab-uc3m/teo-self-presentation)
+[![Build Status (Linux)](https://travis-ci.com/roboticslab-uc3m/teo-self-presentation.svg?branch=develop)](https://travis-ci.com/roboticslab-uc3m/teo-self-presentation)
 
 [![Coverage Status](https://coveralls.io/repos/roboticslab-uc3m/teo-self-presentation/badge.svg)](https://coveralls.io/r/roboticslab-uc3m/teo-self-presentation)
 
