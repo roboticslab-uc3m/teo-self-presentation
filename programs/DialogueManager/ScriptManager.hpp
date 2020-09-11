@@ -33,7 +33,7 @@ namespace teo
  *
  * @brief implements a specific state machine for scriptManager.
  */
-class ScriptManager {
+class ScriptManager : public yarp::os::Thread {
 protected:
 
     yarp::os::BufferedPort<yarp::os::Bottle> *inSrPort;
@@ -67,12 +67,11 @@ protected:
 
 public:
 
-
-
     /**
      * Main script function. This start of all robot actions.
      */
-    void start();
+    /** Thread run */
+    virtual void run();
 
     /** set language for speaking */
     bool setSpeakLanguage(std::string language);

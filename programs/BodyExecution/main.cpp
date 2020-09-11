@@ -36,10 +36,10 @@ int main(int argc, char **argv) {
     if(rf.check("help")) {
         return mod.runModule(rf);
     }
-
     printf("Run \"%s --help\" for options.\n",argv[0]);
     printf("%s checking for yarp network... ",argv[0]);
     fflush(stdout);
+
     yarp::os::Network yarp;
     if (!yarp.checkNetwork()) {
         fprintf(stderr,"[fail]\n%s found no yarp network (try running \"yarpserver &\"), bye!\n",argv[0]);

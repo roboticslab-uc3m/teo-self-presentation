@@ -12,15 +12,14 @@
     </module>
 
     <connection>
-        <from>/dialogueManager/tts/rpc:c</from>
-        <to>/tts/rpc:s</to>
-    </connection>
-
-    <connection>
         <from>/dialogueManager/movements/rpc:c</from>
         <to>/bodyExecution/rpc:s</to>
     </connection>
 
+    <connection>
+        <from>/dialogueManager/tts/rpc:c</from>
+        <to>/tts/rpc:s</to>
+    </connection>
 
 </application>
 
