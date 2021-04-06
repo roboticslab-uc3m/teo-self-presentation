@@ -1,14 +1,14 @@
 # Teo-self-presentation
- 
- This is a demostration of the humanoid robot Teo which presents himself (Press image to see the [video](https://www.youtube.com/watch?v=flyQq09S5GI))
- 
- How to run the demo: [Spanish guide](http://robots.uc3m.es/index.php/Procedimiento_Demos)
- 
- [![IMAGE ALT TEXT](http://i3.ytimg.com/vi/flyQq09S5GI/maxresdefault.jpg)](https://www.youtube.com/watch?v=flyQq09S5GI "Teo Self Presentation")
- 
- ## Installation
 
-Installation instructions for installing from source can be found [here]( /doc/teo-self-presentation-install.md).
+This is a demostration of the humanoid robot Teo which presents himself (Press image to see the [video](https://www.youtube.com/watch?v=flyQq09S5GI))
+
+How to run the demo: [Spanish guide](http://robots.uc3m.es/index.php/Procedimiento_Demos)
+
+[![IMAGE ALT TEXT](http://i3.ytimg.com/vi/flyQq09S5GI/maxresdefault.jpg)](https://www.youtube.com/watch?v=flyQq09S5GI "Teo Self Presentation")
+
+## Installation
+
+Installation instructions for installing from source can be found [here](doc/teo-self-presentation-install.md).
 
 ## Contributing
 
@@ -27,7 +27,7 @@ Installation instructions for installing from source can be found [here]( /doc/t
 
 ## Status
 
-[![Build Status (Linux)](https://travis-ci.com/roboticslab-uc3m/teo-self-presentation.svg?branch=master)](https://travis-ci.com/roboticslab-uc3m/teo-self-presentation)
+[![CI (Linux)](https://github.com/roboticslab-uc3m/teo-self-presentation/workflows/Continuous%20Integration/badge.svg)](https://github.com/roboticslab-uc3m/teo-self-presentation/actions)
 
 [![Coverage Status](https://coveralls.io/repos/roboticslab-uc3m/teo-self-presentation/badge.svg)](https://coveralls.io/r/roboticslab-uc3m/teo-self-presentation)
 
