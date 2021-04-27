@@ -1,4 +1,4 @@
-# Copyright: Universidad Carlos III de Madrid (C) 2017
+# Copyright: Universidad Carlos III de Madrid (C) 2021
 # Authors: Raul de Santos Rico
 
 add_subdirectory(DialogueManager)

@@ -1,8 +1,7 @@
-
 /**
-@brief The main, catch-all namespace for TEO.
+ * @brief The main, catch-all namespace for Roboticslab UC3M.
  */
-namespace teo {}
+namespace roboticslab {}
 
 /**
  * \defgroup teo-self-presentation_libraries teo-self-presentation Libraries
@@ -29,5 +28,8 @@ namespace teo {}
  * @brief teo-self-presentation examples.
  */
 
-
-
+/**
+ * \defgroup teo-self-presentation_tests teo-self-presentation Tests
+ *
+ * @brief teo-self-presentation tests.
+ */

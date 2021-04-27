@@ -10,18 +10,18 @@
 
 #include <yarp/dev/ControlBoardInterfaces.h>
 
-#define VOCAB_STATE_SALUTE VOCAB4('s','a','l','u')
-#define VOCAB_STATE_HOME VOCAB4('h','o','m','e')
-#define VOCAB_STATE_EXPLANATION_1 VOCAB4('e','x','p','1')
-#define VOCAB_STATE_EXPLANATION_2 VOCAB4('e','x','p','2')
-#define VOCAB_STATE_EXPLANATION_3 VOCAB4('e','x','p','3')
-#define VOCAB_STATE_EXPLANATION_HEAD VOCAB4('e','x','h','e')
-#define VOCAB_STATE_EXPLANATION_PC_RIGHT VOCAB4('e','p','c','r')
-#define VOCAB_STATE_EXPLANATION_PC_LEFT VOCAB4('e','p','c','l')
-#define VOCAB_STATE_EXPLANATION_PC_INSIDE VOCAB4('e','p','c','i')
-#define VOCAB_STATE_EXPLANATION_HDD VOCAB4('e','x','h','d')
-#define VOCAB_STATE_EXPLANATION_SENSOR VOCAB4('e','x','s','e')
-#define VOCAB_RETURN_MOVEMENT_STATE VOCAB4('r','e','t','m')
+#define VOCAB_STATE_SALUTE yarp::os::createVocab('s','a','l','u')
+#define VOCAB_STATE_HOME yarp::os::createVocab('h','o','m','e')
+#define VOCAB_STATE_EXPLANATION_1 yarp::os::createVocab('e','x','p','1')
+#define VOCAB_STATE_EXPLANATION_2 yarp::os::createVocab('e','x','p','2')
+#define VOCAB_STATE_EXPLANATION_3 yarp::os::createVocab('e','x','p','3')
+#define VOCAB_STATE_EXPLANATION_HEAD yarp::os::createVocab('e','x','h','e')
+#define VOCAB_STATE_EXPLANATION_PC_RIGHT yarp::os::createVocab('e','p','c','r')
+#define VOCAB_STATE_EXPLANATION_PC_LEFT yarp::os::createVocab('e','p','c','l')
+#define VOCAB_STATE_EXPLANATION_PC_INSIDE yarp::os::createVocab('e','p','c','i')
+#define VOCAB_STATE_EXPLANATION_HDD yarp::os::createVocab('e','x','h','d')
+#define VOCAB_STATE_EXPLANATION_SENSOR yarp::os::createVocab('e','x','s','e')
+#define VOCAB_RETURN_MOVEMENT_STATE yarp::os::createVocab('r','e','t','m')
 
 
 
@@ -60,7 +60,7 @@ protected:
     std::string ending_01;
 
     // function for speaking
-    void ttsSay(const yarp::os::ConstString& sayConstString);
+    void ttsSay(std::string& sayConstString);
 
     // function for wait the movement
     void waitForMovement();

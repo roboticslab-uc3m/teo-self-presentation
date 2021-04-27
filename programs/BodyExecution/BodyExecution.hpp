@@ -8,19 +8,19 @@
 
 #define DEFAULT_ROBOT "/teo" // teo or teoSim
 
-#define VOCAB_STATE_SALUTE VOCAB4('s','a','l','u')
-#define VOCAB_STATE_HOME VOCAB4('h','o','m','e')
-#define VOCAB_STATE_EXPLANATION_1 VOCAB4('e','x','p','1')
-#define VOCAB_STATE_EXPLANATION_2 VOCAB4('e','x','p','2')
-#define VOCAB_STATE_EXPLANATION_3 VOCAB4('e','x','p','3')
-#define VOCAB_STATE_EXPLANATION_4 VOCAB4('e','x','p','4')
-#define VOCAB_STATE_EXPLANATION_HEAD VOCAB4('e','x','h','e')
-#define VOCAB_STATE_EXPLANATION_PC_RIGHT VOCAB4('e','p','c','r')
-#define VOCAB_STATE_EXPLANATION_PC_LEFT VOCAB4('e','p','c','l')
-#define VOCAB_STATE_EXPLANATION_PC_INSIDE VOCAB4('e','p','c','i')
-#define VOCAB_STATE_EXPLANATION_HDD VOCAB4('e','x','h','d')
-#define VOCAB_STATE_EXPLANATION_SENSOR VOCAB4('e','x','s','e')
-#define VOCAB_RETURN_MOVEMENT_STATE VOCAB4('r','e','t','m')
+#define VOCAB_STATE_SALUTE yarp::os::createVocab('s','a','l','u')
+#define VOCAB_STATE_HOME yarp::os::createVocab('h','o','m','e')
+#define VOCAB_STATE_EXPLANATION_1 yarp::os::createVocab('e','x','p','1')
+#define VOCAB_STATE_EXPLANATION_2 yarp::os::createVocab('e','x','p','2')
+#define VOCAB_STATE_EXPLANATION_3 yarp::os::createVocab('e','x','p','3')
+#define VOCAB_STATE_EXPLANATION_4 yarp::os::createVocab('e','x','p','4')
+#define VOCAB_STATE_EXPLANATION_HEAD yarp::os::createVocab('e','x','h','e')
+#define VOCAB_STATE_EXPLANATION_PC_RIGHT yarp::os::createVocab('e','p','c','r')
+#define VOCAB_STATE_EXPLANATION_PC_LEFT yarp::os::createVocab('e','p','c','l')
+#define VOCAB_STATE_EXPLANATION_PC_INSIDE yarp::os::createVocab('e','p','c','i')
+#define VOCAB_STATE_EXPLANATION_HDD yarp::os::createVocab('e','x','h','d')
+#define VOCAB_STATE_EXPLANATION_SENSOR yarp::os::createVocab('e','x','s','e')
+#define VOCAB_RETURN_MOVEMENT_STATE yarp::os::createVocab('r','e','t','m')
 
 namespace teo
 {
@@ -45,45 +45,18 @@ private:
 
      /** Left Arm Device */
      yarp::dev::PolyDriver leftArmDevice;
-     /** Left Arm ControlMode2 Interface */
-     yarp::dev::IControlMode2 *leftArmIControlMode2;
-    /** Left Arm PositionControl2 Interface */
-     yarp::dev::IPositionControl2 *leftArmIPositionControl2;
+     yarp::dev::IControlMode *leftArmIControlMode;
+     yarp::dev::IPositionControl *leftArmIPositionControl;
 
      /** Right Arm Device */
      yarp::dev::PolyDriver rightArmDevice;
-     /** Right Arm ControlMode2 Interface */
-     yarp::dev::IControlMode2 *rightArmIControlMode2;
-     /** Right Arm PositionControl2 Interface */
-      yarp::dev::IPositionControl2 *rightArmIPositionControl2;
+     yarp::dev::IControlMode *rightArmIControlMode;
+     yarp::dev::IPositionControl *rightArmIPositionControl;
 
      /** Head Device */
      yarp::dev::PolyDriver headDevice;
-     /** Head ControlMode2 Interface */
-     yarp::dev::IControlMode2 *headIControlMode2;
-     /** Head PositionControl2 Interface */
-     yarp::dev::IPositionControl2 *headIPositionControl2;
-
-     /** Trunk Device */
-     yarp::dev::PolyDriver trunkDevice;
-     /** Trunk ControlMode2 Interface */
-     yarp::dev::IControlMode2 *trunkIControlMode2;
-     /** Trunk PositionControl2 Interface */
-     yarp::dev::IPositionControl2 *trunkIPositionControl2;
-
-     // -- Not used at this moment --
-     // -----------------------------
-     /** Left Leg Device */
-     yarp::dev::PolyDriver leftLegDevice;
-     /** Left Leg Position Interface */
-     yarp::dev::IControlMode2 *leftLegIControlMode2;
-
-     /** Right Leg Device */
-     yarp::dev::PolyDriver rightLegDevice;
-     /** Right Leg Position Interface */
-     yarp::dev::IControlMode2 *rightLegIControlMode2;
-     // -----------------------------
-
+     yarp::dev::IControlMode *headIControlMode;
+     yarp::dev::IPositionControl *headIPositionControl;
 
      /** Arm Joints Move And Wait */
      bool jointsMoveAndWait(std::vector<double>& leftArm, std::vector<double>& rightArm, std::vector<double> &head);

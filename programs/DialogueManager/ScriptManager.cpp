@@ -131,7 +131,7 @@ void ScriptManager::run() {
 
 /************************************************************************/
 
-void ScriptManager::ttsSay(const yarp::os::ConstString& sayConstString) {
+void ScriptManager::ttsSay(std::string& sayConstString) {
 
     yarp::os::Bottle bOut, bRes;
     bOut.addString("say");
