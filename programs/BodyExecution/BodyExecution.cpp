@@ -36,14 +36,15 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    if (!headDevice.view(headIControlMode) ) {
-        printf("[warning] Problems acquiring headIControlMode interface\n");
-        return false;
-    }
+    bool ok = true;
 
-    if (!headDevice.view(headIPositionControl) ) {
-        printf("[warning] Problems acquiring headIPositionControl interface\n");
-        return false;
+    ok &= headDevice.view(headIControlMode);
+    ok &= headDevice.view(headIPositionControl);
+
+    if (!ok)
+    {
+        printf("Problems acquiring head interfaces.\n");
+        return 1;
     }
 
     // ------ LEFT ARM -------
@@ -59,14 +60,13 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    if (!leftArmDevice.view(leftArmIControlMode) ) {
-        printf("[warning] Problems acquiring leftArmIControlMode interface\n");
-        return false;
-    }
+    ok &= leftArmDevice.view(headIControlMode);
+    ok &= leftArmDevice.view(headIPositionControl);
 
-    if (!leftArmDevice.view(leftArmIPositionControl) ) {
-        printf("[warning] Problems acquiring leftArmIPositionControl interface\n");
-        return false;
+    if (!ok)
+    {
+        printf("Problems acquiring left arm interfaces.\n");
+        return 1;
     }
 
     // ------ RIGHT ARM -------
@@ -82,22 +82,17 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    if (!rightArmDevice.view(rightArmIControlMode) ) {
-        printf("[warning] Problems acquiring rightArmIControlMode interface\n");
-        return false;
-    }
+    ok &= rightArmDevice.view(headIControlMode);
+    ok &= rightArmDevice.view(headIPositionControl);
 
-
-    if (!rightArmDevice.view(rightArmIPositionControl) ) {
-        printf("[warning] Problems acquiring rightArmIPositionControl interface\n");
-        return false;
+    if (!ok)
+    {
+        printf("Problems acquiring right arm interfaces.\n");
+        return 1;
     }
 
     //-- Set control modes
-    int headAxes;
-    headIPositionControl->getAxes(&headAxes);
-    std::vector<int> headControlModes(headAxes,VOCAB_CM_POSITION);
-    if(! headIControlMode->setControlModes( headControlModes.data() )){
+    if(! headIControlMode->setControlMode(0, VOCAB_CM_POSITION )){
         printf("[warning] Problems setting position control mode of: head\n");
         return false;
     }
@@ -162,41 +157,32 @@ bool BodyExecution::jointsMoveAndWait(std::vector<double>& leftArm, std::vector<
     // -- Arms
     std::vector<double> armSpeeds(7,25.0); // 7,30.0
     std::vector<double> armAccelerations(7,25.0); // 7,30.0
-    // -- Head
-    std::vector<double> headSpeed(2,25.0); // 7,30.0
-    std::vector<double> headAcceleration(2,25.0); // 7,30.0
 
     // -- configuring..
+    bool ok = true;
+    ok &= headIPositionControl->setRefSpeed(0, 25.0);
+    ok &= rightArmIPositionControl->setRefSpeeds(armSpeeds.data());
+    ok &= leftArmIPositionControl->setRefSpeeds(armSpeeds.data());
 
-    if(!headIPositionControl->setRefSpeeds(headSpeed.data())){
-        printf("[Error] Problems setting reference speed on head joints.\n");
-        return false;
-    }
-    
-    if(!rightArmIPositionControl->setRefSpeeds(armSpeeds.data())){
-        printf("[Error] Problems setting reference speed on right-arm joints.\n");
-        return false;
-    }
-    if(!leftArmIPositionControl->setRefSpeeds(armSpeeds.data())){
-        printf("[Error] Problems setting reference speed on left-arm joints.\n");
-        return false;
-    }
-    if(!headIPositionControl->setRefAccelerations(headAcceleration.data())){
-        printf("[Error] Problems setting reference acceleration on head joints.\n");
-        return false;
-    }
-    if(!rightArmIPositionControl->setRefAccelerations(armAccelerations.data())){
-        printf("[Error] Problems setting reference acceleration on right-arm joints.\n");
-        return false;
-    }
-    if(!leftArmIPositionControl->setRefAccelerations(armAccelerations.data())){
-        printf("[Error] Problems setting reference acceleration on left-arm joints.\n");
-        return false;
-    }
+    if (!ok)
+     {
+         printf("Problems settings joint speeds\n");
+         return 1;
+     }
+
+    ok &= headIPositionControl->setRefAcceleration(0, 25.0);
+    ok &= rightArmIPositionControl->setRefAccelerations(armAccelerations.data());
+    ok &= leftArmIPositionControl->setRefAccelerations(armAccelerations.data());
+
+    if (!ok)
+     {
+         printf("Problems settings joint accelerations\n");
+         return 1;
+     }
 
     // -- move to position
 
-    if(!headIPositionControl->positionMove( head.data() )){
+    if(!headIPositionControl->positionMove(0, head[0] )){ // only move axial neck
         printf("[Error: positionMove] Problems setting new reference point for head axes.\n");
         return false;
     }
