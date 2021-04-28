@@ -18,7 +18,7 @@
 
     <connection>
         <from>/dialogueManager/tts/rpc:c</from>
-        <to>/tts/rpc:s</to>
+        <to>/teo/tts/rpc:s</to>
     </connection>
 
 </application>
