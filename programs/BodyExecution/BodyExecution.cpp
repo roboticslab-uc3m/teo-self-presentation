@@ -60,8 +60,8 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    ok &= leftArmDevice.view(headIControlMode);
-    ok &= leftArmDevice.view(headIPositionControl);
+    ok &= leftArmDevice.view(leftArmIControlMode);
+    ok &= leftArmDevice.view(leftArmIPositionControl);
 
     if (!ok)
     {
@@ -82,8 +82,8 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
         return false;
     }
 
-    ok &= rightArmDevice.view(headIControlMode);
-    ok &= rightArmDevice.view(headIPositionControl);
+    ok &= rightArmDevice.view(rightArmIControlMode);
+    ok &= rightArmDevice.view(rightArmIPositionControl);
 
     if (!ok)
     {
