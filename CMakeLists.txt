@@ -37,6 +37,7 @@ include(TEO-SELF-PRESENTATIONOptions)
 add_subdirectory(cmake)
 add_subdirectory(programs)
 add_subdirectory(share)
+add_subdirectory(doc)
 
 # Output configuration files.
 include(TEO-SELF-PRESENTATIONDescribe)
