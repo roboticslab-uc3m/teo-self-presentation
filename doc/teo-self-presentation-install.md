@@ -3,8 +3,8 @@
 First install the dependencies:
 - [Install CMake](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-cmake.md)
 - [Install YARP](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md)
-- [Install YARP-DEVICES](https://github.com/roboticslab-uc3m/yarp-devices/blob/develop/doc/yarp_devices_install_on_debian_6.md)
-- [Install SPEECH](https://github.com/roboticslab-uc3m/speech/blob/develop/doc/speech-install.md)
+- [Install YARP-DEVICES](https://github.com/roboticslab-uc3m/yarp-devices/blob/master/doc/yarp-devices-install.md)
+- [Install SPEECH](https://github.com/roboticslab-uc3m/speech/blob/master/doc/speech-install.md)
 
 ### Install teo-self-presentation demo on Ubuntu
 
