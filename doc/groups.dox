@@ -5,29 +5,7 @@
 namespace teo {}
 
 /**
- * \defgroup teo-self-presentation_libraries teo-self-presentation Libraries
- *
- * @brief teo-self-presentation libraries.
- *
- */
-
-/**
  * \defgroup teo-self-presentation_programs teo-self-presentation Programs
  *
  * @brief teo-self-presentation programs.
  */
-
-/**
- * \defgroup teo-self-presentation_applications teo-self-presentation Applications (Collections of Programs)
- *
- * @brief teo-self-presentation applications (collections of programs).
- */
-
-/**
- * \defgroup teo-self-presentation_examples teo-self-presentation Examples
- *
- * @brief teo-self-presentation examples.
- */
-
-
-
