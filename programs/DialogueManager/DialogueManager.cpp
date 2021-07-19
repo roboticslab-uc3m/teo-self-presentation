@@ -10,13 +10,13 @@ namespace teo
 bool DialogueManager::configure(yarp::os::ResourceFinder &rf) {
 
     std::string language = rf.check("language",yarp::os::Value(DEFAULT_LANGUAGE),"language to be used").asString();
-    
+
     printf("--------------------------------------------------------------\n");
     if (rf.check("help")) {
         printf("DialogueManager options:\n");
         printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
         printf("\t--language (default: \"%s\")\n",language.c_str());
-    }    
+    }
 
     printf("--------------------------------------------------------------\n");
     if(rf.check("help")) {
@@ -34,7 +34,7 @@ bool DialogueManager::configure(yarp::os::ResourceFinder &rf) {
         if(outTtsPort.getOutputCount() > 0) break;
         printf("Waiting for \"/dialogueManager/tts/rpc:c\" to be connected to something...\n");
         yarp::os::Time::delay(0.5);
-    }    
+    }
 
     yarp::os::Bottle bConf;
     bConf.clear();
@@ -50,7 +50,7 @@ bool DialogueManager::configure(yarp::os::ResourceFinder &rf) {
         bConf.clear();
 
         bConf.addString("setSpeed");
-        bConf.addInt(150);
+        bConf.addInt32(150);
         outTtsPort.write(bConf);
         printf("[info] Configured bottle: %s\n", bConf.toString().c_str());
         bConf.clear();
@@ -64,7 +64,7 @@ bool DialogueManager::configure(yarp::os::ResourceFinder &rf) {
         bConf.clear();
 
         bConf.addString("setSpeed");
-        bConf.addInt(170);
+        bConf.addInt32(170);
         outTtsPort.write(bConf);
         printf("[info] Configured bottle: %s\n", bConf.toString().c_str());
         bConf.clear();
@@ -77,6 +77,7 @@ bool DialogueManager::configure(yarp::os::ResourceFinder &rf) {
 
     scriptManager.setSpeakLanguage(language);
     scriptManager.start();  //-- Start the thread (calls run).
+    return true;
 }
 
 /************************************************************************/

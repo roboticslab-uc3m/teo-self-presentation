@@ -2,6 +2,8 @@
 
 #include "BodyExecution.hpp"
 
+#include <yarp/conf/version.h>
+
 namespace teo
 {
 
@@ -96,7 +98,7 @@ bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
         printf("[warning] Problems setting position control mode of: head\n");
         return false;
     }
-    
+
     int leftArmAxes;
     leftArmIPositionControl->getAxes(&leftArmAxes);
     std::vector<int> leftArmControlModes(leftArmAxes,VOCAB_CM_POSITION);
@@ -234,7 +236,11 @@ bool BodyExecution::read(yarp::os::ConnectionReader& connection)
     bool ok = in.read(connection);
     if (!ok) return false;
 
+#if YARP_VERSION_MINOR >= 5
+    state = in.get(0).asVocab32();
+#else
     state = in.get(0).asVocab();
+#endif
     printf("state received: %s\n", in.toString().c_str());
 
     if(state == VOCAB_RETURN_MOVEMENT_STATE){
@@ -243,7 +249,7 @@ bool BodyExecution::read(yarp::os::ConnectionReader& connection)
         yarp::os::ConnectionWriter *returnToSender = connection.getWriter();
 
         if(done) {
-            out.addInt(1); // done = 1 (true)
+            out.addInt32(1); // done = 1 (true)
         }
         if (returnToSender!=NULL)
             out.write(*returnToSender);

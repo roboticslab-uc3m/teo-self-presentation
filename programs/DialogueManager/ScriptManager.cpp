@@ -2,6 +2,8 @@
 
 #include "ScriptManager.hpp"
 
+#include <yarp/conf/version.h>
+
 namespace teo
 {
 
@@ -12,7 +14,11 @@ void ScriptManager::run() {
     {
         {
             yarp::os::Bottle cmd;
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STATE_SALUTE);
+#else
             cmd.addVocab(VOCAB_STATE_SALUTE);
+#endif
             outCmdMovementsPort->write(cmd);
             ttsSay( presentation_01 );
             if (_language=="spanish") yarp::os::Time::delay(7);
@@ -21,7 +27,11 @@ void ScriptManager::run() {
 
         {
             yarp::os::Bottle cmd;
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STATE_EXPLANATION_2);
+#else
             cmd.addVocab(VOCAB_STATE_EXPLANATION_2);
+#endif
             outCmdMovementsPort->write(cmd);
             ttsSay( presentation_02 );
             yarp::os::Time::delay(1);
@@ -29,28 +39,48 @@ void ScriptManager::run() {
 
         {
             yarp::os::Bottle cmd;
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STATE_EXPLANATION_1);
+#else
             cmd.addVocab(VOCAB_STATE_EXPLANATION_1);
+#endif
             outCmdMovementsPort->write(cmd);
             ttsSay( composition_01 );
             yarp::os::Time::delay(2);
             ttsSay( composition_02 );
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STOP);
+#else
             cmd.addVocab(VOCAB_STOP);
+#endif
             outCmdMovementsPort->write(cmd);
 
         }
 
         {
             yarp::os::Bottle cmd;
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STATE_EXPLANATION_HEAD);
+#else
             cmd.addVocab(VOCAB_STATE_EXPLANATION_HEAD);
+#endif
             outCmdMovementsPort->write(cmd);
             ttsSay( composition_03 );
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STOP);
+#else
             cmd.addVocab(VOCAB_STOP);
+#endif
             outCmdMovementsPort->write(cmd);
         }
 
         {
             yarp::os::Bottle cmd;
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STATE_EXPLANATION_PC_RIGHT);
+#else
             cmd.addVocab(VOCAB_STATE_EXPLANATION_PC_RIGHT);
+#endif
             outCmdMovementsPort->write(cmd);
             ttsSay( composition_04 );
             ttsSay( composition_05_01 );
@@ -58,41 +88,73 @@ void ScriptManager::run() {
 
         {
             yarp::os::Bottle cmd;
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STATE_EXPLANATION_PC_LEFT);
+#else
             cmd.addVocab(VOCAB_STATE_EXPLANATION_PC_LEFT);
+#endif
             outCmdMovementsPort->write(cmd);
             ttsSay( composition_05_02 );
         }
 
         {
             yarp::os::Bottle cmd;
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STATE_EXPLANATION_PC_INSIDE);
+#else
             cmd.addVocab(VOCAB_STATE_EXPLANATION_PC_INSIDE);
+#endif
             outCmdMovementsPort->write(cmd);
             ttsSay( composition_05_03 );
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STOP);
+#else
             cmd.addVocab(VOCAB_STOP);
+#endif
             outCmdMovementsPort->write(cmd);
         }
 
         {
             yarp::os::Bottle cmd;
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STATE_EXPLANATION_HDD);
+#else
             cmd.addVocab(VOCAB_STATE_EXPLANATION_HDD);
+#endif
             outCmdMovementsPort->write(cmd);
             ttsSay( composition_06 );
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STOP);
+#else
             cmd.addVocab(VOCAB_STOP);
+#endif
             outCmdMovementsPort->write(cmd);
         }
 
         {
             yarp::os::Bottle cmd;
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STATE_EXPLANATION_2);
+#else
             cmd.addVocab(VOCAB_STATE_EXPLANATION_2);
+#endif
             outCmdMovementsPort->write(cmd);
             ttsSay( composition_07 );
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STOP);
+#else
             cmd.addVocab(VOCAB_STOP);
+#endif
             outCmdMovementsPort->write(cmd);
         }
 
         {
             yarp::os::Bottle cmd;
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STATE_EXPLANATION_SENSOR);
+#else
             cmd.addVocab(VOCAB_STATE_EXPLANATION_SENSOR);
+#endif
             outCmdMovementsPort->write(cmd);
             ttsSay( composition_08 );
             yarp::os::Time::delay(1);
@@ -101,7 +163,11 @@ void ScriptManager::run() {
 
         {
             yarp::os::Bottle cmd;
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STATE_EXPLANATION_1);
+#else
             cmd.addVocab(VOCAB_STATE_EXPLANATION_1);
+#endif
             outCmdMovementsPort->write(cmd);
             ttsSay( finality_01 );
             yarp::os::Time::delay(1);
@@ -109,7 +175,11 @@ void ScriptManager::run() {
 
         {
             yarp::os::Bottle cmd;
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STATE_EXPLANATION_3);
+#else
             cmd.addVocab(VOCAB_STATE_EXPLANATION_3);
+#endif
             outCmdMovementsPort->write(cmd);
             ttsSay( finality_02 );
         }
@@ -118,7 +188,11 @@ void ScriptManager::run() {
 
         {
             yarp::os::Bottle cmd;
+#if YARP_VERSION_MINOR >= 5
+            cmd.addVocab32(VOCAB_STATE_HOME);
+#else
             cmd.addVocab(VOCAB_STATE_HOME);
+#endif
             outCmdMovementsPort->write(cmd);
             ttsSay( ending_01 );
         }
