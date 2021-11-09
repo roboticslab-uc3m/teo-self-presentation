@@ -1,10 +1,9 @@
 ## Teo-self-presentation demonstration: Installation from Source Code
 
 First install the dependencies:
-- [Install CMake](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-cmake.md)
-- [Install YARP](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md)
-- [Install YARP-DEVICES](https://github.com/roboticslab-uc3m/yarp-devices/blob/master/doc/yarp-devices-install.md)
-- [Install SPEECH](https://github.com/roboticslab-uc3m/speech/blob/master/doc/speech-install.md)
+- [Install CMake 3.12+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-cmake.md)
+- [Install YCM 0.11+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-ycm.md)
+- [Install YARP 3.4+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md)
 
 ### Install teo-self-presentation demo on Ubuntu
 
@@ -19,4 +18,5 @@ make -j$(nproc)  # Compile
 sudo make install  # Install :-)
 cp ../scripts/gnome/teo-self-presentation.desktop $HOME/Desktop
 ```
+
 For additional options use ccmake instead of cmake.

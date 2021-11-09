@@ -1,6 +1,4 @@
-# Copyright: Universidad Carlos III de Madrid (C) 2021
-# Authors: Raul
-# CopyPolicy: Released under the terms of the LGPLv2.1
-
-### Go through single applications
-#add_subdirectory(prog)
+yarp_install(FILES applications/ymanager.ini
+                   applications/teo-self-presentation_english.xml
+                   applications/teo-self-presentation_spanish.xml
+             DESTINATION ${TEO-SELF-PRESENTATION_APPLICATIONS_INSTALL_DIR})

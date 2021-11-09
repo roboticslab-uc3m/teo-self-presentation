@@ -6,4 +6,4 @@ Exec=yarpmanager
 NoDisplay=true
 StartupNotify=true
 Icon=/home/teo/repos/teo-self-presentation/doc/fig/presentation_robot.png
-Path=/home/teo/repos/teo-self-presentation/share
+Path=/home/teo/repos/teo-self-presentation/share/applications
