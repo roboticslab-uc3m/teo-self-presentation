@@ -1,13 +1,21 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __FOLLOW_ME_ARM_SWING_HPP__
-#define __FOLLOW_ME_ARM_SWING_HPP__
+#ifndef __BODY_EXECUTION_HPP__
+#define __BODY_EXECUTION_HPP__
+
+#include <atomic>
+#include <vector>
 
 #include <yarp/conf/version.h>
-#include <yarp/os/all.h>
-#include <yarp/dev/all.h>
 
-constexpr auto DEFAULT_ROBOT = "/teo"; // teo or teoSim
+#include <yarp/os/PortReader.h>
+#include <yarp/os/RFModule.h>
+#include <yarp/os/RpcServer.h>
+#include <yarp/os/Vocab.h>
+
+#include <yarp/dev/IControlMode.h>
+#include <yarp/dev/IPositionControl.h>
+#include <yarp/dev/PolyDriver.h>
 
 #if YARP_VERSION_MINOR >= 5
 constexpr auto VOCAB_STATE_SALUTE = yarp::os::createVocab32('s','a','l','u');
@@ -39,62 +47,59 @@ constexpr auto VOCAB_STATE_EXPLANATION_SENSOR = yarp::os::createVocab('e','x','s
 constexpr auto VOCAB_RETURN_MOVEMENT_STATE = yarp::os::createVocab('r','e','t','m');
 #endif
 
-namespace teo
+namespace roboticslab
 {
 
 /**
  * @ingroup teo-self-presentation_programs
  *
  * @brief Body Execution Core.
- *
  */
-class BodyExecution : public yarp::os::RFModule, public yarp::os::PortReader, public yarp::os::Thread
+class BodyExecution : public yarp::os::RFModule,
+                      public yarp::os::PortReader
 {
 public:
-     virtual bool configure(yarp::os::ResourceFinder &rf);
+    ~BodyExecution()
+    { close(); }
+
+    bool configure(yarp::os::ResourceFinder & rf) override;
+    bool close() override;
+    bool interruptModule() override;
+    double getPeriod() override;
+    bool updateModule() override;
+
+    /** Treats data received from input port from speech recognition */
+    bool read(yarp::os::ConnectionReader & connection) override;
+
 private:
-     /** RFModule interruptModule. */
-     virtual bool interruptModule();
-     /** RFModule getPeriod. */
-     virtual double getPeriod();
-     /** RFModule updateModule. */
-     virtual bool updateModule();
+    /** Left Arm Device */
+    yarp::dev::PolyDriver leftArmDevice;
+    yarp::dev::IControlMode *leftArmIControlMode;
+    yarp::dev::IPositionControl *leftArmIPositionControl;
 
-     /** Left Arm Device */
-     yarp::dev::PolyDriver leftArmDevice;
-     yarp::dev::IControlMode *leftArmIControlMode;
-     yarp::dev::IPositionControl *leftArmIPositionControl;
+    /** Right Arm Device */
+    yarp::dev::PolyDriver rightArmDevice;
+    yarp::dev::IControlMode *rightArmIControlMode;
+    yarp::dev::IPositionControl *rightArmIPositionControl;
 
-     /** Right Arm Device */
-     yarp::dev::PolyDriver rightArmDevice;
-     yarp::dev::IControlMode *rightArmIControlMode;
-     yarp::dev::IPositionControl *rightArmIPositionControl;
+    /** Head Device */
+    yarp::dev::PolyDriver headDevice;
+    yarp::dev::IControlMode *headIControlMode;
+    yarp::dev::IPositionControl *headIPositionControl;
 
-     /** Head Device */
-     yarp::dev::PolyDriver headDevice;
-     yarp::dev::IControlMode *headIControlMode;
-     yarp::dev::IPositionControl *headIPositionControl;
+    /** Arm Joints Move And Wait */
+    void moveAndWait(const std::vector<double> & leftArm, const std::vector<double> & rightArm, const std::vector<double> & head);
 
-     /** Arm Joints Move And Wait */
-     bool jointsMoveAndWait(std::vector<double>& leftArm, std::vector<double>& rightArm, std::vector<double> &head);
+    /** State */
+    std::atomic<int> state {0};
 
-     /** State */
-     int state;
+    /** movement finished */
+    std::atomic_bool done {false};
 
-     /** movement finished */
-     bool done;
-
-     /** Input port from dialogue manager */
-     yarp::os::RpcServer inDialogPort;
-
-     /** Treats data received from input port from speech recognition */
-     virtual bool read(yarp::os::ConnectionReader& connection);
-
-     /** Thread run */
-     virtual void run();
-
+    /** Input port from dialogue manager */
+    yarp::os::RpcServer inDialogPort;
 };
 
-}  // namespace teo
+} // namespace roboticslab
 
-#endif  // __FOLLOW_ME_ARM_SWING_HPP__
+#endif // __BODY_EXECUTION_HPP__

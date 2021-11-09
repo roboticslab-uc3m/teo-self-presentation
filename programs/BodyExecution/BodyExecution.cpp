@@ -4,526 +4,345 @@
 
 #include <yarp/conf/version.h>
 
-namespace teo
+#include <yarp/os/Bottle.h>
+#include <yarp/os/LogStream.h>
+#include <yarp/os/Property.h>
+#include <yarp/os/SystemClock.h>
+
+using namespace roboticslab;
+
+constexpr auto DEFAULT_ROBOT = "/teo"; // teo or teoSim
+constexpr auto DEFAULT_PREFIX = "/bodyExecution";
+constexpr auto DEFAULT_REF_SPEED = 25.0; // [m/s]
+constexpr auto DEFAULT_REF_ACCELERATION = 25.0; // [m/s^2]
+
+bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
 {
+    auto robot = rf.check("robot", yarp::os::Value(DEFAULT_ROBOT), "remote robot port prefix").asString();
 
-/************************************************************************/
-
-bool BodyExecution::configure(yarp::os::ResourceFinder &rf)
-{
-    std::string robot = rf.check("robot",yarp::os::Value(DEFAULT_ROBOT),"name of /robot to be used").asString();
-
-    printf("--------------------------------------------------------------\n");
     if (rf.check("help"))
     {
-        printf("BodyExecution options:\n");
-        printf("\t--help (this help)\t--from [file.ini]\t--context [path]\n");
-        printf("\t--robot: %s [%s]\n",robot.c_str(),DEFAULT_ROBOT);
-        ::exit(0);
-    }
-
-    std::string bodyExecutionStr("/bodyExecution");
-
-
-    // ------ HEAD -------
-    yarp::os::Property headOptions;
-    headOptions.put("device","remote_controlboard");
-    headOptions.put("remote",robot+"/head");
-    headOptions.put("local",bodyExecutionStr+robot+"/head");
-    headDevice.open(headOptions);
-    if(!headDevice.isValid()) {
-        printf("robot head device not available.\n");
-        headDevice.close();
-        yarp::os::Network::fini();
+        yInfo("BodyExecution options:");
+        yInfo("\t--help (this help)\t--from [file.ini]\t--context [path]");
+        yInfo("\t--robot: %s [%s]", robot.c_str(), DEFAULT_ROBOT);
         return false;
     }
 
-    bool ok = true;
+    // ------ HEAD -------
 
-    ok &= headDevice.view(headIControlMode);
-    ok &= headDevice.view(headIPositionControl);
+    yarp::os::Property headOptions {
+        {"device", yarp::os::Value("remote_controlboard")},
+        {"remote", yarp::os::Value(robot + "/head")},
+        {"local", yarp::os::Value(DEFAULT_PREFIX + robot + "/head")}
+    };
 
-    if (!ok)
+    if (!headDevice.open(headOptions))
     {
-        printf("Problems acquiring head interfaces.\n");
-        return 1;
+        yError() << "Robot head device not available";
+        return false;
+    }
+
+    if (!headDevice.view(headIControlMode) || !headDevice.view(headIPositionControl))
+    {
+        yError() << "Unable to acquire head interfaces";
+        return false;
     }
 
     // ------ LEFT ARM -------
-    yarp::os::Property leftArmOptions;
-    leftArmOptions.put("device","remote_controlboard");
-    leftArmOptions.put("remote",robot+"/leftArm");
-    leftArmOptions.put("local",bodyExecutionStr+robot+"/leftArm");
-    leftArmDevice.open(leftArmOptions);
-    if(!leftArmDevice.isValid()) {
-        printf("robot leftArm device not available.\n");
-        leftArmDevice.close();
-        yarp::os::Network::fini();
+
+    yarp::os::Property leftArmOptions {
+        {"device", yarp::os::Value("remote_controlboard")},
+        {"remote", yarp::os::Value(robot + "/leftArm")},
+        {"local", yarp::os::Value(DEFAULT_PREFIX + robot + "/leftArm")}
+    };
+
+    if (!leftArmDevice.open(leftArmOptions)) {
+        yError() << "Robot left arm device not available";
         return false;
     }
 
-    ok &= leftArmDevice.view(leftArmIControlMode);
-    ok &= leftArmDevice.view(leftArmIPositionControl);
-
-    if (!ok)
+    if (!leftArmDevice.view(leftArmIControlMode) || !leftArmDevice.view(leftArmIPositionControl))
     {
-        printf("Problems acquiring left arm interfaces.\n");
-        return 1;
+        yError() << "Unable to acquire left arm interfaces";
+        return false;
     }
 
     // ------ RIGHT ARM -------
-    yarp::os::Property rightArmOptions;
-    rightArmOptions.put("device","remote_controlboard");
-    rightArmOptions.put("remote",robot+"/rightArm");
-    rightArmOptions.put("local",bodyExecutionStr+robot+"/rightArm");
-    rightArmDevice.open(rightArmOptions);
-    if(!rightArmDevice.isValid()) {
-        printf("robot rightArm device not available.\n");
-        rightArmDevice.close();
-        yarp::os::Network::fini();
+
+    yarp::os::Property rightArmOptions {
+        {"device", yarp::os::Value("remote_controlboard")},
+        {"remote", yarp::os::Value(robot + "/rightArm")},
+        {"local", yarp::os::Value(DEFAULT_PREFIX + robot + "/rightArm")}
+    };
+
+    if (!rightArmDevice.open(rightArmOptions))
+    {
+        yError() << "Robot right arm device not available";
         return false;
     }
 
-    ok &= rightArmDevice.view(rightArmIControlMode);
-    ok &= rightArmDevice.view(rightArmIPositionControl);
-
-    if (!ok)
+    if (!rightArmDevice.view(rightArmIControlMode) || !rightArmDevice.view(rightArmIPositionControl))
     {
-        printf("Problems acquiring right arm interfaces.\n");
-        return 1;
+        yError() << "Unable to acquire right arm interfaces";
+        return false;
     }
 
     //-- Set control modes
-    if(! headIControlMode->setControlMode(0, VOCAB_CM_POSITION )){
-        printf("[warning] Problems setting position control mode of: head\n");
+
+    int headAxes;
+    headIPositionControl->getAxes(&headAxes);
+
+    if (!headIControlMode->setControlModes(std::vector<int>(headAxes, VOCAB_CM_POSITION).data()))
+    {
+        yError() << "Unable to set position control mode on head";
         return false;
     }
 
     int leftArmAxes;
     leftArmIPositionControl->getAxes(&leftArmAxes);
-    std::vector<int> leftArmControlModes(leftArmAxes,VOCAB_CM_POSITION);
-    if(! leftArmIControlMode->setControlModes( leftArmControlModes.data() )){
-        printf("[warning] Problems setting position control mode of: left-arm\n");
+
+    if (!leftArmIControlMode->setControlModes(std::vector<int>(leftArmAxes, VOCAB_CM_POSITION).data()))
+    {
+        yError() << "Unable to set position control mode on left arm";
         return false;
     }
 
     int rightArmAxes;
     rightArmIPositionControl->getAxes(&rightArmAxes);
-    std::vector<int> rightArmControlModes(rightArmAxes,VOCAB_CM_POSITION);
-    if(! rightArmIControlMode->setControlModes(rightArmControlModes.data())){
-        printf("[warning] Problems setting position control mode of: right-arm\n");
+
+    if (!rightArmIControlMode->setControlModes(std::vector<int>(rightArmAxes, VOCAB_CM_POSITION).data()))
+    {
+        yError() << "Unable to set position control mode on right arm";
         return false;
     }
 
-    // -- Configuring ports
-    inDialogPort.open("/bodyExecution/rpc:s");
-    inDialogPort.setReader(*this);  //-- Callback reader: avoid need to call inSrPort.read().
+    // -- Configure speeds and accelerations
 
-    return this->start();  //-- Start the thread (calls run).
+    if (!headIPositionControl->setRefSpeeds(std::vector<double>(headAxes, DEFAULT_REF_SPEED).data()))
+    {
+        yError() << "Unable to set reference speeds on head";
+        return false;
+    }
+
+    if (!leftArmIPositionControl->setRefSpeeds(std::vector<double>(leftArmAxes, DEFAULT_REF_SPEED).data()))
+    {
+        yError() << "Unable to set reference speeds on left arm";
+        return false;
+    }
+
+    if (!rightArmIPositionControl->setRefSpeeds(std::vector<double>(rightArmAxes, DEFAULT_REF_SPEED).data()))
+    {
+        yError() << "Unable to set reference speeds on right arm";
+        return false;
+    }
+
+    if (!headIPositionControl->setRefAccelerations(std::vector<double>(headAxes, DEFAULT_REF_ACCELERATION).data()))
+    {
+        yError() << "Unable to set reference accelerations on head";
+        return false;
+    }
+
+    if (!leftArmIPositionControl->setRefAccelerations(std::vector<double>(leftArmAxes, DEFAULT_REF_ACCELERATION).data()))
+    {
+        yError() << "Unable to set reference accelerations on left arm";
+        return false;
+    }
+
+    if (!rightArmIPositionControl->setRefAccelerations(std::vector<double>(rightArmAxes, DEFAULT_REF_ACCELERATION).data()))
+    {
+        yError() << "Unable to set reference accelerations on right arm";
+        return false;
+    }
+
+    // -- Configure port
+
+    if (!inDialogPort.open(DEFAULT_PREFIX + std::string("/rpc:s")))
+    {
+        yError() << "Unable to open RPC port";
+        return false;
+    }
+
+    inDialogPort.setReader(*this);
+    return true;
 }
 
-/************************************************************************/
+bool BodyExecution::close()
+{
+    inDialogPort.close();
+    headDevice.close();
+    leftArmDevice.close();
+    rightArmDevice.close();
+    return true;
+}
 
 bool BodyExecution::interruptModule()
 {
-    this->stop();
     inDialogPort.interrupt();
-    rightArmDevice.close();
-    leftArmDevice.close();
-    headDevice.close();
     return true;
 }
-
-/************************************************************************/
 
 double BodyExecution::getPeriod()
 {
-    return 4.0; // Fixed, in seconds, the slow thread that calls updateModule below
+    return 1.0; // [s]
 }
-
-/************************************************************************/
 
 bool BodyExecution::updateModule()
 {
-    printf("Entered updateModule...\n");
+    static const std::vector<double> headZeros(2, 0.0);
+    static const std::vector<double> armZeros(6, 0.0);
+
+    switch (state)
+    {
+    case VOCAB_STATE_SALUTE:
+        yInfo() << "Salute";
+        moveAndWait(armZeros, {-45.0, 0.0, -20.0, -80.0, 0.0, 0.0}, headZeros);
+        moveAndWait(armZeros, {-45.0, 0.0, 20.0, -80.0, 0.0, 0.0}, headZeros);
+        moveAndWait(armZeros, {-45.0, 0.0, -20.0, -80.0, 0.0, 0.0}, headZeros);
+        // force homing on next iteration, don't reset done flag nor state yet
+        state = VOCAB_STATE_HOME;
+        return true;
+
+    case VOCAB_STATE_HOME:
+        yInfo() << "Home";
+        moveAndWait(armZeros, armZeros, headZeros);
+        break;
+
+    case VOCAB_STATE_EXPLANATION_1:
+        yInfo() << "Explanation 1";
+        moveAndWait(armZeros, {17.03, -22.65, -1.49, -88.75, 2.36, -53.78}, headZeros);
+        moveAndWait(armZeros, {-65.00, -79.42, -6.24, -88.66, 31.44, 31.18}, {-60.0, 0.0});
+        moveAndWait({-68.75, 10.53, -16.59, -96.57, -34.89, -9.02}, {17.03, -22.65, -1.49, -88.75, 2.36, -53.78}, headZeros);
+        break;
+
+    case VOCAB_STATE_EXPLANATION_2:
+        yInfo() << "Explanation 2";
+        moveAndWait({-39.46, -0.50, 5.09, -58.08, -29.75, -52.80}, {-39.12, -3.60, -5.90, -64.95, 29.75, -56.96}, headZeros);
+        moveAndWait({-63.12, -3.60, -5.90, -80.95, 10.25, -19.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -38.58}, headZeros);
+        break;
+
+    case VOCAB_STATE_EXPLANATION_3:
+        yInfo() << "Explanation 3";
+        moveAndWait({-39.46, -0.50, 5.09, -58.08, -29.75, -52.80}, {-39.12, -3.60, -5.90, -64.95, 29.75, -56.96}, headZeros);
+        moveAndWait({-63.12, -3.60, -5.90, -80.95, 10.25, -19.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -38.58}, headZeros);
+        moveAndWait({-63.12, -3.60, -5.90, -80.95, 10.25, -19.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -38.58}, {0.0, 10.0});
+        moveAndWait({-63.12, -3.60, -5.90, -80.95, 10.25, -19.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -38.58}, {0.0, -10.0});
+        break;
+
+    case VOCAB_STATE_EXPLANATION_HEAD:
+        yInfo() << "Explanation Head";
+        moveAndWait({-70.90, -1.30, -48.51, -93.04, -8.96, -52.80}, armZeros, {20.0, 10.0});
+        break;
+
+    case VOCAB_STATE_EXPLANATION_PC_RIGHT:
+        yInfo() << "Explanation PC 1";
+        moveAndWait(armZeros, {-63.53, -8.15, 34.52, -72.23, 32.32, -85.17}, {-20.0, 10.0});
+        break;
+
+    case VOCAB_STATE_EXPLANATION_PC_LEFT:
+        yInfo() << "Explanation PC 1";
+        moveAndWait(armZeros, {-64.93, 8.96, 54.29, -72.32, 40.40, -50.00}, {20.0, 10.0});
+        break;
+
+    case VOCAB_STATE_EXPLANATION_PC_INSIDE:
+        yInfo() << "Explanation PC 1";
+        // left arm without plate (wrist = -79.961016)
+        moveAndWait({-37.96, 15.48, -29.75, -94.64, -20.31, -52.80}, armZeros, {20.0, 10.0});
+        break;
+
+    case VOCAB_STATE_EXPLANATION_HDD:
+        yInfo() << "Explanation HDD";
+        moveAndWait({-36.80, 14.85, -37.96, -85.83, -60.72, -52.80}, {-42.71, -8.42, 30.83, -81.37, 68.79, -93.67}, {0.0, 10.0});
+        break;
+
+    case VOCAB_STATE_EXPLANATION_SENSOR:
+        yInfo() << "Explanation Sensors";
+        moveAndWait({-55.87, -11.32, -27.07, -87.33, -38.84, -43.04}, {-42.00, 5.98, 38.03, -76.98, 48.93, -36.20}, {15.0, 10.0});
+        moveAndWait({-44.80, 14.32, -9.31, -79.95, -44.64, -52.80}, {-42.00, 5.98, 38.03, -76.98, 48.93, -36.20}, {15.0, 10.0});
+        moveAndWait({-44.80, 14.32, -9.31, -79.95, -44.64, -52.80}, {-64.32, 13.71, 38.12, -76.98, 48.84, -43.15}, {15.0, 10.0});
+        moveAndWait({-62.11, -3.50, -28.91, -66.68, -55.27, -52.80}, {-65.47, 14.85, 36.45, -76.98, 21.33, -56.15}, {-15.0, 10.0});
+        break;
+
+    default:
+        yInfo() << "Doing nothing....";
+        break;
+    }
+
+    done = true;
+    state = 0;
 
     return true;
 }
 
-/************************************************************************/
-
-bool BodyExecution::jointsMoveAndWait(std::vector<double>& leftArm, std::vector<double> &rightArm, std::vector<double> &head)
+void BodyExecution::moveAndWait(const std::vector<double> & leftArm, const std::vector<double> & rightArm, const std::vector<double> & head)
 {
-    // -- Configuring Speeds and Accelerations
+    done = false;
 
-    // -- Arms
-    std::vector<double> armSpeeds(7,25.0); // 7,30.0
-    std::vector<double> armAccelerations(7,25.0); // 7,30.0
-
-    // -- configuring..
-    bool ok = true;
-    ok &= headIPositionControl->setRefSpeed(0, 25.0);
-    ok &= rightArmIPositionControl->setRefSpeeds(armSpeeds.data());
-    ok &= leftArmIPositionControl->setRefSpeeds(armSpeeds.data());
-
-    if (!ok)
-     {
-         printf("Problems settings joint speeds\n");
-         return 1;
-     }
-
-    ok &= headIPositionControl->setRefAcceleration(0, 25.0);
-    ok &= rightArmIPositionControl->setRefAccelerations(armAccelerations.data());
-    ok &= leftArmIPositionControl->setRefAccelerations(armAccelerations.data());
-
-    if (!ok)
-     {
-         printf("Problems settings joint accelerations\n");
-         return 1;
-     }
-
-    // -- move to position
-
-    if(!headIPositionControl->positionMove(0, head[0] )){ // only move axial neck
-        printf("[Error: positionMove] Problems setting new reference point for head axes.\n");
-        return false;
-    }
-
-    if(!rightArmIPositionControl->positionMove( rightArm.data() )){
-        printf("[Error: positionMove] Problems setting new reference point for right-arm axes.\n");
-        return false;
-    }
-    if(!leftArmIPositionControl->positionMove( leftArm.data() )){
-        printf("[Error: positionMove] Problems setting new reference point for left-arm axes.\n");
-        return false;
-    }
-
-
-    // -- checking movement done...
-    bool doneRight = false;
-    bool doneLeft = false;
-    bool doneHead = false;
-
-    while(!doneRight)
+    if (!headIPositionControl->positionMove(head.data()))
     {
-        yarp::os::Time::delay(0.1);
-        rightArmIPositionControl->checkMotionDone(&doneRight);
+        yWarning() << "Unable to set reference point for head axes";
     }
 
-    while(!doneLeft)
+    if (!leftArmIPositionControl->positionMove(leftArm.data()))
     {
-        yarp::os::Time::delay(0.1);
-        leftArmIPositionControl->checkMotionDone(&doneLeft);
+        yWarning() << "Unable to set reference point for left arm axes";
     }
 
-    // to avoid problems, we have commented checkMotionDone for the head
-    /*
-    while(!doneHead)
+    if (!rightArmIPositionControl->positionMove(rightArm.data()))
     {
-        yarp::os::Time::delay(0.1);
-        headIPositionControl->checkMotionDone(&doneHead);
+        yWarning() << "Unable to set reference point for right arm axes";
     }
-    */
-    //printf("\n");
-    return true;
+
+    bool leftArmMotionDone = false;
+
+    while (!leftArmMotionDone)
+    {
+        yarp::os::SystemClock::delaySystem(0.1);
+        leftArmIPositionControl->checkMotionDone(&leftArmMotionDone);
+    }
+
+    bool rightArmMotionDone = false;
+
+    while (!rightArmMotionDone)
+    {
+        yarp::os::SystemClock::delaySystem(0.1);
+        rightArmIPositionControl->checkMotionDone(&rightArmMotionDone);
+    }
+
+    bool headMotionDone = false;
+
+    while (!headMotionDone)
+    {
+        yarp::os::SystemClock::delaySystem(0.1);
+        headIPositionControl->checkMotionDone(&headMotionDone);
+    }
 }
 
-/************************************************************************/
-
-bool BodyExecution::read(yarp::os::ConnectionReader& connection)
+bool BodyExecution::read(yarp::os::ConnectionReader & connection)
 {
-    yarp::os::Bottle in, out; // in: the VOCAB_STATE, out: boolean to check if the movement has finished
-    bool ok = in.read(connection);
-    if (!ok) return false;
+    yarp::os::Bottle in; // in: the VOCAB_STATE, out: boolean to check if the movement has finished
+
+    if (!in.read(connection))
+    {
+        return false;
+    }
 
 #if YARP_VERSION_MINOR >= 5
     state = in.get(0).asVocab32();
 #else
     state = in.get(0).asVocab();
 #endif
-    printf("state received: %s\n", in.toString().c_str());
+    yDebug() << "State received:" << in.toString();
 
-    if(state == VOCAB_RETURN_MOVEMENT_STATE){
+    if (state == VOCAB_RETURN_MOVEMENT_STATE)
+    {
+        auto * returnToSender = connection.getWriter();
 
-        // -- Gets a way to reply to the message, if possible.
-        yarp::os::ConnectionWriter *returnToSender = connection.getWriter();
-
-        if(done) {
-            out.addInt32(1); // done = 1 (true)
-        }
-        if (returnToSender!=NULL)
+        if (returnToSender)
+        {
+            yarp::os::Bottle out {yarp::os::Value(done ? 1 : 0)};
             out.write(*returnToSender);
+        }
     }
+
     return true;
 }
-
-/************************************************************************/
-
-void BodyExecution::run()
-{
-    while( !Thread::isStopping() )
-    {
-        switch (state)
-        {
-
-        case VOCAB_STATE_SALUTE:
-            printf("Salute\n");
-        {
-            double rightArmPoss[7] = {-45, 0.0, -20.0, -80, 0.0, 0.0, 0.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(7,0.0);
-            std::vector<double> head(2,0.0);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-        {
-            double rightArmPoss[7] = {-45, 0.0, 20.0, -80, 0.0, 0.0, 0.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(7,0.0);
-            std::vector<double> head(2,0.0);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-        {
-            double rightArmPoss[7] = {-45.0, 0.0, -20.0, -80, 0.0, 0.0, 0.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(7,0.0);
-            std::vector<double> head(2,0.0);
-            jointsMoveAndWait(leftArm,rightArm,head);
-
-        }
-            state = VOCAB_STATE_HOME;
-            break;
-
-        case VOCAB_STATE_HOME:
-            printf("Home\n");
-        {
-            std::vector<double> leftArm(7,0.0);
-            std::vector<double> rightArm(7,0.0);
-            std::vector<double> head(2,0.0);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-            done = true;
-            state = 0; //default
-            break;
-
-        case VOCAB_STATE_EXPLANATION_1:
-            printf("Explanation 1\n");
-        {
-            double rightArmPoss[7] = {17.029877, -22.653778, -1.493849, -88.752197, 2.355011, -53.778557, 0.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(7,0.0);
-            std::vector<double> head(2,0.0);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-        {
-            double rightArmPoss[7] = {-65, -79.420044, -6.239016, -88.664322, 31.441132, 31.177521, 0.0};
-            double headPoss[2] = {-60.0, 0.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(7,0.0);
-            std::vector<double> head(&headPoss[0], &headPoss[0]+2);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-        {
-            double rightArmPoss[7] = {17.029877, -22.653778, -1.493849, -88.752197, 2.355011, -53.778557, 0.0};
-            double lefArmPoss[7] = {-68.750282, 10.531192, -16.5944, -96.568978, -34.899421, -9.019511, 0.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
-            std::vector<double> head(2,0.0);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-            done = true;
-            state = 0; //default
-            break;
-
-        case VOCAB_STATE_EXPLANATION_2:
-            printf("Explanation 2\n");
-        {
-            double rightArmPoss[7] = {-39.12303, -3.598853, -5.90115, -64.952431, 29.75017, -56.955845, 0.0};
-            double lefArmPoss[7] = {-39.462073, -0.496053, 5.092714, -58.080423, -29.750108, -52.803162, 0.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
-            std::vector<double> head(2,0.0);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-        {
-            double rightArmPoss[7] = {-63.796131, -3.848846, -3.602812, -65.20211, -12.653778, -38.57645, 0.0};
-            double lefArmPoss[7] = {-63.12303, -3.598853, -5.90115, -80.952431, 10.249928, -19.750286, 0.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
-            std::vector<double> head(2,0.0);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-
-            done = true;
-            state = 0; //default
-            break;
-
-        case VOCAB_STATE_EXPLANATION_3:
-            printf("Explanation 3\n");
-        {
-            double rightArmPoss[7] = {-39.12303, -3.598853, -5.90115, -64.952431, 29.75017, -56.955845, 0.0};
-            double lefArmPoss[7] = {-39.462073, -0.496053, 5.092714, -58.080423, -29.750108, -52.803162, 0.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
-            std::vector<double> head(2,0.0);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-        {
-            double rightArmPoss[7] = {-63.796131, -3.848846, -3.602812, -65.20211, -12.653778, -38.57645, 0.0};
-            double lefArmPoss[7] = {-63.12303, -3.598853, -5.90115, -80.952431, 10.249928, -19.750286, 0.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
-            std::vector<double> head(2,0.0);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-        {
-            double rightArmPoss[7] = {-63.796131, -3.848846, -3.602812, -65.20211, -12.653778, -38.57645, 0.0};
-            double lefArmPoss[7] = {-63.12303, -3.598853, -5.90115, -80.952431, 10.249928, -19.750286, 0.0};
-            double headPoss[2] = {0.0, 10.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
-            std::vector<double> head(&headPoss[0], &headPoss[0]+2);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-        {
-            double rightArmPoss[7] = {-63.796131, -3.848846, -3.602812, -65.20211, -12.653778, -38.57645, 0.0};
-            double lefArmPoss[7] = {-63.12303, -3.598853, -5.90115, -80.952431, 10.249928, -19.750286, 0.0};
-            double headPoss[2] = {0.0, -10.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
-            std::vector<double> head(&headPoss[0], &headPoss[0]+2);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-
-            done = true;
-            state = 0; //default
-            break;
-
-        case VOCAB_STATE_EXPLANATION_HEAD:
-            printf("Explanation Head\n");
-        {
-
-            double lefArmPoss[7] = {-70.896301, -1.300537, -48.506149, -93.040436, -8.963093, -52.803162, 0.0};
-            double headPoss[2] = {20.0, 10.0};
-            std::vector<double> rightArm(7,0.0);
-            std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
-            std::vector<double> head(&headPoss[0], &headPoss[0]+2);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-            done = true;
-            state = 0; //default
-            break;
-
-        case VOCAB_STATE_EXPLANATION_PC_RIGHT:
-            printf("Explanation PC 1 \n");
-        {
-            double rightArmPoss[7] = {-63.532513, -8.154663, 34.516693, -72.231987, 32.319855, -85.166962, 0.0};
-            double headPoss[2] = {-20.0, 10.0};
-            std::vector<double> leftArm(7,0.0);
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> head(&headPoss[0], &headPoss[0]+2);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-            done = true;
-            state = 0; //default
-            break;
-
-        case VOCAB_STATE_EXPLANATION_PC_LEFT:
-            printf("Explanation PC 1 \n");
-        {
-            double rightArmPoss[7] = {-64.938484, 8.963093, 54.288239, -72.319862, 40.404236, -50, 0.0};
-            double headPoss[2] = {20.0, 10.0};
-            std::vector<double> leftArm(7,0.0);
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> head(&headPoss[0], &headPoss[0]+2);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-            done = true;
-            state = 0; //default
-            break;
-
-        case VOCAB_STATE_EXPLANATION_PC_INSIDE:
-            printf("Explanation PC 1 \n");
-        {
-            double lefArmPoss[7] = {-37.957572, 15.479351, -29.750346, -94.636667, -20.312505, -52.803162, 0.0}; // without plate (wrist = -79.961016)
-            double headPoss[2] = {20.0, 10.0};
-            std::vector<double> rightArm(7,0.0);
-            std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
-            std::vector<double> head(&headPoss[0], &headPoss[0]+2);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-            done = true;
-            state = 0; //default
-            break;
-
-        case VOCAB_STATE_EXPLANATION_HDD:
-            printf("Explanation HDD \n");
-        {
-            double rightArmPoss[7] = {-42.706501, -8.418274, 30.826019, -81.370827, 68.787354, -93.673111, 0.0};
-            double lefArmPoss[7] = {-36.801422, 14.850615, -37.961334, -85.834808, -60.720562, -52.803162, 0.0};
-            double headPoss[2] = {0.0, 10.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
-            std::vector<double> head(&headPoss[0], &headPoss[0]+2);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-            done = true;
-            state = 0; //default
-            break;
-
-        case VOCAB_STATE_EXPLANATION_SENSOR:
-            printf("Explanation Sensors \n");
-        {
-            double rightArmPoss[7] = {-42.003513, 5.975395, 38.031647, -76.97715, 48.927948, -36.203865, 0.0};
-            double lefArmPoss[7] = {-55.869965, -11.318115, -27.065025, -87.328644, -38.840069, -43.040436, 0.0};
-            double headPoss[2] = {15, 10.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
-            std::vector<double> head(&headPoss[0], &headPoss[0]+2);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-        {
-            double rightArmPoss[7] = {-42.003513, 5.975395, 38.031647, -76.97715, 48.927948, -36.203865, 0.0};
-            double lefArmPoss[7] = {-44.797882, 14.323374, -9.314587, -79.947266, -44.639717, -52.803162, 0.0};
-            double headPoss[2] = {15, 10.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
-            std::vector<double> head(&headPoss[0], &headPoss[0]+2);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-        {
-            double rightArmPoss[7] = {-64.323372, 13.70826, 38.119507, -76.97715, 48.840088, -43.14587, 0.0};
-            double lefArmPoss[7] = {-44.797882, 14.323374, -9.314587, -79.947266, -44.639717, -52.803162, 0.0};
-            double headPoss[2] = {15, 10.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
-            std::vector<double> head(&headPoss[0], &headPoss[0]+7);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-
-        {
-            double rightArmPoss[7] = {-65.465729, 14.850615, 36.449921, -76.97715, 21.335693, -56.151142, 0.0};
-            double lefArmPoss[7] = {-62.108978, -3.497375, -28.910368, -66.678375, -55.272408, -52.803162, 0.0};
-            double headPoss[2] = {-15, 10.0};
-            std::vector<double> rightArm(&rightArmPoss[0], &rightArmPoss[0]+7); //teoSim (+6) teo (+7)
-            std::vector<double> leftArm(&lefArmPoss[0], &lefArmPoss[0]+7);
-            std::vector<double> head(&headPoss[0], &headPoss[0]+7);
-            jointsMoveAndWait(leftArm,rightArm,head);
-        }
-            done = true;
-            state = 0; //default
-            break;
-
-        default:
-            yarp::os::Time::delay(1);
-            printf("Doing nothing....\n");
-            done = false;
-            break;
-        }
-
-    }
-}
-
-/************************************************************************/
-
-}  // namespace teo
-
