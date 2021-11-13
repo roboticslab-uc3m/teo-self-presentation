@@ -14,7 +14,7 @@
     </module>
 
     <connection>
-        <from>/dialogueManager/movements/rpc:c</from>
+        <from>/dialogueManager/motion/rpc:c</from>
         <to>/bodyExecution/rpc:s</to>
     </connection>
 

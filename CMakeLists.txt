@@ -24,7 +24,7 @@ endif()
 
 # Hard dependencies.
 find_package(YCM 0.11 REQUIRED)
-find_package(YARP 3.4 REQUIRED COMPONENTS os dev)
+find_package(YARP 3.4 REQUIRED COMPONENTS os dev idl_tools)
 find_package(ROBOTICSLAB_SPEECH REQUIRED)
 
 # Add WITH_PLUGINS if this projects exports YARP devices.
@@ -42,6 +42,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 include(CMakeDependentOption)
 
 # Define and enter subdirectories.
+add_subdirectory(libraries)
 add_subdirectory(programs)
 add_subdirectory(share)
 

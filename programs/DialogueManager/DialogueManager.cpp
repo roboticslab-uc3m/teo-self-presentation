@@ -2,7 +2,6 @@
 
 #include "DialogueManager.hpp"
 
-#include <yarp/os/Bottle.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/SystemClock.h>
 
@@ -62,21 +61,18 @@ bool DialogueManager::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
-    if (!outTtsPort.open(std::string(DEFAULT_PREFIX) + "/tts/rpc:c"))
+    if (!speechPort.open(std::string(DEFAULT_PREFIX) + "/tts/rpc:c"))
     {
-        yError() << "Unable to open RPC TTS port" << outTtsPort.getName();
+        yError() << "Unable to open RPC TTS port" << speechPort.getName();
     }
 
-    if (!outCmdMovementsPort.open(std::string(DEFAULT_PREFIX) + "/movements/rpc:c"))
+    if (!motionPort.open(std::string(DEFAULT_PREFIX) + "/motion/rpc:c"))
     {
-        yError() << "Unable to open RPC motion port" << outCmdMovementsPort.getName();
+        yError() << "Unable to open RPC motion port" << motionPort.getName();
     }
 
-    if (!speech.yarp().attachAsClient(outTtsPort))
-    {
-        yError() << "Unable to attach TTS port";
-        return false;
-    }
+    speech.yarp().attachAsClient(speechPort);
+    motion.yarp().attachAsClient(motionPort);
 
     if (language == "english")
     {
@@ -104,7 +100,7 @@ double DialogueManager::getPeriod()
 
 bool DialogueManager::updateModule()
 {
-    if (outTtsPort.getOutputCount() == 0)
+    if (speechPort.getOutputCount() == 0)
     {
         if (!yarp::os::Thread::isStopping())
         {
@@ -117,7 +113,7 @@ bool DialogueManager::updateModule()
         }
         else if (!yarp::os::Thread::isRunning())
         {
-            yDebug() << "Waiting for" << outTtsPort.getName() << "to be connected to something...";
+            yDebug() << "Waiting for" << speechPort.getName() << "to be connected to something...";
             demoCompleted = false;
         }
     }
@@ -138,7 +134,7 @@ bool DialogueManager::updateModule()
         }
         else
         {
-            yDebug() << "Presentation has ended, reconnect TTS port" << outTtsPort.getName() << "to start again";
+            yDebug() << "Presentation has ended, reconnect TTS port" << speechPort.getName() << "to start again";
         }
     }
 
@@ -152,8 +148,8 @@ bool DialogueManager::interruptModule()
 
 bool DialogueManager::close()
 {
-    outTtsPort.close();
-    outCmdMovementsPort.close();
+    speechPort.close();
+    motionPort.close();
     return true;
 }
 
@@ -174,95 +170,94 @@ void DialogueManager::threadRelease()
     {
         yWarning() << "Unable to stop speech";
     }
+
+    if (!motion.stop())
+    {
+        yWarning() << "Unable to stop motion";
+    }
 }
 
 void DialogueManager::run()
 {
-    yarp::os::Bottle cmd;
-
     yInfo() << "Presentation start";
 
-    yInfo() << "SALUTE";
-    cmd = {yarp::os::Value(VOCAB_STATE_SALUTE)};
-    outCmdMovementsPort.write(cmd);
+    yInfo() << "Greet";
+    motion.doGreet();
     speech.say(sentences["presentation_01"]);
     awaitSpeechAndMotionCompletion();
 
     yarp::os::SystemClock::delaySystem(1.0);
 
-    yInfo() << "EXPLANATION_2";
-    cmd = {yarp::os::Value(VOCAB_STATE_EXPLANATION_2)};
-    outCmdMovementsPort.write(cmd);
+    yInfo() << "Explanation 2";
+    motion.doExplanation2();
     speech.say(sentences["presentation_02"]);
     awaitSpeechAndMotionCompletion();
 
-    yInfo() << "EXPLANATION_1";
-    cmd = {yarp::os::Value(VOCAB_STATE_EXPLANATION_1)};
-    outCmdMovementsPort.write(cmd);
+    yarp::os::SystemClock::delaySystem(1.0);
+
+    yInfo() << "Explanation 1";
+    motion.doExplanation1();
     speech.say(sentences["composition_01"]);
     awaitSpeechCompletion();
+    yarp::os::SystemClock::delaySystem(2.0);
     speech.say(sentences["composition_02"]);
     awaitSpeechAndMotionCompletion();
 
-    yInfo() << "EXPLANATION_HEAD";
-    cmd = {yarp::os::Value(VOCAB_STATE_EXPLANATION_HEAD)};
-    outCmdMovementsPort.write(cmd);
+    yInfo() << "Explanation head";
+    motion.doExplanationHead();
     speech.say(sentences["composition_03"]);
     awaitSpeechAndMotionCompletion();
 
-    yInfo() << "EXPLANATION_PC_RIGHT";
-    cmd = {yarp::os::Value(VOCAB_STATE_EXPLANATION_PC_RIGHT)};
-    outCmdMovementsPort.write(cmd);
+    yInfo() << "Explanation right PC";
+    motion.doExplanationRightPC();
     speech.say(sentences["composition_04"]);
     awaitSpeechCompletion();
     speech.say(sentences["composition_05_01"]);
     awaitSpeechAndMotionCompletion();
 
-    yInfo() << "EXPLANATION_PC_LEFT";
-    cmd = {yarp::os::Value(VOCAB_STATE_EXPLANATION_PC_LEFT)};
-    outCmdMovementsPort.write(cmd);
+    yInfo() << "Explanation left PC";
+    motion.doExplanationLeftPC();
     speech.say(sentences["composition_05_02"]);
     awaitSpeechAndMotionCompletion();
 
-    yInfo() << "EXPLANATION_PC_INSIDE";
-    cmd = {yarp::os::Value(VOCAB_STATE_EXPLANATION_PC_INSIDE)};
-    outCmdMovementsPort.write(cmd);
+    yInfo() << "Explanation inside PC";
+    motion.doExplanationInsidePC();
     speech.say(sentences["composition_05_03"]);
     awaitSpeechAndMotionCompletion();
 
-    yInfo() << "EXPLANATION_HDD";
-    cmd = {yarp::os::Value(VOCAB_STATE_EXPLANATION_HDD)};
-    outCmdMovementsPort.write(cmd);
+    yInfo() << "Explanation HDD";
+    motion.doExplanationHead();
     speech.say(sentences["composition_06"]);
     awaitSpeechAndMotionCompletion();
 
-    yInfo() << "EXPLANATION_2";
-    cmd = {yarp::os::Value(VOCAB_STATE_EXPLANATION_2)};
-    outCmdMovementsPort.write(cmd);
+    yInfo() << "Explanation 2";
+    motion.doExplanation2();
     speech.say(sentences["composition_07"]);
     awaitSpeechAndMotionCompletion();
 
-    yInfo() << "EXPLANATION_SENSOR";
-    cmd = {yarp::os::Value(VOCAB_STATE_EXPLANATION_SENSOR)};
-    outCmdMovementsPort.write(cmd);
+    yInfo() << "Explanation sensors";
+    motion.doExplanationSensors();
     speech.say(sentences["composition_08"]);
     awaitSpeechAndMotionCompletion();
 
-    yInfo() << "purpose_01";
-    cmd = {yarp::os::Value(VOCAB_STATE_EXPLANATION_1)};
-    outCmdMovementsPort.write(cmd);
+    yarp::os::SystemClock::delaySystem(1.0);
+
+    yInfo() << "Explanation 1";
+    motion.doExplanation1();
     speech.say(sentences["purpose_01"]);
     awaitSpeechAndMotionCompletion();
 
-    yInfo() << "EXPLANATION_3";
-    cmd = {yarp::os::Value(VOCAB_STATE_EXPLANATION_3)};
-    outCmdMovementsPort.write(cmd);
+    yarp::os::SystemClock::delaySystem(1.0);
+
+    yInfo() << "Explanation 3";
+    motion.doExplanation3();
     speech.say(sentences["purpose_02"]);
     awaitSpeechAndMotionCompletion();
 
-    yInfo() << "HOME";
-    cmd = {yarp::os::Value(VOCAB_STATE_HOME)};
-    outCmdMovementsPort.write(cmd);
+    yarp::os::SystemClock::delaySystem(2.0);
+
+    yInfo() << "Homing";
+    motion.doHoming();
     speech.say(sentences["ending_01"]);
     awaitSpeechAndMotionCompletion();
 
@@ -282,5 +277,10 @@ void DialogueManager::awaitSpeechCompletion()
 void DialogueManager::awaitSpeechAndMotionCompletion()
 {
     awaitSpeechCompletion();
-    // TODO:: motion completion
+
+    do
+    {
+        yarp::os::SystemClock::delaySystem(0.1);
+    }
+    while (!motion.checkMotionDone());
 }
