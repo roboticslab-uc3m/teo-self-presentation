@@ -1,39 +1,61 @@
 // -*- mode:C++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 
-#ifndef __FM_DIALOGUE_MANAGER_HPP__
-#define __FM_DIALOGUE_MANAGER_HPP__
+#ifndef __DIALOGUE_MANAGER_HPP__
+#define __DIALOGUE_MANAGER_HPP__
 
-#include <yarp/os/all.h>
-#include <stdlib.h>
+#include <atomic>
+#include <string>
+#include <unordered_map>
 
-#include "ScriptManager.hpp"
+#include <yarp/os/RFModule.h>
+#include <yarp/os/RpcClient.h>
+#include <yarp/os/Thread.h>
 
-#define DEFAULT_LANGUAGE "spanish"
+#include <SpeechIDL.h>
 
-namespace teo
+#include "SelfPresentationCommandsIDL.h"
+
+namespace roboticslab
 {
 
 /**
  * @ingroup teo-self-presentation_programs
- *
  * @brief Dialogue Manager.
  */
-class DialogueManager : public yarp::os::RFModule
+class DialogueManager : public yarp::os::RFModule,
+                        public yarp::os::Thread
 {
-    public:
-      virtual bool configure(yarp::os::ResourceFinder &rf);
-      virtual bool close();
-      ScriptManager scriptManager;
-    private:
-        yarp::os::RpcClient outTtsPort; // tts port
-        yarp::os::RpcClient outCmdMovementsPort; // robot movements
+public:
+    ~DialogueManager()
+    { close(); }
 
-        virtual bool interruptModule();
-        virtual double getPeriod();
-        virtual bool updateModule();
+    bool configure(yarp::os::ResourceFinder & rf) override;
+    bool close() override;
+    bool interruptModule() override;
+    double getPeriod() override;
+    bool updateModule() override;
 
+    bool threadInit() override;
+    void threadRelease() override;
+    void run() override;
+
+private:
+    void awaitSpeechCompletion();
+    void awaitMotionCompletion();
+    void awaitSpeechAndMotionCompletion();
+
+    SpeechIDL speech;
+    SelfPresentationCommandsIDL motion;
+
+    yarp::os::RpcClient speechPort;
+    yarp::os::RpcClient motionPort;
+
+    std::string voice;
+    std::unordered_map<std::string, std::string> sentences;
+
+    std::atomic<bool> demoCompleted {false};
 };
 
-}  // namespace teo
+} // namespace roboticslab
 
-#endif  // __FM_DIALOGUE_MANAGER_HPP__
+#endif // __DIALOGUE_MANAGER_HPP__

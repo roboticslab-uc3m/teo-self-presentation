@@ -1,49 +1,52 @@
-# Copyright: Universidad Carlos III de Madrid (C) 2021
-# Authors: Raul
-# CopyPolicy: Released under the terms of the LGPLv2.1
-
 cmake_minimum_required(VERSION 3.12)
 
-# Start a project. Set the LANGUAGES option according to your
-# needs, e.g. 'C', 'CXX', 'NONE'.
-project(TEO-SELF-PRESENTATION VERSION 0.1.0 LANGUAGES CXX)
+project(TEO-SELF-PRESENTATION LANGUAGES CXX)
 
-# Set module path.
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
-                              ${CMAKE_SOURCE_DIR}/cmake/modules
-                              ${CMAKE_SOURCE_DIR}/cmake/find-modules)
+# Let the user specify a configuration (only single-config generators).
+if(NOT CMAKE_CONFIGURATION_TYPES)
+    # Possible values.
+    set(_configurations Debug Release MinSizeRel RelWithDebInfo)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${_configurations})
+
+    foreach(_conf ${_configurations})
+        set(_conf_string "${_conf_string} ${_conf}")
+    endforeach()
+
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY HELPSTRING
+                 "Choose the type of build, options are:${_conf_string}")
+
+    if(NOT CMAKE_BUILD_TYPE)
+        # Encourage the user to specify build type.
+        message(STATUS "Setting build type to 'Release' as none was specified.")
+        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY VALUE Release)
+    endif()
+endif()
 
 # Hard dependencies.
 find_package(YCM 0.11 REQUIRED)
-find_package(YARP 3.4 REQUIRED COMPONENTS os dev)
+find_package(YARP 3.4 REQUIRED COMPONENTS os dev idl_tools)
 
 # Soft dependencies.
-find_package(Doxygen QUIET)
-find_package(GTestSources 1.6.0 QUIET)
+find_package(ROBOTICSLAB_SPEECH QUIET)
 
 # Add WITH_PLUGINS if this projects exports YARP devices.
 yarp_configure_external_installation(teo-self-presentation)
 
-# Retrieve current TEO-SELF-PRESENTATION version.
-include(TEO-SELF-PRESENTATIONVersion)
+# Standard installation directories.
+include(GNUInstallDirs)
 
-# Define standard paths, check system configuration.
-include(TEO-SELF-PRESENTATIONSystem)
+# Control where libraries and executables are placed during the build.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
-# Setup build options.
-include(TEO-SELF-PRESENTATIONOptions)
+# Create targets if specific requirements are satisfied.
+include(CMakeDependentOption)
 
 # Define and enter subdirectories.
-add_subdirectory(cmake)
+add_subdirectory(libraries)
 add_subdirectory(programs)
 add_subdirectory(share)
-add_subdirectory(doc)
 
-# Output configuration files.
-include(TEO-SELF-PRESENTATIONDescribe)
-
-# Invoke CPack from here.
-include(TEO-SELF-PRESENTATIONPackage)
-
-# Generate a report of enabled/disabled features.
-feature_summary(WHAT ALL)
+# Configure and create uninstall target.
+include(AddUninstallTarget)
