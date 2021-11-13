@@ -41,6 +41,7 @@ public:
 
 private:
     void awaitSpeechCompletion();
+    void awaitMotionCompletion();
     void awaitSpeechAndMotionCompletion();
 
     SpeechIDL speech;

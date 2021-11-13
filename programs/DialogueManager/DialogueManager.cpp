@@ -184,6 +184,8 @@ void DialogueManager::run()
     yInfo() << "Greet";
     motion.doGreet();
     speech.say(sentences["presentation_01"]);
+    awaitMotionCompletion();
+    motion.doHoming();
     awaitSpeechAndMotionCompletion();
 
     yarp::os::SystemClock::delaySystem(1.0);
@@ -274,13 +276,17 @@ void DialogueManager::awaitSpeechCompletion()
     while (!speech.checkSayDone());
 }
 
-void DialogueManager::awaitSpeechAndMotionCompletion()
+void DialogueManager::awaitMotionCompletion()
 {
-    awaitSpeechCompletion();
-
     do
     {
         yarp::os::SystemClock::delaySystem(0.1);
     }
     while (!motion.checkMotionDone());
+}
+
+void DialogueManager::awaitSpeechAndMotionCompletion()
+{
+    awaitSpeechCompletion();
+    awaitMotionCompletion();
 }

@@ -2,12 +2,8 @@
 
 #include "BodyExecution.hpp"
 
-#include <yarp/conf/version.h>
-
-#include <yarp/os/Bottle.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
-#include <yarp/os/SystemClock.h>
 
 using namespace roboticslab;
 
@@ -156,19 +152,18 @@ bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
 
     // -- Configure port
 
-    if (!inDialogPort.open(DEFAULT_PREFIX + std::string("/rpc:s")))
+    if (!serverPort.open(DEFAULT_PREFIX + std::string("/rpc:s")))
     {
         yError() << "Unable to open RPC port";
         return false;
     }
 
-    inDialogPort.setReader(*this);
-    return true;
+    return yarp::os::Wire::yarp().attachAsServer(serverPort);
 }
 
 bool BodyExecution::close()
 {
-    inDialogPort.close();
+    serverPort.close();
     headDevice.close();
     leftArmDevice.close();
     rightArmDevice.close();
@@ -177,172 +172,212 @@ bool BodyExecution::close()
 
 bool BodyExecution::interruptModule()
 {
-    inDialogPort.interrupt();
-    return true;
+    serverPort.interrupt();
+    return stop();
 }
 
 double BodyExecution::getPeriod()
 {
-    return 1.0; // [s]
+    return 0.1; // [s]
 }
 
 bool BodyExecution::updateModule()
 {
-    static const std::vector<double> headZeros(2, 0.0);
-    static const std::vector<double> armZeros(6, 0.0);
+    bool isMotionDone = checkMotionDone();
+    actionMutex.lock();
 
-    switch (state)
+    if (!hasNewSetpoints && isMotionDone && currentSetpoints.empty())
     {
-    case VOCAB_STATE_SALUTE:
-        yInfo() << "Salute";
-        moveAndWait(armZeros, {-45.0, 0.0, -20.0, -80.0, 0.0, 0.0}, headZeros);
-        moveAndWait(armZeros, {-45.0, 0.0, 20.0, -80.0, 0.0, 0.0}, headZeros);
-        moveAndWait(armZeros, {-45.0, 0.0, -20.0, -80.0, 0.0, 0.0}, headZeros);
-        // force homing on next iteration, don't reset done flag nor state yet
-        state = VOCAB_STATE_HOME;
-        return true;
-
-    case VOCAB_STATE_HOME:
-        yInfo() << "Home";
-        moveAndWait(armZeros, armZeros, headZeros);
-        break;
-
-    case VOCAB_STATE_EXPLANATION_1:
-        yInfo() << "Explanation 1";
-        moveAndWait(armZeros, {17.03, -22.65, -1.49, -88.75, 2.36, -53.78}, headZeros);
-        moveAndWait(armZeros, {-65.00, -79.42, -6.24, -88.66, 31.44, 31.18}, {-60.0, 0.0});
-        moveAndWait({-68.75, 10.53, -16.59, -96.57, -34.89, -9.02}, {17.03, -22.65, -1.49, -88.75, 2.36, -53.78}, headZeros);
-        break;
-
-    case VOCAB_STATE_EXPLANATION_2:
-        yInfo() << "Explanation 2";
-        moveAndWait({-39.46, -0.50, 5.09, -58.08, -29.75, -52.80}, {-39.12, -3.60, -5.90, -64.95, 29.75, -56.96}, headZeros);
-        moveAndWait({-63.12, -3.60, -5.90, -80.95, 10.25, -19.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -38.58}, headZeros);
-        break;
-
-    case VOCAB_STATE_EXPLANATION_3:
-        yInfo() << "Explanation 3";
-        moveAndWait({-39.46, -0.50, 5.09, -58.08, -29.75, -52.80}, {-39.12, -3.60, -5.90, -64.95, 29.75, -56.96}, headZeros);
-        moveAndWait({-63.12, -3.60, -5.90, -80.95, 10.25, -19.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -38.58}, headZeros);
-        moveAndWait({-63.12, -3.60, -5.90, -80.95, 10.25, -19.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -38.58}, {0.0, 10.0});
-        moveAndWait({-63.12, -3.60, -5.90, -80.95, 10.25, -19.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -38.58}, {0.0, -10.0});
-        break;
-
-    case VOCAB_STATE_EXPLANATION_HEAD:
-        yInfo() << "Explanation Head";
-        moveAndWait({-70.90, -1.30, -48.51, -93.04, -8.96, -52.80}, armZeros, {20.0, 10.0});
-        break;
-
-    case VOCAB_STATE_EXPLANATION_PC_RIGHT:
-        yInfo() << "Explanation PC 1";
-        moveAndWait(armZeros, {-63.53, -8.15, 34.52, -72.23, 32.32, -85.17}, {-20.0, 10.0});
-        break;
-
-    case VOCAB_STATE_EXPLANATION_PC_LEFT:
-        yInfo() << "Explanation PC 1";
-        moveAndWait(armZeros, {-64.93, 8.96, 54.29, -72.32, 40.40, -50.00}, {20.0, 10.0});
-        break;
-
-    case VOCAB_STATE_EXPLANATION_PC_INSIDE:
-        yInfo() << "Explanation PC 1";
-        // left arm without plate (wrist = -79.961016)
-        moveAndWait({-37.96, 15.48, -29.75, -94.64, -20.31, -52.80}, armZeros, {20.0, 10.0});
-        break;
-
-    case VOCAB_STATE_EXPLANATION_HDD:
-        yInfo() << "Explanation HDD";
-        moveAndWait({-36.80, 14.85, -37.96, -85.83, -60.72, -52.80}, {-42.71, -8.42, 30.83, -81.37, 68.79, -93.67}, {0.0, 10.0});
-        break;
-
-    case VOCAB_STATE_EXPLANATION_SENSOR:
-        yInfo() << "Explanation Sensors";
-        moveAndWait({-55.87, -11.32, -27.07, -87.33, -38.84, -43.04}, {-42.00, 5.98, 38.03, -76.98, 48.93, -36.20}, {15.0, 10.0});
-        moveAndWait({-44.80, 14.32, -9.31, -79.95, -44.64, -52.80}, {-42.00, 5.98, 38.03, -76.98, 48.93, -36.20}, {15.0, 10.0});
-        moveAndWait({-44.80, 14.32, -9.31, -79.95, -44.64, -52.80}, {-64.32, 13.71, 38.12, -76.98, 48.84, -43.15}, {15.0, 10.0});
-        moveAndWait({-62.11, -3.50, -28.91, -66.68, -55.27, -52.80}, {-65.47, 14.85, 36.45, -76.98, 21.33, -56.15}, {-15.0, 10.0});
-        break;
-
-    default:
-        yInfo() << "Doing nothing....";
-        break;
+        currentAction = noAction; // motion done and no more points to send
     }
 
-    done = true;
-    state = 0;
+    yDebugThrottle(1.0) << "Current action:" << currentAction;
 
-    return true;
-}
-
-void BodyExecution::moveAndWait(const std::vector<double> & leftArm, const std::vector<double> & rightArm, const std::vector<double> & head)
-{
-    done = false;
-
-    if (!headIPositionControl->positionMove(head.data()))
+    if (hasNewSetpoints || (isMotionDone && !currentSetpoints.empty()))
     {
-        yWarning() << "Unable to set reference point for head axes";
-    }
+        auto setpoints = currentSetpoints.front();
+        currentSetpoints.pop_front();
+        hasNewSetpoints = false;
+        actionMutex.unlock();
 
-    if (!leftArmIPositionControl->positionMove(leftArm.data()))
-    {
-        yWarning() << "Unable to set reference point for left arm axes";
-    }
+        yInfo() << "Sending new setpoints"; // TODO: print values
 
-    if (!rightArmIPositionControl->positionMove(rightArm.data()))
-    {
-        yWarning() << "Unable to set reference point for right arm axes";
-    }
-
-    bool leftArmMotionDone = false;
-
-    while (!leftArmMotionDone)
-    {
-        yarp::os::SystemClock::delaySystem(0.1);
-        leftArmIPositionControl->checkMotionDone(&leftArmMotionDone);
-    }
-
-    bool rightArmMotionDone = false;
-
-    while (!rightArmMotionDone)
-    {
-        yarp::os::SystemClock::delaySystem(0.1);
-        rightArmIPositionControl->checkMotionDone(&rightArmMotionDone);
-    }
-
-    bool headMotionDone = false;
-
-    while (!headMotionDone)
-    {
-        yarp::os::SystemClock::delaySystem(0.1);
-        headIPositionControl->checkMotionDone(&headMotionDone);
-    }
-}
-
-bool BodyExecution::read(yarp::os::ConnectionReader & connection)
-{
-    yarp::os::Bottle in; // in: the VOCAB_STATE, out: boolean to check if the movement has finished
-
-    if (!in.read(connection))
-    {
-        return false;
-    }
-
-#if YARP_VERSION_MINOR >= 5
-    state = in.get(0).asVocab32();
-#else
-    state = in.get(0).asVocab();
-#endif
-    yDebug() << "State received:" << in.toString();
-
-    if (state == VOCAB_RETURN_MOVEMENT_STATE)
-    {
-        auto * returnToSender = connection.getWriter();
-
-        if (returnToSender)
+        if (!headIPositionControl->positionMove(std::get<0>(setpoints).data()))
         {
-            yarp::os::Bottle out {yarp::os::Value(done ? 1 : 0)};
-            out.write(*returnToSender);
+            yWarning() << "Unable to configure new setpoints on head";
+        }
+
+        if (!leftArmIPositionControl->positionMove(std::get<1>(setpoints).data()))
+        {
+            yWarning() << "Unable to configure new setpoints on left arm";
+        }
+
+        if (!rightArmIPositionControl->positionMove(std::get<2>(setpoints).data()))
+        {
+            yWarning() << "Unable to configure new setpoints on right arm";
         }
     }
 
+    actionMutex.unlock();
     return true;
+}
+
+void BodyExecution::doGreet()
+{
+    registerSetpoints("greet", {
+        {headZeros, armZeros, {-45.0, 0.0, -20.0, -80.0, 0.0, 0.0}},
+        {headZeros, armZeros, {-45.0, 0.0, 20.0, -80.0, 0.0, 0.0}},
+        {headZeros, armZeros, {-45.0, 0.0, -20.0, -80.0, 0.0, 0.0}},
+    });
+}
+
+void BodyExecution::doHoming()
+{
+    registerSetpoints("homing", {
+        {headZeros, armZeros, armZeros}
+    });
+}
+
+void BodyExecution::doExplanation1()
+{
+    registerSetpoints("explanation 1", {
+        {headZeros, armZeros, {17.03, -22.65, -1.49, -88.75, 2.36, -53.78}},
+        {{-60.0, 0.0}, armZeros, {-65.00, -79.42, -6.24, -88.66, 31.44, 31.18}},
+        {headZeros, {-68.75, 10.53, -16.59, -96.57, -34.89, -9.02}, {17.03, -22.65, -1.49, -88.75, 2.36, -53.78}},
+    });
+}
+
+void BodyExecution::doExplanation2()
+{
+    registerSetpoints("explanation 2", {
+        {headZeros, {-39.46, -0.50, 5.09, -58.08, -29.75, -52.80}, {-39.12, -3.60, -5.90, -64.95, 29.75, -56.96}},
+        {headZeros, {-63.12, -3.60, -5.90, -80.95, 10.25, -19.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -38.58}},
+    });
+}
+
+void BodyExecution::doExplanation3()
+{
+    registerSetpoints("explanation 3", {
+        {headZeros, {-39.46, -0.50, 5.09, -58.08, -29.75, -52.80}, {-39.12, -3.60, -5.90, -64.95, 29.75, -56.96}},
+        {headZeros, {-63.12, -3.60, -5.90, -80.95, 10.25, -19.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -38.58}},
+        {{0.0, 10.0}, {-63.12, -3.60, -5.90, -80.95, 10.25, -19.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -38.58}},
+        {{0.0, -10.0}, {-63.12, -3.60, -5.90, -80.95, 10.25, -19.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -38.58}},
+    });
+}
+
+void BodyExecution::doExplanationHead()
+{
+    registerSetpoints("explanation head", {
+        {{20.0, 10.0}, {-70.90, -1.30, -48.51, -93.04, -8.96, -52.80}, armZeros}
+    });
+}
+
+void BodyExecution::doExplanationRightPC()
+{
+    registerSetpoints("explanation right PC", {
+        {{-20.0, 10.0}, armZeros, {-63.53, -8.15, 34.52, -72.23, 32.32, -85.17}}
+    });
+}
+
+void BodyExecution::doExplanationLeftPC()
+{
+    registerSetpoints("explanation left PC", {
+        {{20.0, 10.0}, armZeros, {-64.93, 8.96, 54.29, -72.32, 40.40, -50.00}}
+    });
+}
+
+void BodyExecution::doExplanationInsidePC()
+{
+    // left arm without plate (wrist = -79.961016)
+    registerSetpoints("explanation inside PC", {
+        {{20.0, 10.0}, {-37.96, 15.48, -29.75, -94.64, -20.31, -52.80}, armZeros}
+    });
+}
+
+void BodyExecution::doExplanationHDD()
+{
+    registerSetpoints("explanation HDD", {
+        {{0.0, 10.0}, {-36.80, 14.85, -37.96, -85.83, -60.72, -52.80}, {-42.71, -8.42, 30.83, -81.37, 68.79, -93.67}}
+    });
+}
+
+void BodyExecution::doExplanationSensors()
+{
+    registerSetpoints("explanation sensors", {
+        {{15.0, 10.0}, {-55.87, -11.32, -27.07, -87.33, -38.84, -43.04}, {-42.00, 5.98, 38.03, -76.98, 48.93, -36.20}},
+        {{15.0, 10.0}, {-44.80, 14.32, -9.31, -79.95, -44.64, -52.80}, {-42.00, 5.98, 38.03, -76.98, 48.93, -36.20}},
+        {{15.0, 10.0}, {-44.80, 14.32, -9.31, -79.95, -44.64, -52.80}, {-64.32, 13.71, 38.12, -76.98, 48.84, -43.15}},
+        {{-15.0, 10.0}, {-62.11, -3.50, -28.91, -66.68, -55.27, -52.80}, {-65.47, 14.85, 36.45, -76.98, 21.33, -56.15}},
+    });
+}
+
+bool BodyExecution::checkMotionDone()
+{
+    bool headMotionDone = true;
+
+    if (!headIPositionControl->checkMotionDone(&headMotionDone))
+    {
+        yWarning() << "Unable to check motion state of head";
+    }
+
+    bool leftArmMotionDone = true;
+
+    if (!leftArmIPositionControl->checkMotionDone(&leftArmMotionDone))
+    {
+        yWarning() << "Unable to check motion state of left arm";
+    }
+
+    bool rightArmMotionDone = true;
+
+    if (!rightArmIPositionControl->checkMotionDone(&rightArmMotionDone))
+    {
+        yWarning() << "Unable to check motion state of right arm";
+    }
+
+    return headMotionDone && leftArmMotionDone && rightArmMotionDone;
+}
+
+bool BodyExecution::stop()
+{
+    yInfo() << "Commanding stop";
+
+    {
+        std::unique_lock<std::mutex> lock(actionMutex);
+        currentAction = noAction;
+        currentSetpoints.clear();
+        hasNewSetpoints = false;
+    }
+
+    bool ok = true;
+
+    if (!headIPositionControl->stop())
+    {
+        yWarning() << "Failed to stop head";
+        ok = false;
+    }
+
+    if (!leftArmIPositionControl->stop())
+    {
+        yWarning() << "Failed to stop left arm";
+        ok = false;
+    }
+
+    if (!rightArmIPositionControl->stop())
+    {
+        yWarning() << "Failed to stop right arm";
+        ok = false;
+    }
+
+    return ok;
+}
+
+void BodyExecution::registerSetpoints(const std::string & action, std::initializer_list<setpoints_t> setpoints)
+{
+    yInfo() << "Registered new action:" << action;
+
+    std::lock_guard<std::mutex> lock(actionMutex);
+    currentAction = action;
+    currentSetpoints.clear();
+    currentSetpoints.insert(currentSetpoints.end(), setpoints);
+    hasNewSetpoints = true;
 }
