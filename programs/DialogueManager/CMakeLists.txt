@@ -4,12 +4,11 @@ IF (ENABLE_dialogueManager)
 
     add_executable(dialogueManager main.cpp
                                    DialogueManager.hpp
-                                   DialogueManager.cpp
-                                   ScriptManager.hpp
-                                   ScriptManager.cpp)
+                                   DialogueManager.cpp)
 
     target_link_libraries(dialogueManager YARP::YARP_os
-                                          YARP::YARP_init)
+                                          YARP::YARP_init
+                                          ROBOTICSLAB::SpeechIDL)
 
     install(TARGETS dialogueManager
             DESTINATION ${CMAKE_INSTALL_BINDIR})
