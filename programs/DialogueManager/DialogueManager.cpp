@@ -2,6 +2,8 @@
 
 #include "DialogueManager.hpp"
 
+#include <exception>
+
 #include <yarp/os/LogStream.h>
 #include <yarp/os/SystemClock.h>
 
@@ -9,6 +11,8 @@ using namespace roboticslab;
 
 namespace
 {
+    class ThreadTerminator : public std::exception {};
+
     const std::unordered_map<std::string, std::string> englishSentences = {
         {"presentation_01", "Hi. My name is TEO. I am, an humanoid robot, designed by engineers, of the university Carlos tercero, of Madrid. I am 5 years old. My size, is 1 62 meters, and my weight, is 70 kilograms."},
         {"presentation_02", "My purpose, is to help to researchs, and to get new hits, and discoveries, within the robotics area."},
@@ -95,7 +99,7 @@ bool DialogueManager::configure(yarp::os::ResourceFinder & rf)
 
 double DialogueManager::getPeriod()
 {
-    return 2.0; // [s]
+    return 1.0; // [s]
 }
 
 bool DialogueManager::updateModule()
@@ -181,87 +185,95 @@ void DialogueManager::run()
 {
     yInfo() << "Presentation start";
 
-    yInfo() << "Greet";
-    motion.doGreet();
-    speech.say(sentences["presentation_01"]);
-    awaitMotionCompletion();
-    motion.doHoming();
-    awaitSpeechAndMotionCompletion();
+    try
+    {
+        yInfo() << "Greet";
+        motion.doGreet();
+        speech.say(sentences["presentation_01"]);
+        awaitMotionCompletion();
+        motion.doHoming();
+        awaitSpeechAndMotionCompletion();
 
-    yarp::os::SystemClock::delaySystem(1.0);
+        yarp::os::SystemClock::delaySystem(1.0);
 
-    yInfo() << "Explanation 2";
-    motion.doExplanation2();
-    speech.say(sentences["presentation_02"]);
-    awaitSpeechAndMotionCompletion();
+        yInfo() << "Explanation 2";
+        motion.doExplanation2();
+        speech.say(sentences["presentation_02"]);
+        awaitSpeechAndMotionCompletion();
 
-    yarp::os::SystemClock::delaySystem(1.0);
+        yarp::os::SystemClock::delaySystem(1.0);
 
-    yInfo() << "Explanation 1";
-    motion.doExplanation1();
-    speech.say(sentences["composition_01"]);
-    awaitSpeechCompletion();
-    yarp::os::SystemClock::delaySystem(2.0);
-    speech.say(sentences["composition_02"]);
-    awaitSpeechAndMotionCompletion();
+        yInfo() << "Explanation 1";
+        motion.doExplanation1();
+        speech.say(sentences["composition_01"]);
+        awaitSpeechCompletion();
+        yarp::os::SystemClock::delaySystem(2.0);
+        speech.say(sentences["composition_02"]);
+        awaitSpeechAndMotionCompletion();
 
-    yInfo() << "Explanation head";
-    motion.doExplanationHead();
-    speech.say(sentences["composition_03"]);
-    awaitSpeechAndMotionCompletion();
+        yInfo() << "Explanation head";
+        motion.doExplanationHead();
+        speech.say(sentences["composition_03"]);
+        awaitSpeechAndMotionCompletion();
 
-    yInfo() << "Explanation right PC";
-    motion.doExplanationRightPC();
-    speech.say(sentences["composition_04"]);
-    awaitSpeechCompletion();
-    speech.say(sentences["composition_05_01"]);
-    awaitSpeechAndMotionCompletion();
+        yInfo() << "Explanation right PC";
+        motion.doExplanationRightPC();
+        speech.say(sentences["composition_04"]);
+        awaitSpeechCompletion();
+        speech.say(sentences["composition_05_01"]);
+        awaitSpeechAndMotionCompletion();
 
-    yInfo() << "Explanation left PC";
-    motion.doExplanationLeftPC();
-    speech.say(sentences["composition_05_02"]);
-    awaitSpeechAndMotionCompletion();
+        yInfo() << "Explanation left PC";
+        motion.doExplanationLeftPC();
+        speech.say(sentences["composition_05_02"]);
+        awaitSpeechAndMotionCompletion();
 
-    yInfo() << "Explanation inside PC";
-    motion.doExplanationInsidePC();
-    speech.say(sentences["composition_05_03"]);
-    awaitSpeechAndMotionCompletion();
+        yInfo() << "Explanation inside PC";
+        motion.doExplanationInsidePC();
+        speech.say(sentences["composition_05_03"]);
+        awaitSpeechAndMotionCompletion();
 
-    yInfo() << "Explanation HDD";
-    motion.doExplanationHead();
-    speech.say(sentences["composition_06"]);
-    awaitSpeechAndMotionCompletion();
+        yInfo() << "Explanation HDD";
+        motion.doExplanationHead();
+        speech.say(sentences["composition_06"]);
+        awaitSpeechAndMotionCompletion();
 
-    yInfo() << "Explanation 2";
-    motion.doExplanation2();
-    speech.say(sentences["composition_07"]);
-    awaitSpeechAndMotionCompletion();
+        yInfo() << "Explanation 2";
+        motion.doExplanation2();
+        speech.say(sentences["composition_07"]);
+        awaitSpeechAndMotionCompletion();
 
-    yInfo() << "Explanation sensors";
-    motion.doExplanationSensors();
-    speech.say(sentences["composition_08"]);
-    awaitSpeechAndMotionCompletion();
+        yInfo() << "Explanation sensors";
+        motion.doExplanationSensors();
+        speech.say(sentences["composition_08"]);
+        awaitSpeechAndMotionCompletion();
 
-    yarp::os::SystemClock::delaySystem(1.0);
+        yarp::os::SystemClock::delaySystem(1.0);
 
-    yInfo() << "Explanation 1";
-    motion.doExplanation1();
-    speech.say(sentences["purpose_01"]);
-    awaitSpeechAndMotionCompletion();
+        yInfo() << "Explanation 1";
+        motion.doExplanation1();
+        speech.say(sentences["purpose_01"]);
+        awaitSpeechAndMotionCompletion();
 
-    yarp::os::SystemClock::delaySystem(1.0);
+        yarp::os::SystemClock::delaySystem(1.0);
 
-    yInfo() << "Explanation 3";
-    motion.doExplanation3();
-    speech.say(sentences["purpose_02"]);
-    awaitSpeechAndMotionCompletion();
+        yInfo() << "Explanation 3";
+        motion.doExplanation3();
+        speech.say(sentences["purpose_02"]);
+        awaitSpeechAndMotionCompletion();
 
-    yarp::os::SystemClock::delaySystem(2.0);
+        yarp::os::SystemClock::delaySystem(2.0);
 
-    yInfo() << "Homing";
-    motion.doHoming();
-    speech.say(sentences["ending_01"]);
-    awaitSpeechAndMotionCompletion();
+        yInfo() << "Homing";
+        motion.doHoming();
+        speech.say(sentences["ending_01"]);
+        awaitSpeechAndMotionCompletion();
+    }
+    catch (const ThreadTerminator & terminator)
+    {
+        yInfo() << "Prematurely terminating presentation thread";
+        return;
+    }
 
     yInfo() << "Presentation end";
     demoCompleted = true;
@@ -271,18 +283,28 @@ void DialogueManager::awaitSpeechCompletion()
 {
     do
     {
+        if (yarp::os::Thread::isStopping())
+        {
+            throw ThreadTerminator();
+        }
+
         yarp::os::SystemClock::delaySystem(0.1);
     }
-    while (!speech.checkSayDone());
+    while (speechPort.getOutputCount() > 0 && !speech.checkSayDone());
 }
 
 void DialogueManager::awaitMotionCompletion()
 {
     do
     {
+        if (yarp::os::Thread::isStopping())
+        {
+            throw ThreadTerminator();
+        }
+
         yarp::os::SystemClock::delaySystem(0.1);
     }
-    while (!motion.checkMotionDone());
+    while (motionPort.getOutputCount() > 0 && !motion.checkMotionDone());
 }
 
 void DialogueManager::awaitSpeechAndMotionCompletion()
