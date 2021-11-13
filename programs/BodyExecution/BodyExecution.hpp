@@ -68,17 +68,9 @@ private:
     std::mutex actionMutex;
     bool hasNewSetpoints { false };
 
-    yarp::dev::PolyDriver leftArmDevice;
-    yarp::dev::IControlMode * leftArmIControlMode;
-    yarp::dev::IPositionControl * leftArmIPositionControl;
-
-    yarp::dev::PolyDriver rightArmDevice;
-    yarp::dev::IControlMode * rightArmIControlMode;
-    yarp::dev::IPositionControl * rightArmIPositionControl;
-
-    yarp::dev::PolyDriver headDevice;
-    yarp::dev::IControlMode * headIControlMode;
-    yarp::dev::IPositionControl * headIPositionControl;
+    yarp::dev::PolyDriver robotDevice;
+    yarp::dev::IControlMode * iControlMode;
+    yarp::dev::IPositionControl * iPositionControl;
 
     yarp::os::RpcServer serverPort;
 };

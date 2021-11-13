@@ -2,6 +2,8 @@
 
 #include "BodyExecution.hpp"
 
+#include <vector>
+
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 
@@ -24,133 +26,58 @@ bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
-    // ------ HEAD -------
-
-    yarp::os::Property headOptions {
-        {"device", yarp::os::Value("remote_controlboard")},
-        {"remote", yarp::os::Value(robot + "/head")},
-        {"local", yarp::os::Value(DEFAULT_PREFIX + robot + "/head")}
+    yarp::os::Property robotOptions {
+        {"device", yarp::os::Value("remotecontrolboardremapper")},
+        {"localPortPrefix", yarp::os::Value(DEFAULT_PREFIX)}
     };
 
-    if (!headDevice.open(headOptions))
-    {
-        yError() << "Robot head device not available";
-        return false;
-    }
-
-    if (!headDevice.view(headIControlMode) || !headDevice.view(headIPositionControl))
-    {
-        yError() << "Unable to acquire head interfaces";
-        return false;
-    }
-
-    // ------ LEFT ARM -------
-
-    yarp::os::Property leftArmOptions {
-        {"device", yarp::os::Value("remote_controlboard")},
-        {"remote", yarp::os::Value(robot + "/leftArm")},
-        {"local", yarp::os::Value(DEFAULT_PREFIX + robot + "/leftArm")}
+    yarp::os::Bottle remotePorts {
+        yarp::os::Value(robot + "/head"),
+        yarp::os::Value(robot + "/leftArm"),
+        yarp::os::Value(robot + "/rightArm")
     };
 
-    if (!leftArmDevice.open(leftArmOptions)) {
-        yError() << "Robot left arm device not available";
-        return false;
-    }
+    robotOptions.put("remoteControlBoards", yarp::os::Value::makeList(remotePorts.toString().c_str()));
 
-    if (!leftArmDevice.view(leftArmIControlMode) || !leftArmDevice.view(leftArmIPositionControl))
-    {
-        yError() << "Unable to acquire left arm interfaces";
-        return false;
-    }
-
-    // ------ RIGHT ARM -------
-
-    yarp::os::Property rightArmOptions {
-        {"device", yarp::os::Value("remote_controlboard")},
-        {"remote", yarp::os::Value(robot + "/rightArm")},
-        {"local", yarp::os::Value(DEFAULT_PREFIX + robot + "/rightArm")}
+    yarp::os::Bottle axesNames {
+        yarp::os::Value("AxialNeck"), yarp::os::Value("FrontalNeck"),
+        yarp::os::Value("FrontalLeftShoulder"), yarp::os::Value("SagittalLeftShoulder"), yarp::os::Value("AxialLeftShoulder"),
+        yarp::os::Value("FrontalLeftElbow"), yarp::os::Value("AxialLeftWrist"), yarp::os::Value("FrontalLeftWrist"),
+        yarp::os::Value("FrontalRightShoulder"), yarp::os::Value("SagittalRightShoulder"), yarp::os::Value("AxialRightShoulder"),
+        yarp::os::Value("FrontalRightElbow"), yarp::os::Value("AxialRightWrist"), yarp::os::Value("FrontalRightWrist")
     };
 
-    if (!rightArmDevice.open(rightArmOptions))
+    robotOptions.put("axesNames", yarp::os::Value::makeList(axesNames.toString().c_str()));
+
+    if (!robotDevice.open(robotOptions))
     {
-        yError() << "Robot right arm device not available";
+        yError("Failed to open robot device");
         return false;
     }
 
-    if (!rightArmDevice.view(rightArmIControlMode) || !rightArmDevice.view(rightArmIPositionControl))
+    if (!robotDevice.view(iControlMode) || !robotDevice.view(iPositionControl))
     {
-        yError() << "Unable to acquire right arm interfaces";
+        yError("Failed to view robot interfaces");
         return false;
     }
 
-    //-- Set control modes
-
-    int headAxes;
-    headIPositionControl->getAxes(&headAxes);
-
-    if (!headIControlMode->setControlModes(std::vector<int>(headAxes, VOCAB_CM_POSITION).data()))
+    if (!iControlMode->setControlModes(std::vector<int>(axesNames.size(), VOCAB_CM_POSITION).data()))
     {
-        yError() << "Unable to set position control mode on head";
+        yError("Failed to set position control mode");
         return false;
     }
 
-    int leftArmAxes;
-    leftArmIPositionControl->getAxes(&leftArmAxes);
-
-    if (!leftArmIControlMode->setControlModes(std::vector<int>(leftArmAxes, VOCAB_CM_POSITION).data()))
+    if (!iPositionControl->setRefSpeeds(std::vector<double>(axesNames.size(), DEFAULT_REF_SPEED).data()))
     {
-        yError() << "Unable to set position control mode on left arm";
+        yError("Failed to set reference speeds");
         return false;
     }
 
-    int rightArmAxes;
-    rightArmIPositionControl->getAxes(&rightArmAxes);
-
-    if (!rightArmIControlMode->setControlModes(std::vector<int>(rightArmAxes, VOCAB_CM_POSITION).data()))
+    if (!iPositionControl->setRefAccelerations(std::vector<double>(axesNames.size(), DEFAULT_REF_ACCELERATION).data()))
     {
-        yError() << "Unable to set position control mode on right arm";
+        yError("Failed to set reference accelerations");
         return false;
     }
-
-    // -- Configure speeds and accelerations
-
-    if (!headIPositionControl->setRefSpeeds(std::vector<double>(headAxes, DEFAULT_REF_SPEED).data()))
-    {
-        yError() << "Unable to set reference speeds on head";
-        return false;
-    }
-
-    if (!leftArmIPositionControl->setRefSpeeds(std::vector<double>(leftArmAxes, DEFAULT_REF_SPEED).data()))
-    {
-        yError() << "Unable to set reference speeds on left arm";
-        return false;
-    }
-
-    if (!rightArmIPositionControl->setRefSpeeds(std::vector<double>(rightArmAxes, DEFAULT_REF_SPEED).data()))
-    {
-        yError() << "Unable to set reference speeds on right arm";
-        return false;
-    }
-
-    if (!headIPositionControl->setRefAccelerations(std::vector<double>(headAxes, DEFAULT_REF_ACCELERATION).data()))
-    {
-        yError() << "Unable to set reference accelerations on head";
-        return false;
-    }
-
-    if (!leftArmIPositionControl->setRefAccelerations(std::vector<double>(leftArmAxes, DEFAULT_REF_ACCELERATION).data()))
-    {
-        yError() << "Unable to set reference accelerations on left arm";
-        return false;
-    }
-
-    if (!rightArmIPositionControl->setRefAccelerations(std::vector<double>(rightArmAxes, DEFAULT_REF_ACCELERATION).data()))
-    {
-        yError() << "Unable to set reference accelerations on right arm";
-        return false;
-    }
-
-    // -- Configure port
 
     if (!serverPort.open(DEFAULT_PREFIX + std::string("/rpc:s")))
     {
@@ -164,9 +91,7 @@ bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
 bool BodyExecution::close()
 {
     serverPort.close();
-    headDevice.close();
-    leftArmDevice.close();
-    rightArmDevice.close();
+    robotDevice.close();
     return true;
 }
 
@@ -200,21 +125,16 @@ bool BodyExecution::updateModule()
         hasNewSetpoints = false;
         actionMutex.unlock();
 
-        yInfo() << "Sending new setpoints"; // TODO: print values
+        std::vector<double> values;
+        values.insert(values.end(), std::get<0>(setpoints).begin(), std::get<0>(setpoints).end()); // 2 head joints
+        values.insert(values.end(), std::get<1>(setpoints).begin(), std::get<1>(setpoints).end()); // 6 left arm joints
+        values.insert(values.end(), std::get<2>(setpoints).begin(), std::get<2>(setpoints).end()); // 6 right arm joints
 
-        if (!headIPositionControl->positionMove(std::get<0>(setpoints).data()))
-        {
-            yWarning() << "Unable to configure new setpoints on head";
-        }
+        yDebug() << "Sending new setpoints:" << values;
 
-        if (!leftArmIPositionControl->positionMove(std::get<1>(setpoints).data()))
+        if (!iPositionControl->positionMove(values.data()))
         {
-            yWarning() << "Unable to configure new setpoints on left arm";
-        }
-
-        if (!rightArmIPositionControl->positionMove(std::get<2>(setpoints).data()))
-        {
-            yWarning() << "Unable to configure new setpoints on right arm";
+            yWarning() << "Failed to send new setpoints";
         }
     }
 
@@ -313,28 +233,14 @@ void BodyExecution::doExplanationSensors()
 
 bool BodyExecution::checkMotionDone()
 {
-    bool headMotionDone = true;
+    bool isMotionDone = true;
 
-    if (!headIPositionControl->checkMotionDone(&headMotionDone))
+    if (!iPositionControl->checkMotionDone(&isMotionDone))
     {
-        yWarning() << "Unable to check motion state of head";
+        yWarning() << "Unable to check motion state";
     }
 
-    bool leftArmMotionDone = true;
-
-    if (!leftArmIPositionControl->checkMotionDone(&leftArmMotionDone))
-    {
-        yWarning() << "Unable to check motion state of left arm";
-    }
-
-    bool rightArmMotionDone = true;
-
-    if (!rightArmIPositionControl->checkMotionDone(&rightArmMotionDone))
-    {
-        yWarning() << "Unable to check motion state of right arm";
-    }
-
-    return headMotionDone && leftArmMotionDone && rightArmMotionDone;
+    return isMotionDone;
 }
 
 bool BodyExecution::stop()
@@ -348,27 +254,13 @@ bool BodyExecution::stop()
         hasNewSetpoints = false;
     }
 
-    bool ok = true;
-
-    if (!headIPositionControl->stop())
+    if (!iPositionControl->stop())
     {
-        yWarning() << "Failed to stop head";
-        ok = false;
+        yWarning() << "Failed to stop";
+        return false;
     }
 
-    if (!leftArmIPositionControl->stop())
-    {
-        yWarning() << "Failed to stop left arm";
-        ok = false;
-    }
-
-    if (!rightArmIPositionControl->stop())
-    {
-        yWarning() << "Failed to stop right arm";
-        ok = false;
-    }
-
-    return ok;
+    return true;
 }
 
 void BodyExecution::registerSetpoints(const std::string & action, std::initializer_list<setpoints_t> setpoints)
