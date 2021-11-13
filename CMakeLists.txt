@@ -25,7 +25,9 @@ endif()
 # Hard dependencies.
 find_package(YCM 0.11 REQUIRED)
 find_package(YARP 3.4 REQUIRED COMPONENTS os dev idl_tools)
-find_package(ROBOTICSLAB_SPEECH REQUIRED)
+
+# Soft dependencies.
+find_package(ROBOTICSLAB_SPEECH QUIET)
 
 # Add WITH_PLUGINS if this projects exports YARP devices.
 yarp_configure_external_installation(teo-self-presentation)

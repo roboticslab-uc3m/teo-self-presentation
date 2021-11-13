@@ -1,5 +1,5 @@
 cmake_dependent_option(ENABLE_dialogueManager "Choose if you want to compile dialogueManager" ON
-                       ENABLE_SelfPresentationCommandsIDL OFF)
+                       "ENABLE_SelfPresentationCommandsIDL;TARGET ROBOTICSLAB::SpeechIDL" OFF)
 
 IF(ENABLE_dialogueManager)
 
