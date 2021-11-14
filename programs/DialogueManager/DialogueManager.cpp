@@ -99,14 +99,16 @@ bool DialogueManager::configure(yarp::os::ResourceFinder & rf)
 
 double DialogueManager::getPeriod()
 {
-    return 1.0; // [s]
+    return 0.1; // [s]
 }
 
 bool DialogueManager::updateModule()
 {
+    constexpr auto throttle = 1.0; // [s]
+
     if (speechPort.getOutputCount() == 0)
     {
-        if (!yarp::os::Thread::isStopping())
+        if (yarp::os::Thread::isRunning())
         {
             yInfo() << "Port disconnected, forcing presentation stop";
 
@@ -115,9 +117,9 @@ bool DialogueManager::updateModule()
                 yWarning() << "Unable to stop presentation thread";
             }
         }
-        else if (!yarp::os::Thread::isRunning())
+        else
         {
-            yDebug() << "Waiting for" << speechPort.getName() << "to be connected to something...";
+            yDebugThrottle(throttle) << "Waiting for" << speechPort.getName() << "to be connected to TTS server";
             demoCompleted = false;
         }
     }
@@ -125,7 +127,7 @@ bool DialogueManager::updateModule()
     {
         if (yarp::os::Thread::isRunning())
         {
-            yDebug() << "Presentation is running";
+            yDebugThrottle(throttle) << "Presentation is running";
         }
         else if (!demoCompleted)
         {
@@ -138,7 +140,7 @@ bool DialogueManager::updateModule()
         }
         else
         {
-            yDebug() << "Presentation has ended, reconnect TTS port" << speechPort.getName() << "to start again";
+            yDebugThrottle(throttle) << "Presentation has ended, reconnect TTS port" << speechPort.getName() << "to start again";
         }
     }
 
