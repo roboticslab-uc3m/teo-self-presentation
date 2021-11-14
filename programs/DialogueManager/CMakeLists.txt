@@ -1,3 +1,7 @@
+if(NOT TARGET ROBOTICSLAB::SpeechIDL AND (NOT DEFINED ENABLE_dialogueManager OR ENABLE_dialogueManager))
+    message(WARNING "ROBOTICSLAB::SpeechIDL target not found, disabling dialogueManager")
+endif()
+
 cmake_dependent_option(ENABLE_dialogueManager "Choose if you want to compile dialogueManager" ON
                        "ENABLE_SelfPresentationCommandsIDL;TARGET ROBOTICSLAB::SpeechIDL" OFF)
 
@@ -14,5 +18,9 @@ IF(ENABLE_dialogueManager)
 
     install(TARGETS dialogueManager
             DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+else()
+
+    set(ENABLE_dialogueManager OFF CACHE BOOL "Enable/disable dialogueManager program" FORCE)
 
 endif()
