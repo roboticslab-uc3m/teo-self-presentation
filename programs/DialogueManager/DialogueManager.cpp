@@ -189,8 +189,7 @@ void DialogueManager::run()
 
     try
     {
-        yInfo() << "presentation_01:" << sentences["presentation_01"];
-        speech.say(sentences["presentation_01"]);
+        speak("presentation_01");
         motion.doGreet();
         awaitMotionCompletion();
         motion.doHoming();
@@ -198,78 +197,64 @@ void DialogueManager::run()
 
         yarp::os::SystemClock::delaySystem(1.0);
 
-        yInfo() << "presentation_02:" << sentences["presentation_02"];
-        speech.say(sentences["presentation_02"]);
+        speak("presentation_02");
         motion.doExplanation2();
         awaitSpeechAndMotionCompletion();
 
         yarp::os::SystemClock::delaySystem(1.0);
 
-        yInfo() << "composition_01:" << sentences["composition_01"];
-        speech.say(sentences["composition_01"]);
+        speak("composition_01");
         motion.doExplanation1();
         awaitSpeechCompletion();
         yarp::os::SystemClock::delaySystem(2.0);
-        yInfo() << "composition_02:" << sentences["composition_02"];
-        speech.say(sentences["composition_02"]);
+        speak("composition_02");
         awaitSpeechAndMotionCompletion();
 
-        yInfo() << "composition_03:" << sentences["composition_03"];
-        speech.say(sentences["composition_03"]);
+        speak("composition_03");
         motion.doExplanationHead();
         awaitSpeechAndMotionCompletion();
 
-        yInfo() << "composition_04:" << sentences["composition_04"];
-        speech.say(sentences["composition_04"]);
+        speak("composition_04");
         motion.doExplanationRightPC();
         awaitSpeechCompletion();
-        yInfo() << "composition_05_01:" << sentences["composition_05_01"];
-        speech.say(sentences["composition_05_01"]);
+        speak("composition_05_01");
         awaitSpeechAndMotionCompletion();
 
-        yInfo() << "composition_05_02:" << sentences["composition_05_02"];
-        speech.say(sentences["composition_05_02"]);
+        speak("composition_05_02");
         motion.doExplanationLeftPC();
         awaitSpeechAndMotionCompletion();
 
-        yInfo() << "composition_05_03:" << sentences["composition_05_03"];
-        speech.say(sentences["composition_05_03"]);
+        speak("composition_05_03");
         motion.doExplanationInsidePC();
         awaitSpeechAndMotionCompletion();
 
-        yInfo() << "composition_06:" << sentences["composition_06"];
-        speech.say(sentences["composition_06"]);
+        speak("composition_06");
         motion.doExplanationHead();
         awaitSpeechAndMotionCompletion();
 
-        yInfo() << "composition_07:" << sentences["composition_07"];
-        speech.say(sentences["composition_07"]);
+        speak("composition_07");
         motion.doExplanation2();
         awaitSpeechAndMotionCompletion();
 
-        yInfo() << "composition_08:" << sentences["composition_08"];
-        speech.say(sentences["composition_08"]);
+        speak("composition_08");
         motion.doExplanationSensors();
         awaitSpeechAndMotionCompletion();
 
         yarp::os::SystemClock::delaySystem(1.0);
 
-        yInfo() << "purpose_01:" << sentences["purpose_01"];
-        speech.say(sentences["purpose_01"]);
+        speak("purpose_01");
         motion.doExplanation1();
         awaitSpeechAndMotionCompletion();
 
         yarp::os::SystemClock::delaySystem(1.0);
 
-        yInfo() << "purpose_02:" << sentences["purpose_02"];
-        speech.say(sentences["purpose_02"]);
+        speak("purpose_02");
         motion.doExplanation3();
         awaitSpeechAndMotionCompletion();
 
         yarp::os::SystemClock::delaySystem(2.0);
 
-        yInfo() << "ending_01:" << sentences["ending_01"];
-        speech.say(sentences["ending_01"]);
+        speak("ending_01");
         motion.doHoming();
         awaitSpeechAndMotionCompletion();
     }
@@ -281,6 +266,16 @@ void DialogueManager::run()
 
     yInfo() << "Presentation end";
     demoCompleted = true;
+}
+
+void DialogueManager::speak(const std::string & sentenceId)
+{
+    yInfo() << sentenceId << "->" << sentences[sentenceId];
+
+    if (!speech.say(sentences[sentenceId]))
+    {
+        yWarning() << "Unable to say" << sentenceId;
+    }
 }
 
 void DialogueManager::awaitSpeechCompletion()

@@ -40,6 +40,7 @@ public:
     void run() override;
 
 private:
+    void speak(const std::string & sentenceId);
     void awaitSpeechCompletion();
     void awaitMotionCompletion();
     void awaitSpeechAndMotionCompletion();
