@@ -189,86 +189,88 @@ void DialogueManager::run()
 
     try
     {
-        yInfo() << "Greet";
-        motion.doGreet();
+        yInfo() << "presentation_01:" << sentences["presentation_01"];
         speech.say(sentences["presentation_01"]);
+        motion.doGreet();
         awaitMotionCompletion();
         motion.doHoming();
         awaitSpeechAndMotionCompletion();
 
         yarp::os::SystemClock::delaySystem(1.0);
 
-        yInfo() << "Explanation 2";
-        motion.doExplanation2();
+        yInfo() << "presentation_02:" << sentences["presentation_02"];
         speech.say(sentences["presentation_02"]);
+        motion.doExplanation2();
         awaitSpeechAndMotionCompletion();
 
         yarp::os::SystemClock::delaySystem(1.0);
 
-        yInfo() << "Explanation 1";
-        motion.doExplanation1();
+        yInfo() << "composition_01:" << sentences["composition_01"];
         speech.say(sentences["composition_01"]);
+        motion.doExplanation1();
         awaitSpeechCompletion();
         yarp::os::SystemClock::delaySystem(2.0);
+        yInfo() << "composition_02:" << sentences["composition_02"];
         speech.say(sentences["composition_02"]);
         awaitSpeechAndMotionCompletion();
 
-        yInfo() << "Explanation head";
-        motion.doExplanationHead();
+        yInfo() << "composition_03:" << sentences["composition_03"];
         speech.say(sentences["composition_03"]);
+        motion.doExplanationHead();
         awaitSpeechAndMotionCompletion();
 
-        yInfo() << "Explanation right PC";
-        motion.doExplanationRightPC();
+        yInfo() << "composition_04:" << sentences["composition_04"];
         speech.say(sentences["composition_04"]);
+        motion.doExplanationRightPC();
         awaitSpeechCompletion();
+        yInfo() << "composition_05_01:" << sentences["composition_05_01"];
         speech.say(sentences["composition_05_01"]);
         awaitSpeechAndMotionCompletion();
 
-        yInfo() << "Explanation left PC";
-        motion.doExplanationLeftPC();
+        yInfo() << "composition_05_02:" << sentences["composition_05_02"];
         speech.say(sentences["composition_05_02"]);
+        motion.doExplanationLeftPC();
         awaitSpeechAndMotionCompletion();
 
-        yInfo() << "Explanation inside PC";
-        motion.doExplanationInsidePC();
+        yInfo() << "composition_05_03:" << sentences["composition_05_03"];
         speech.say(sentences["composition_05_03"]);
+        motion.doExplanationInsidePC();
         awaitSpeechAndMotionCompletion();
 
-        yInfo() << "Explanation HDD";
-        motion.doExplanationHead();
+        yInfo() << "composition_06:" << sentences["composition_06"];
         speech.say(sentences["composition_06"]);
+        motion.doExplanationHead();
         awaitSpeechAndMotionCompletion();
 
-        yInfo() << "Explanation 2";
-        motion.doExplanation2();
+        yInfo() << "composition_07:" << sentences["composition_07"];
         speech.say(sentences["composition_07"]);
+        motion.doExplanation2();
         awaitSpeechAndMotionCompletion();
 
-        yInfo() << "Explanation sensors";
-        motion.doExplanationSensors();
+        yInfo() << "composition_08:" << sentences["composition_08"];
         speech.say(sentences["composition_08"]);
+        motion.doExplanationSensors();
         awaitSpeechAndMotionCompletion();
 
         yarp::os::SystemClock::delaySystem(1.0);
 
-        yInfo() << "Explanation 1";
-        motion.doExplanation1();
+        yInfo() << "purpose_01:" << sentences["purpose_01"];
         speech.say(sentences["purpose_01"]);
+        motion.doExplanation1();
         awaitSpeechAndMotionCompletion();
 
         yarp::os::SystemClock::delaySystem(1.0);
 
-        yInfo() << "Explanation 3";
-        motion.doExplanation3();
+        yInfo() << "purpose_02:" << sentences["purpose_02"];
         speech.say(sentences["purpose_02"]);
+        motion.doExplanation3();
         awaitSpeechAndMotionCompletion();
 
         yarp::os::SystemClock::delaySystem(2.0);
 
-        yInfo() << "Homing";
-        motion.doHoming();
+        yInfo() << "ending_01:" << sentences["ending_01"];
         speech.say(sentences["ending_01"]);
+        motion.doHoming();
         awaitSpeechAndMotionCompletion();
     }
     catch (const ThreadTerminator & terminator)
