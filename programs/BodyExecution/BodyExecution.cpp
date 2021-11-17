@@ -247,7 +247,7 @@ bool BodyExecution::stop()
     yInfo() << "Commanding stop";
 
     {
-        std::unique_lock<std::mutex> lock(actionMutex);
+        std::lock_guard<std::mutex> lock(actionMutex);
         currentAction = noAction;
         currentSetpoints.clear();
         hasNewSetpoints = false;
