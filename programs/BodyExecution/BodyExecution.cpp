@@ -109,7 +109,7 @@ double BodyExecution::getPeriod()
 bool BodyExecution::updateModule()
 {
     bool isMotionDone = checkMotionDone();
-    actionMutex.lock();
+    std::unique_lock<std::mutex> lock(actionMutex);
 
     if (!hasNewSetpoints && isMotionDone && currentSetpoints.empty())
     {
@@ -123,7 +123,7 @@ bool BodyExecution::updateModule()
         auto setpoints = currentSetpoints.front();
         currentSetpoints.pop_front();
         hasNewSetpoints = false;
-        actionMutex.unlock();
+        lock.unlock();
 
         std::vector<double> values;
         values.insert(values.end(), std::get<0>(setpoints).begin(), std::get<0>(setpoints).end()); // 2 head joints
@@ -138,7 +138,6 @@ bool BodyExecution::updateModule()
         }
     }
 
-    actionMutex.unlock();
     return true;
 }
 
