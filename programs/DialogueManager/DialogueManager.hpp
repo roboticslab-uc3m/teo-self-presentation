@@ -11,7 +11,7 @@
 #include <yarp/os/RpcClient.h>
 #include <yarp/os/Thread.h>
 
-#include <SpeechIDL.h>
+#include <TextToSpeechIDL.h>
 
 #include "SelfPresentationCommandsIDL.h"
 
@@ -45,7 +45,7 @@ private:
     void awaitMotionCompletion();
     void awaitSpeechAndMotionCompletion();
 
-    SpeechIDL speech;
+    TextToSpeechIDL speech;
     SelfPresentationCommandsIDL motion;
 
     yarp::os::RpcClient speechPort;
