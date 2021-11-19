@@ -114,7 +114,8 @@ bool DialogueManager::updateModule()
 
             if (!yarp::os::Thread::stop())
             {
-                yWarning() << "Unable to stop presentation thread";
+                yError() << "Unable to stop presentation thread";
+                return false;
             }
         }
         else
@@ -135,7 +136,8 @@ bool DialogueManager::updateModule()
 
             if (!yarp::os::Thread::start())
             {
-                yWarning() << "Unable to start presentation thread";
+                yError() << "Unable to start presentation thread";
+                return false;
             }
         }
         else
