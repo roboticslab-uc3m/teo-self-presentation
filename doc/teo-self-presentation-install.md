@@ -4,10 +4,11 @@ First install the dependencies:
 - [Install CMake 3.12+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-cmake.md)
 - [Install YCM 0.11+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-ycm.md)
 - [Install YARP 3.4+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md)
+- [Install SPEECH](https://github.com/roboticslab-uc3m/speech/blob/master/doc/speech-install.md) (only required by dialogueManager)
 
 ### Install teo-self-presentation demo on Ubuntu
 
-Our software integrates the previous dependencies. Note that you will be prompted for your password upon using `sudo` a couple of times:
+Note that you will be prompted for your password upon using `sudo` a couple of times:
 
 ```bash
 cd  # go home
@@ -19,4 +20,4 @@ sudo make install  # Install :-)
 cp ../scripts/gnome/teo-self-presentation.desktop $HOME/Desktop
 ```
 
-For additional options use ccmake instead of cmake.
+For additional options, use `ccmake` instead of `cmake`.
