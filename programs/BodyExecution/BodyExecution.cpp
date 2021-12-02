@@ -4,6 +4,8 @@
 
 #include <vector>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 
@@ -130,7 +132,11 @@ bool BodyExecution::updateModule()
         values.insert(values.end(), std::get<1>(setpoints).begin(), std::get<1>(setpoints).end()); // 6 left arm joints
         values.insert(values.end(), std::get<2>(setpoints).begin(), std::get<2>(setpoints).end()); // 6 right arm joints
 
+#if defined(YARP_VERSION_COMPARE) // >= 3.6.0
+        yDebug() << "Sending new setpoints:" << setpoints;
+#else
         yDebug() << "Sending new setpoints:" << values;
+#endif
 
         if (!iPositionControl->positionMove(values.data()))
         {
