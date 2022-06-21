@@ -16,8 +16,7 @@ IF(ENABLE_dialogueManager)
                                           ROBOTICSLAB::SpeechIDL
                                           ROBOTICSLAB::SelfPresentationCommandsIDL)
 
-    install(TARGETS dialogueManager
-            DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(TARGETS dialogueManager)
 
 else()
 

@@ -29,6 +29,10 @@ class BodyExecution : public yarp::os::RFModule,
                       public SelfPresentationCommandsIDL
 {
 public:
+    using setpoints_head_t = std::array<double, 2>;
+    using setpoints_arm_t = std::array<double, 6>;
+    using setpoints_t = std::tuple<setpoints_head_t, setpoints_arm_t, setpoints_arm_t>;
+
     ~BodyExecution()
     { close(); }
 
@@ -53,15 +57,9 @@ public:
     bool stop() override;
 
 private:
-    using setpoints_head_t = std::array<double, 2>;
-    using setpoints_arm_t = std::array<double, 6>;
-    using setpoints_t = std::tuple<setpoints_head_t, setpoints_arm_t, setpoints_arm_t>;
-
     void registerSetpoints(const std::string & action, std::initializer_list<setpoints_t> setpoints);
 
     const std::string noAction { "none" };
-    const setpoints_head_t headZeros { 0.0, 0.0 };
-    const setpoints_arm_t armZeros { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
     std::string currentAction { noAction };
     std::deque<setpoints_t> currentSetpoints;

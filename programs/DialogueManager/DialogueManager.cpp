@@ -104,7 +104,7 @@ double DialogueManager::getPeriod()
 
 bool DialogueManager::updateModule()
 {
-    constexpr auto throttle = 1.0; // [s]
+    static const auto throttle = 1.0; // [s]
 
     if (speechPort.getOutputCount() == 0)
     {

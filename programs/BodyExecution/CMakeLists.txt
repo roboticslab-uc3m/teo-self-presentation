@@ -12,7 +12,6 @@ IF(ENABLE_bodyExecution)
                                         YARP::YARP_dev
                                         ROBOTICSLAB::SelfPresentationCommandsIDL)
 
-    install(TARGETS bodyExecution
-            DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(TARGETS bodyExecution)
 
 endif()

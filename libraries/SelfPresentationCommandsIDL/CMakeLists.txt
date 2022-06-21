@@ -21,11 +21,7 @@ if(ENABLE_SelfPresentationCommandsIDL)
 
     target_include_directories(SelfPresentationCommandsIDL PUBLIC ${idl_include_dirs})
 
-    install(TARGETS SelfPresentationCommandsIDL
-            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    install(TARGETS SelfPresentationCommandsIDL)
 
     add_library(ROBOTICSLAB::SelfPresentationCommandsIDL ALIAS SelfPresentationCommandsIDL)
 

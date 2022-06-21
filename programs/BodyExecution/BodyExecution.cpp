@@ -4,8 +4,6 @@
 
 #include <vector>
 
-#include <yarp/conf/version.h>
-
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 
@@ -15,6 +13,9 @@ constexpr auto DEFAULT_ROBOT = "/teo"; // teo or teoSim
 constexpr auto DEFAULT_PREFIX = "/bodyExecution";
 constexpr auto DEFAULT_REF_SPEED = 25.0; // [m/s]
 constexpr auto DEFAULT_REF_ACCELERATION = 25.0; // [m/s^2]
+
+constexpr BodyExecution::setpoints_head_t headZeros { 0.0, 0.0 };
+constexpr BodyExecution::setpoints_arm_t armZeros { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
 bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
 {
@@ -63,19 +64,19 @@ bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
-    if (!iControlMode->setControlModes(std::vector<int>(axesNames.size(), VOCAB_CM_POSITION).data()))
+    if (!iControlMode->setControlModes(std::vector(axesNames.size(), VOCAB_CM_POSITION).data()))
     {
         yError("Failed to set position control mode");
         return false;
     }
 
-    if (!iPositionControl->setRefSpeeds(std::vector<double>(axesNames.size(), DEFAULT_REF_SPEED).data()))
+    if (!iPositionControl->setRefSpeeds(std::vector(axesNames.size(), DEFAULT_REF_SPEED).data()))
     {
         yError("Failed to set reference speeds");
         return false;
     }
 
-    if (!iPositionControl->setRefAccelerations(std::vector<double>(axesNames.size(), DEFAULT_REF_ACCELERATION).data()))
+    if (!iPositionControl->setRefAccelerations(std::vector(axesNames.size(), DEFAULT_REF_ACCELERATION).data()))
     {
         yError("Failed to set reference accelerations");
         return false;
@@ -122,21 +123,17 @@ bool BodyExecution::updateModule()
 
     if (hasNewSetpoints || (isMotionDone && !currentSetpoints.empty()))
     {
-        auto setpoints = currentSetpoints.front();
+        yDebug() << "Sending new setpoints:" << currentSetpoints.front();
+
+        auto [head, leftArm, rightArm] = currentSetpoints.front();
         currentSetpoints.pop_front();
         hasNewSetpoints = false;
         lock.unlock();
 
         std::vector<double> values;
-        values.insert(values.end(), std::get<0>(setpoints).begin(), std::get<0>(setpoints).end()); // 2 head joints
-        values.insert(values.end(), std::get<1>(setpoints).begin(), std::get<1>(setpoints).end()); // 6 left arm joints
-        values.insert(values.end(), std::get<2>(setpoints).begin(), std::get<2>(setpoints).end()); // 6 right arm joints
-
-#if defined(YARP_VERSION_COMPARE) // >= 3.6.0
-        yDebug() << "Sending new setpoints:" << setpoints;
-#else
-        yDebug() << "Sending new setpoints:" << values;
-#endif
+        values.insert(values.end(), head.cbegin(), head.cend());
+        values.insert(values.end(), leftArm.cbegin(), leftArm.cend());
+        values.insert(values.end(), rightArm.begin(), rightArm.end());
 
         if (!iPositionControl->positionMove(values.data()))
         {
