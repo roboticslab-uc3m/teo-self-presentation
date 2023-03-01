@@ -47,6 +47,7 @@ public:
     void doExplanation1() override;
     void doExplanation2() override;
     void doExplanation3() override;
+    void doExplanation4() override;
     void doExplanationHead() override;
     void doExplanationRightPC() override;
     void doExplanationLeftPC() override;
