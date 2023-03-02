@@ -9,7 +9,7 @@
 
 using namespace roboticslab;
 
-constexpr auto DEFAULT_ROBOT = "/teoSim"; // teo or teoSim
+constexpr auto DEFAULT_ROBOT = "/teo"; // teo or teoSim
 constexpr auto DEFAULT_PREFIX = "/bodyExecution";
 constexpr auto DEFAULT_REF_SPEED = 25.0; // [m/s]
 constexpr auto DEFAULT_REF_ACCELERATION = 25.0; // [m/s^2]
@@ -75,13 +75,13 @@ bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
         yError("Failed to set reference speeds");
         return false;
     }
-    /*
+
     if (!iPositionControl->setRefAccelerations(std::vector(axesNames.size(), DEFAULT_REF_ACCELERATION).data()))
     {
         yError("Failed to set reference accelerations");
         return false;
     }
-    */
+
     if (!serverPort.open(DEFAULT_PREFIX + std::string("/rpc:s")))
     {
         yError() << "Unable to open RPC port";
@@ -180,7 +180,6 @@ void BodyExecution::doExplanation2()
 void BodyExecution::doExplanation3()
 {
     registerSetpoints("explanation 3", {
-        {headZeros, {-39.46, -0.50, 5.09, -58.08, -29.75, -52.80}, {-39.12, -3.60, -5.90, -64.95, 29.75, -56.96}},
         {headZeros, {-63.12, -3.60, -5.90, -80.95, 10.25, -19.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -38.58}},
         {headZeros, {-63.12, -3.60, -5.90, -80.95, 10.25, -39.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -58.58}},
         {headZeros, {-63.12, -3.60, -5.90, -80.95, 10.25, -19.75}, {-63.80, -3.85, -3.60, -65.20, -12.65, -38.58}},
