@@ -112,7 +112,7 @@ double BodyExecution::getPeriod()
 bool BodyExecution::updateModule()
 {
     bool isMotionDone = checkMotionDone();
-    std::unique_lock<std::mutex> lock(actionMutex);
+    std::unique_lock lock(actionMutex);
 
     if (!hasNewSetpoints && isMotionDone && currentSetpoints.empty())
     {
@@ -250,7 +250,7 @@ bool BodyExecution::stop()
     yInfo() << "Commanding stop";
 
     {
-        std::lock_guard<std::mutex> lock(actionMutex);
+        std::lock_guard lock(actionMutex);
         currentAction = noAction;
         currentSetpoints.clear();
         hasNewSetpoints = false;
@@ -269,7 +269,7 @@ void BodyExecution::registerSetpoints(const std::string & action, std::initializ
 {
     yInfo() << "Registered new action:" << action;
 
-    std::lock_guard<std::mutex> lock(actionMutex);
+    std::lock_guard lock(actionMutex);
     currentAction = action;
     currentSetpoints.clear();
     currentSetpoints.insert(currentSetpoints.end(), setpoints);
