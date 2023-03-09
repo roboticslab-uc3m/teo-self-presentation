@@ -30,6 +30,10 @@
 # CMake
 CMakeLists.txt.user
 /build*/
+/.project
+/.cproject
+/.vs/
+/.vscode/
 
 # Doxygen
 /doc/html/
