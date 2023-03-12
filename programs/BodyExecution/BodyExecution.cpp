@@ -111,23 +111,29 @@ double BodyExecution::getPeriod()
 
 bool BodyExecution::updateModule()
 {
-    bool isMotionDone = checkMotionDone();
+    bool isMotionDone = true;
+
+    if (!iPositionControl->checkMotionDone(&isMotionDone))
+    {
+        yWarning() << "Unable to check motion state";
+    }
+
     std::unique_lock lock(actionMutex);
 
-    if (!hasNewSetpoints && isMotionDone && currentSetpoints.empty())
+    if (isProcessingSetpoints && isMotionDone && currentSetpoints.empty())
     {
         currentAction = noAction; // motion done and no more points to send
+        isProcessingSetpoints = false;
     }
 
     yDebugThrottle(1.0) << "Current action:" << currentAction;
 
-    if (hasNewSetpoints || (isMotionDone && !currentSetpoints.empty()))
+    if (isProcessingSetpoints && isMotionDone && !currentSetpoints.empty())
     {
         yDebug() << "Sending new setpoints:" << currentSetpoints.front();
 
         auto [head, leftArm, rightArm] = currentSetpoints.front();
         currentSetpoints.pop_front();
-        hasNewSetpoints = false;
         lock.unlock();
 
         std::vector<double> values;
@@ -235,14 +241,8 @@ void BodyExecution::doExplanationSensors()
 
 bool BodyExecution::checkMotionDone()
 {
-    bool isMotionDone = true;
-
-    if (!iPositionControl->checkMotionDone(&isMotionDone))
-    {
-        yWarning() << "Unable to check motion state";
-    }
-
-    return isMotionDone;
+    std::lock_guard lock(actionMutex);
+    return !isProcessingSetpoints;
 }
 
 bool BodyExecution::stop()
@@ -253,7 +253,7 @@ bool BodyExecution::stop()
         std::lock_guard lock(actionMutex);
         currentAction = noAction;
         currentSetpoints.clear();
-        hasNewSetpoints = false;
+        isProcessingSetpoints = false;
     }
 
     if (!iPositionControl->stop())
@@ -273,5 +273,5 @@ void BodyExecution::registerSetpoints(const std::string & action, std::initializ
     currentAction = action;
     currentSetpoints.clear();
     currentSetpoints.insert(currentSetpoints.end(), setpoints);
-    hasNewSetpoints = true;
+    isProcessingSetpoints = true;
 }

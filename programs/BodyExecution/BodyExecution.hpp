@@ -64,7 +64,7 @@ private:
     std::string currentAction { noAction };
     std::deque<setpoints_t> currentSetpoints;
     std::mutex actionMutex;
-    bool hasNewSetpoints { false };
+    bool isProcessingSetpoints { false };
 
     yarp::dev::PolyDriver robotDevice;
     yarp::dev::IControlMode * iControlMode;
