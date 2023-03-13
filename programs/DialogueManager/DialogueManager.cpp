@@ -306,7 +306,7 @@ void DialogueManager::awaitMotionCompletion()
             throw ThreadTerminator();
         }
 
-        yarp::os::SystemClock::delaySystem(0.5);
+        yarp::os::SystemClock::delaySystem(0.1);
     }
     while (motionPort.getOutputCount() > 0 && !motion.checkMotionDone());
 }
