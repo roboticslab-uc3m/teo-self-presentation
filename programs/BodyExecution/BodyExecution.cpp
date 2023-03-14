@@ -76,13 +76,10 @@ bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
-    // condition to solve error: setRefAccelerations is not implemented in Openrave teoSim
-    if(robot == "/teo"){
-        if (!iPositionControl->setRefAccelerations(std::vector(axesNames.size(), DEFAULT_REF_ACCELERATION).data()))
-        {
-            yError("Failed to set reference accelerations");
-            return false;
-        }
+    if (!iPositionControl->setRefAccelerations(std::vector(axesNames.size(), DEFAULT_REF_ACCELERATION).data()))
+    {
+        // might not be available in certain implementations, e.g. OpenRAVE
+        yWarning("Failed to set reference accelerations");
     }
 
     if (!serverPort.open(DEFAULT_PREFIX + std::string("/rpc:s")))
