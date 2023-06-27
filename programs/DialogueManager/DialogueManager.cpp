@@ -14,21 +14,21 @@ namespace
     class ThreadTerminator : public std::exception {};
 
     const std::unordered_map<std::string, std::string> englishSentences = {
-        {"presentation_01", "Hi. My name is TEO. I am, an humanoid robot, designed by engineers, of the university Carlos tercero, of Madrid. I am 10 years old. My size, is 1 70 meters, and my weight, is 70 kilograms."},
+        {"presentation_01", "Hi. My name is Teo. I am, an humanoid robot, designed by engineers, of the university Carlos tercero, of Madrid. I am 10 years old. My size, is 1 70 meters, and my weight, is 70 kilograms."},
         {"presentation_02", "My purpose, is to help to researchs, and to get new hits, and discoveries, within the robotics area."},
         {"composition_01", "I am mainly built, of aluminum, plastic and carbon fiber."},
         {"composition_02", "I have 28 degrees, of freedom, that allow me to move freely, being able to do, such human tasks as walking, identifying and manipulating objects, doing household chores, ironing, serving as a waiter, etc."},
         {"composition_03", "In my head, I have implemented two cameras, with which, I can detect objects, and human faces. Also, I can detect the distance, and the depth, in which they are."},
         {"composition_04", "As you can see, I have three computers, in my chest, each dedicated to a different task."},
         {"composition_05_01", "The computer on my right, serves me, to capture and process the data collected from my sensors."},
-        {"composition_05_02", "While, the one on my left, is dedicated, to the tasks of, manipulation and locomotion. It is the computer that plans and gives life to each of my movements"},
-        {"composition_05_03", "The computer that is located, just at the top, is the most powerful of all, and is dedicated, to the processing of vision. In this way, each computer, is dedicated to processing a part of the task, that I will do."},
-        {"composition_06", "Below, are located the hard disks, S, S, D, which are the main memory, where I store, all the tasks and programs, that allow me to perform, all my functions."},
-        {"composition_07", "Both of them, the manipulation computer, and the locomotion computer, are connected to a communication network called, CAN, BUS, which sends all movement signals, to each of my motors."},
-        {"composition_08", "I also have movement, inertial, and force sensors, that allow me to detect the weight, and pressure exerted, on my joints. These sensors allow, for example, to keep me in balance, while walking or standing up."},
-        {"purpose_01", "All the components that make up everything I am, as well as the programs, that allow me to perform all these tasks, have been designed by students and doctors of this university. The main mission, is to discover and advance together, in the field, of robotics."},
-        {"purpose_02", "For now, I am only a prototype, dedicated to research, so, I can not be sold, in any store. Also, my price would be too expensive, to be bought."},
-        {"ending_01", "These, is the end, of my presentation. I hope you liked it, and if you want, you can take a picture with me. Nice to meet you."},
+        {"composition_05_02", "While, the computer on my left, is dedicated, to the tasks of, manipulation and locomotion. It is the computer that plans and gives life to each of my movements"},
+        {"composition_05_03", "The computer that is located, just at the top, is the most powerful of all, and is dedicated to the processing of vision. In this way, each computer, is dedicated to processing a part of the task that I will do."},
+        {"composition_06", "Below, are located the hard disks, SSD, which are the main memory, where I store, all the tasks and programs, that allow me to perform, all my functions."},
+        {"composition_07", "Both of them, the manipulation computer, and the locomotion computer, are connected to a communication network called, can bus, which sends all movement signals to each of my motors."},
+        {"composition_08", "I also have movement, inertial, and force sensors, that allow me to detect the weight, and pressure exerted on my joints. These sensors allow, for example, to keep me in balance, while walking or standing up."},
+        {"purpose_01", "All the components that make up everything I am, as well as the programs, that allow me to perform all these tasks, have been designed by engineers, students, and doctors of this university. The main mission, is to discover and advance together, in the field, of robotics."},
+        {"purpose_02", "For now, I am only a prototype, dedicated to research, so, I can not be sold in any store. Also, my price would be too expensive to be bought."},
+        {"ending_01", "These, is the end of my presentation. I hope you liked it, and if you want, you can take a picture with me. Nice to meet you."},
     };
 
     const std::unordered_map<std::string, std::string> spanishSentences = {
@@ -82,7 +82,7 @@ bool DialogueManager::configure(yarp::os::ResourceFinder & rf)
 
     if (language == "english")
     {
-        voice = "mb-en1";
+        voice = "en_US/m-ailabs_low";
         sentences = englishSentences;
     }
     else if (language == "spanish")
