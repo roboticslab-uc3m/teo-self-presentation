@@ -77,7 +77,7 @@ bool DialogueManager::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
-    speech.yarp().attachAsClient(speechPort);
+    tts.yarp().attachAsClient(speechPort);
     motion.yarp().attachAsClient(motionPort);
 
     if (language == "english")
@@ -165,7 +165,7 @@ bool DialogueManager::close()
 
 bool DialogueManager::threadInit()
 {
-    if (!speech.setLanguage(voice))
+    if (!tts.setLanguage(voice))
     {
         yError() << "Unable to set voice to" << voice;
         return false;
@@ -176,7 +176,7 @@ bool DialogueManager::threadInit()
 
 void DialogueManager::threadRelease()
 {
-    if (!speech.stop())
+    if (!tts.stop())
     {
         yWarning() << "Unable to stop speech";
     }
@@ -279,7 +279,7 @@ void DialogueManager::speak(const std::string & sentenceId)
 {
     yInfo() << sentenceId << "->" << sentences[sentenceId];
 
-    if (!speech.say(sentences[sentenceId]))
+    if (!tts.say(sentences[sentenceId]))
     {
         yWarning() << "Unable to say" << sentenceId;
     }
@@ -296,7 +296,7 @@ void DialogueManager::awaitSpeechCompletion()
 
         yarp::os::SystemClock::delaySystem(0.1);
     }
-    while (speechPort.getOutputCount() > 0 && !speech.checkSayDone());
+    while (speechPort.getOutputCount() > 0 && !tts.checkSayDone());
 }
 
 void DialogueManager::awaitMotionCompletion()

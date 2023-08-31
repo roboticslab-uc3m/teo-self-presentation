@@ -16,7 +16,7 @@
 #include <yarp/dev/IPositionControl.h>
 #include <yarp/dev/PolyDriver.h>
 
-#include "SelfPresentationCommandsIDL.h"
+#include "SelfPresentationCommands.h"
 
 namespace roboticslab
 {
@@ -26,7 +26,7 @@ namespace roboticslab
  * @brief Body Execution core.
  */
 class BodyExecution : public yarp::os::RFModule,
-                      public SelfPresentationCommandsIDL
+                      public SelfPresentationCommands
 {
 public:
     using setpoints_head_t = std::array<double, 2>;

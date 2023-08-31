@@ -11,9 +11,9 @@
 #include <yarp/os/RpcClient.h>
 #include <yarp/os/Thread.h>
 
-#include <TextToSpeechIDL.h>
+#include <SpeechSynthesis.h>
 
-#include "SelfPresentationCommandsIDL.h"
+#include "SelfPresentationCommands.h"
 
 namespace roboticslab
 {
@@ -45,8 +45,8 @@ private:
     void awaitMotionCompletion();
     void awaitSpeechAndMotionCompletion();
 
-    TextToSpeechIDL speech;
-    SelfPresentationCommandsIDL motion;
+    SpeechSynthesis tts;
+    SelfPresentationCommands motion;
 
     yarp::os::RpcClient speechPort;
     yarp::os::RpcClient motionPort;

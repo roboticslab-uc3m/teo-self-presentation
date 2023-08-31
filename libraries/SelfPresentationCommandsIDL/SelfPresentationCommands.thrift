@@ -1,6 +1,6 @@
 namespace yarp roboticslab
 
-service SelfPresentationCommandsIDL
+service SelfPresentationCommands
 {
     oneway void doGreet();
     oneway void doHoming();
