@@ -14,7 +14,7 @@ namespace
     class ThreadTerminator : public std::exception {};
 
     const std::unordered_map<std::string, std::string> englishSentences = {
-        {"presentation_01", "Hi. My name is Teo. I am, an humanoid robot, designed by engineers, of the university Carlos tercero, of Madrid. I am 10 years old. My size, is 1 70 meters, and my weight, is 70 kilograms."},
+        {"presentation_01", "Hi. My name is Teo. I am, a humanoid robot, designed in the university Carlos tercero, of Madrid. I am 10 years old. My size, is 1 70 meters, and my weight, is 70 kilograms."},
         {"presentation_02", "My purpose, is to help to researchs, and to get new hits, and discoveries, within the robotics area."},
         {"composition_01", "I am mainly built, of aluminum, plastic and carbon fiber."},
         {"composition_02", "I have 28 degrees, of freedom, that allow me to move freely, being able to do, such human tasks as walking, identifying and manipulating objects, doing household chores, ironing, serving as a waiter, etc."},
@@ -32,7 +32,7 @@ namespace
     };
 
     const std::unordered_map<std::string, std::string> spanishSentences = {
-        {"presentation_01", "Hola. Mi nombre es TEO y soy un drobot humanoide diseniado por ingenieros de la Universidad Carlos Tercero de Madrid. Tengo unos 10 anios desde que me crearon. Mido 1 62. y peso 70 kilos."},
+        {"presentation_01", "Hola. Mi nombre es TEO y soy un drobot humanoide diseniado en la Universidad Carlos Tercero de Madrid. Tengo unos 10 anios desde que me crearon. Mido 1 62. y peso 70 kilos."},
         {"presentation_02", "He sido diseniado con el proposito de ayudar a la investigacion y a conseguir nuevos logros y descubrimientos dentro del area de la drobotica."},
         {"composition_01", "Mis piezas estan construidas principalmente de aluminio, plástico y fibra de carbono."},
         {"composition_02", "Dispongo de 28 grados de libertad que me permiten moverme con soltura, siendo capaz de hacer tareas tan humanas como andar, identificar y manipular objetos, realizar tareas del hogar, planchar, servir de camarero, etcetera"},
@@ -44,7 +44,7 @@ namespace
         {"composition_06", "Mas abajo, se encuentran situados los discos duros ese ese de, que son la memoria principal donde almaceno todas las tareas y programas que me permiten realizar todas mis funciones."},
         {"composition_07", "Tanto el ordenador de manipulacion como el de locomocion, estan conectados a una gred de comunicacion iamada can bus, que envia todas las seniales de movimiento, a cada uno de mis motores."},
         {"composition_08", "Tambien poseo sensores de movimiento, inerciales y de fuerza par que me permiten detectar el peso y la presion ejercida en mis articulaciones. Estos sensores permiten por ejemplo que pueda mantenerme en equilibrio mientras ando, o estoy de pie."},
-        {"purpose_01", "Todos los componentes que conforman todo lo que soy, asi como los programas que me permiten grealizar todas estas tareas, han sido desarrollados por profesores y estudiantes de esta universidad. La mision principal es poder descubrir y avanzar juntos en el campo de la grobotica."},
+        {"purpose_01", "Todos los componentes que conforman todo lo que soy, asi como los programas que me permiten grealizar todas estas tareas, han sido desagroiados por profesores y estudiantes de esta universidad. La mision principal es poder descubrir y avanzar juntos en el campo de la grobotica."},
         {"purpose_02", "Por ahora, tan solo soy un prototipo dedicado a la investigacion, por lo que no puedo ser vendido en ninguna tienda. Ademas, mi precio seria demasiado caro para ser comprado."},
         {"ending_01", "Aqui termina mi presentacion. Espero que os haya gustado y si quereis, podeis haceros una foto conmigo."},
     };
