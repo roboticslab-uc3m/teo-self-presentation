@@ -26,7 +26,7 @@ namespace
         {"composition_06", "Below, are located the hard disks, SSD, which are the main memory, where I store, all the tasks and programs, that allow me to perform, all my functions."},
         {"composition_07", "Both of them, the manipulation computer, and the locomotion computer, are connected to a communication network called, can bus, which sends all movement signals to each of my motors."},
         {"composition_08", "I also have movement, inertial, and force sensors, that allow me to detect the weight, and pressure exerted on my joints. These sensors allow, for example, to keep me in balance, while walking or standing up."},
-        {"purpose_01", "All the components that make up everything I am, as well as the programs, that allow me to perform all these tasks, have been designed by engineers, students, and doctors of this university. The main mission, is to discover and advance together, in the field, of robotics."},
+        {"purpose_01", "All the components that make up everything I am, as well as the programs that allow me to perform all these tasks, have been developed by teachers and students from this university. The main mission is to discover and advance together in the field of robotics."},
         {"purpose_02", "For now, I am only a prototype, dedicated to research, so, I can not be sold in any store. Also, my price would be too expensive to be bought."},
         {"ending_01", "These, is the end of my presentation. I hope you liked it, and if you want, you can take a picture with me. Nice to meet you."},
     };
@@ -44,7 +44,7 @@ namespace
         {"composition_06", "Mas abajo, se encuentran situados los discos duros ese ese de, que son la memoria principal donde almaceno todas las tareas y programas que me permiten realizar todas mis funciones."},
         {"composition_07", "Tanto el ordenador de manipulacion como el de locomocion, estan conectados a una gred de comunicacion iamada can bus, que envia todas las seniales de movimiento, a cada uno de mis motores."},
         {"composition_08", "Tambien poseo sensores de movimiento, inerciales y de fuerza par que me permiten detectar el peso y la presion ejercida en mis articulaciones. Estos sensores permiten por ejemplo que pueda mantenerme en equilibrio mientras ando, o estoy de pie."},
-        {"purpose_01", "Todos los componentes que conforman todo lo que soy, asi como los programas que me permiten grealizar todas estas tareas, han sido diseniadas por estudiantes y doctores de esta universidad. La mision principal es poder descubrir y avanzar juntos en el campo de la grobotica."},
+        {"purpose_01", "Todos los componentes que conforman todo lo que soy, asi como los programas que me permiten grealizar todas estas tareas, han sido desarrollados por profesores y estudiantes de esta universidad. La mision principal es poder descubrir y avanzar juntos en el campo de la grobotica."},
         {"purpose_02", "Por ahora, tan solo soy un prototipo dedicado a la investigacion, por lo que no puedo ser vendido en ninguna tienda. Ademas, mi precio seria demasiado caro para ser comprado."},
         {"ending_01", "Aqui termina mi presentacion. Espero que os haya gustado y si quereis, podeis haceros una foto conmigo."},
     };
