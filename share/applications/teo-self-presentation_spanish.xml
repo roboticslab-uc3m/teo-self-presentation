@@ -3,6 +3,12 @@
     <name>teo-self-presentation_spanish_App</name>
 
     <module>
+        <name>espeakServer</name>
+        <parameters>--name /tts</parameters>
+        <node>head</node>
+    </module>
+
+    <module>
         <name>dialogueManager</name>
         <parameters>--language spanish</parameters>
         <node>localhost</node>
@@ -10,6 +16,7 @@
 
     <module>
         <name>bodyExecution</name>
+        <parameters>--robot /teo</parameters>
         <node>localhost</node>
     </module>
 
