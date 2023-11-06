@@ -24,6 +24,9 @@
         <name>bodyExecution</name>
         <parameters>--robot /teo</parameters>
         <node>localhost</node>
+        <dependencies>
+            <port timeout="10.0">/teo/sync:o</port>
+        </dependencies>
     </module>
 
     <connection>
