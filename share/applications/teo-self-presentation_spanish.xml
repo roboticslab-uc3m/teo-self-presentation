@@ -3,6 +3,12 @@
     <name>teo-self-presentation_spanish_App</name>
 
     <module>
+        <name>launchCanBus</name>
+        <parameters>--from manipulation.ini</parameters>
+        <node>manipulation</node>
+    </module>
+
+    <module>
         <name>espeakServer</name>
         <parameters>--name /tts</parameters>
         <node>head</node>
