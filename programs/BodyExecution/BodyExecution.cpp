@@ -2,6 +2,9 @@
 
 #include "BodyExecution.hpp"
 
+#include <cmath> // std::abs
+
+#include <algorithm> // std::max_element, std::transform
 #include <vector>
 
 #include <yarp/os/LogStream.h>
@@ -58,7 +61,7 @@ bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
-    if (!robotDevice.view(iControlMode) || !robotDevice.view(iPositionControl))
+    if (!robotDevice.view(iControlMode) || !robotDevice.view(iEncoders) || !robotDevice.view(iPositionControl))
     {
         yError() << "Failed to view robot interfaces";
         return false;
@@ -94,6 +97,12 @@ bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
 bool BodyExecution::close()
 {
     stop();
+
+    if (int numAxes; !iEncoders->getAxes(&numAxes) || !iPositionControl->setRefSpeeds(std::vector(numAxes, DEFAULT_REF_SPEED).data()))
+    {
+        yWarning() << "Failed to restore reference speeds";
+    }
+
     serverPort.close();
     robotDevice.close();
     return true;
@@ -142,10 +151,49 @@ bool BodyExecution::updateModule()
         values.insert(values.end(), leftArm.cbegin(), leftArm.cend());
         values.insert(values.end(), rightArm.begin(), rightArm.end());
 
-        if (!iPositionControl->positionMove(values.data()))
+        if (!sendMotionCommand(values))
         {
             yWarning() << "Failed to send new setpoints";
         }
+    }
+
+    return true;
+}
+
+bool BodyExecution::sendMotionCommand(const std::vector<double> & targets)
+{
+    std::vector<double> q(targets.size());
+
+    if (!iEncoders->getEncoders(q.data()))
+    {
+        yWarning() << "Failed to get current encoder values";
+        return false;
+    }
+
+    std::vector<double> deltas(targets.size());
+
+    std::transform(targets.cbegin(), targets.cend(), q.cbegin(), deltas.begin(), [](auto target, auto current) {
+        return std::abs(target - current);
+    });
+
+    double maxDelta = *std::max_element(deltas.cbegin(), deltas.cend());
+
+    std::vector<double> refSpeeds(targets.size());
+
+    std::transform(deltas.cbegin(), deltas.cend(), refSpeeds.begin(), [maxDelta](auto delta) {
+        return DEFAULT_REF_SPEED * delta / maxDelta; // isochronous
+    });
+
+    if (!iPositionControl->setRefSpeeds(refSpeeds.data()))
+    {
+        yWarning() << "Failed to set reference speeds";
+        return false;
+    }
+
+    if (!iPositionControl->positionMove(targets.data()))
+    {
+        yWarning() << "Failed to send motion command";
+        return false;
     }
 
     return true;

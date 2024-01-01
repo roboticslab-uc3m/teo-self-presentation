@@ -8,11 +8,13 @@
 #include <initializer_list>
 #include <mutex>
 #include <tuple>
+#include <vector>
 
 #include <yarp/os/RFModule.h>
 #include <yarp/os/RpcServer.h>
 
 #include <yarp/dev/IControlMode.h>
+#include <yarp/dev/IEncoders.h>
 #include <yarp/dev/IPositionControl.h>
 #include <yarp/dev/PolyDriver.h>
 
@@ -59,6 +61,7 @@ public:
 
 private:
     void registerSetpoints(const std::string & action, std::initializer_list<setpoints_t> setpoints);
+    bool sendMotionCommand(const std::vector<double> & targets);
 
     const std::string noAction { "none" };
 
@@ -68,8 +71,9 @@ private:
     bool isProcessingSetpoints { false };
 
     yarp::dev::PolyDriver robotDevice;
-    yarp::dev::IControlMode * iControlMode;
-    yarp::dev::IPositionControl * iPositionControl;
+    yarp::dev::IControlMode * iControlMode { nullptr };
+    yarp::dev::IEncoders * iEncoders { nullptr };
+    yarp::dev::IPositionControl * iPositionControl { nullptr };
 
     yarp::os::RpcServer serverPort;
 };
