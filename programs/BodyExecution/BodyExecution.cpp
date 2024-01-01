@@ -54,32 +54,32 @@ bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
 
     if (!robotDevice.open(robotOptions))
     {
-        yError("Failed to open robot device");
+        yError() << "Failed to open robot device";
         return false;
     }
 
     if (!robotDevice.view(iControlMode) || !robotDevice.view(iPositionControl))
     {
-        yError("Failed to view robot interfaces");
+        yError() << "Failed to view robot interfaces";
         return false;
     }
 
     if (!iControlMode->setControlModes(std::vector(axesNames.size(), VOCAB_CM_POSITION).data()))
     {
-        yError("Failed to set position control mode");
+        yError() << "Failed to set position control mode";
         return false;
     }
 
     if (!iPositionControl->setRefSpeeds(std::vector(axesNames.size(), DEFAULT_REF_SPEED).data()))
     {
-        yError("Failed to set reference speeds");
+        yError() << "Failed to set reference speeds";
         return false;
     }
 
     if (!iPositionControl->setRefAccelerations(std::vector(axesNames.size(), DEFAULT_REF_ACCELERATION).data()))
     {
         // might not be available in certain implementations, e.g. OpenRAVE
-        yWarning("Failed to set reference accelerations");
+        yWarning() << "Failed to set reference accelerations";
     }
 
     if (!serverPort.open(DEFAULT_PREFIX + std::string("/rpc:s")))
