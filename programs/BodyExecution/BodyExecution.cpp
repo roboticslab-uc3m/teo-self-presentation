@@ -93,6 +93,7 @@ bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
 
 bool BodyExecution::close()
 {
+    stop();
     serverPort.close();
     robotDevice.close();
     return true;
