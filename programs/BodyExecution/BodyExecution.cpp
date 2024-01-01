@@ -96,8 +96,6 @@ bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
 
 bool BodyExecution::close()
 {
-    stop();
-
     if (int numAxes; !iEncoders->getAxes(&numAxes) || !iPositionControl->setRefSpeeds(std::vector(numAxes, DEFAULT_REF_SPEED).data()))
     {
         yWarning() << "Failed to restore reference speeds";
