@@ -10,7 +10,7 @@
 
     <module>
         <name>espeakServer</name>
-        <parameters>--name /tts</parameters>
+        <parameters>--name /teo/tts</parameters>
         <node>head</node>
     </module>
 

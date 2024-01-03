@@ -1,32 +1,28 @@
 <application>
 
-    <name>teo-self-presentation_english_App</name>
+    <name>teo-self-presentation_spanish_sim_App</name>
 
     <module>
-        <name>launchCanBus</name>
-        <parameters>--from manipulation.ini</parameters>
-        <node>manipulation</node>
+        <name>teoSim</name>
+        <node>localhost</node>
     </module>
 
     <module>
         <name>espeakServer</name>
-        <parameters>--name /teo/tts</parameters>
-        <node>head</node>
+        <parameters>--name /tts</parameters>
+        <node>localhost</node>
     </module>
 
     <module>
         <name>dialogueManager</name>
-        <parameters>--language english</parameters>
+        <parameters>--language spanish</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>bodyExecution</name>
-        <parameters>--robot /teo</parameters>
+        <parameters>--robot /teoSim</parameters>
         <node>localhost</node>
-        <dependencies>
-            <port timeout="10.0">/teo/sync:o</port>
-        </dependencies>
     </module>
 
     <connection>
@@ -36,7 +32,7 @@
 
     <connection>
         <from>/dialogueManager/tts/rpc:c</from>
-        <to>/teo/tts/rpc:s</to>
+        <to>/tts/rpc:s</to>
     </connection>
 
 </application>
