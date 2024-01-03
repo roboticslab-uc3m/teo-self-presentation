@@ -279,13 +279,6 @@ void BodyExecution::doExplanationInsidePC()
     });
 }
 
-void BodyExecution::doExplanationHDD()
-{
-    registerSetpoints("explanation HDD", {
-        {{0.0, 10.0}, {-36.80, 14.85, -37.96, -85.83, -60.72, -52.80}, {-42.71, -8.42, 30.83, -81.37, 68.79, -93.67}}
-    });
-}
-
 void BodyExecution::doExplanationSensors()
 {
     registerSetpoints("explanation sensors", {

@@ -54,7 +54,6 @@ public:
     void doExplanationRightPC() override;
     void doExplanationLeftPC() override;
     void doExplanationInsidePC() override;
-    void doExplanationHDD() override;
     void doExplanationSensors() override;
     bool checkMotionDone() override;
     bool stop() override;

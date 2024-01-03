@@ -14,39 +14,37 @@ namespace
     class ThreadTerminator : public std::exception {};
 
     const std::unordered_map<std::string, std::string> englishSentences = {
-        {"presentation_01", "Hi. My name is Teo. I am, a humanoid robot, designed in the university Carlos tercero, of Madrid. I am 10 years old. My size, is 1 70 meters, and my weight, is 70 kilograms."},
-        {"presentation_02", "My purpose, is to help to researchs, and to get new hits, and discoveries, within the robotics area."},
+        {"presentation_01", "Hi. My name is TEO. I am a humanoid robot designed in the University Carlos Tercero of Madrid. I am 10 years old. My size is 1 70 meters and my weight is 60 kilograms."},
+        {"presentation_02", "My purpose, is to enable our researchers, to reach new achievements and discoveries, within the robotics area."},
         {"composition_01", "I am mainly built, of aluminum, plastic and carbon fiber."},
         {"composition_02", "I have 28 degrees, of freedom, that allow me to move freely, being able to do, such human tasks as walking, identifying and manipulating objects, doing household chores, ironing, serving as a waiter, etc."},
-        {"composition_03", "In my head, I have implemented two cameras, with which, I can detect objects, and human faces. Also, I can detect the distance, and the depth, in which they are."},
+        {"composition_03", "In my head, I have implemented two cameras, with which, I can detect objects, and human faces. Also, I can detect their distance and depth."},
         {"composition_04", "As you can see, I have three computers, in my chest, each dedicated to a different task."},
         {"composition_05_01", "The computer on my right, serves me, to capture and process the data collected from my sensors."},
         {"composition_05_02", "While, the computer on my left, is dedicated, to the tasks of, manipulation and locomotion. It is the computer that plans and gives life to each of my movements"},
-        {"composition_05_03", "The computer that is located, just at the top, is the most powerful of all, and is dedicated to the processing of vision. In this way, each computer, is dedicated to processing a part of the task that I will do."},
-        {"composition_06", "Below, are located the hard disks, SSD, which are the main memory, where I store, all the tasks and programs, that allow me to perform, all my functions."},
-        {"composition_07", "Both of them, the manipulation computer, and the locomotion computer, are connected to a communication network called, can bus, which sends all movement signals to each of my motors."},
-        {"composition_08", "I also have movement, inertial, and force sensors, that allow me to detect the weight, and pressure exerted on my joints. These sensors allow, for example, to keep me in balance, while walking or standing up."},
+        {"composition_05_03", "The computer that is located, just at the top, is dedicated to the processing of vision. In this way, each computer, is dedicated to processing a part of the task that I will perform."},
+        {"composition_06", "Both of them, the manipulation computer, and the locomotion computer, are connected to a communication network called, can bus, which sends all the motion commands to each of my motors."},
+        {"composition_07", "I also have movement, inertial, and force sensors, that allow me to detect the weight, and pressure exerted on my joints. These sensors allow, for example, to stay in balance, while walking or standing up."},
         {"purpose_01", "All the components that make up everything I am, as well as the programs that allow me to perform all these tasks, have been developed by teachers and students from this university. The main mission is to discover and advance together in the field of robotics."},
         {"purpose_02", "For now, I am only a prototype, dedicated to research, so, I can not be sold in any store. Also, my price would be too expensive to be bought."},
         {"ending_01", "These, is the end of my presentation. I hope you liked it, and if you want, you can take a picture with me. Nice to meet you."},
     };
 
     const std::unordered_map<std::string, std::string> spanishSentences = {
-        {"presentation_01", "Hola. Mi nombre es TEO y soy un drobot humanoide diseniado en la Universidad Carlos Tercero de Madrid. Tengo unos 10 anios desde que me crearon. Mido 1 62. y peso 70 kilos."},
-        {"presentation_02", "He sido diseniado con el proposito de ayudar a la investigacion y a conseguir nuevos logros y descubrimientos dentro del area de la drobotica."},
-        {"composition_01", "Mis piezas estan construidas principalmente de aluminio, plástico y fibra de carbono."},
-        {"composition_02", "Dispongo de 28 grados de libertad que me permiten moverme con soltura, siendo capaz de hacer tareas tan humanas como andar, identificar y manipular objetos, realizar tareas del hogar, planchar, servir de camarero, etcetera"},
-        {"composition_03", "En mi cabeza tengo implementadas 2 camaras con las cuales puedo detectar objetos y caras humanas, asi como detectar la distancia y profundidad a la que se encuentran."},
-        {"composition_04", "Como podeis ver, dispongo en el interior de mi pecho de 3 ordenadores, cada uno dedicado a una tarea distinta."},
-        {"composition_05_01", "El ordenador de mi derecha me sirve para captar y procesar los datos que grecogen mis sensores"},
-        {"composition_05_02", "Mientras que el de mi izquierda esta dedicado a las tareas de manipulacion y locomocion. Es el ordenador que planifica y da vida a cada uno de mis movimientos"},
-        {"composition_05_03", "El ordenador que esta situado justo en la parte superior, es el mas potente de todos y se encuentra dedicado al procesamiento de vision. De esta forma, cada ordenador se dedica a procesar una parte de la tarea que voy a grealizar."},
-        {"composition_06", "Mas abajo, se encuentran situados los discos duros ese ese de, que son la memoria principal donde almaceno todas las tareas y programas que me permiten realizar todas mis funciones."},
-        {"composition_07", "Tanto el ordenador de manipulacion como el de locomocion, estan conectados a una gred de comunicacion iamada can bus, que envia todas las seniales de movimiento, a cada uno de mis motores."},
-        {"composition_08", "Tambien poseo sensores de movimiento, inerciales y de fuerza par que me permiten detectar el peso y la presion ejercida en mis articulaciones. Estos sensores permiten por ejemplo que pueda mantenerme en equilibrio mientras ando, o estoy de pie."},
-        {"purpose_01", "Todos los componentes que conforman todo lo que soy, asi como los programas que me permiten grealizar todas estas tareas, han sido desagroiados por profesores y estudiantes de esta universidad. La mision principal es poder descubrir y avanzar juntos en el campo de la grobotica."},
-        {"purpose_02", "Por ahora, tan solo soy un prototipo dedicado a la investigacion, por lo que no puedo ser vendido en ninguna tienda. Ademas, mi precio seria demasiado caro para ser comprado."},
-        {"ending_01", "Aqui termina mi presentacion. Espero que os haya gustado y si quereis, podeis haceros una foto conmigo."},
+        {"presentation_01", "Hola. Mi nombre es TEO y soy un drobot humanoide diseñado en la Universidad Carlos Tercero de Madrid. Tengo unos 10 años desde que me crearon. Mido 1 70 y peso 60 kilos."},
+        {"presentation_02", "He sido diseñado con el propósito de ayudar a la investigación y a conseguir nuevos logros y descubrimientos dentro del área de la drobótica."},
+        {"composition_01", "Mis piezas están construidas principalmente de aluminio, plástico y fibra de carbono."},
+        {"composition_02", "Dispongo de 28 grados de libertad que me permiten moverme con soltura, siendo capaz de hacer tareas tan humanas como andar, identificar y manipular objetos, realizar tareas del hogar, planchar, servir de camarero, etcétera."},
+        {"composition_03", "En mi cabeza tengo implementadas dos cámaras con las cuales puedo detectar objetos y caras humanas, así como determinar la distancia y profundidad a la que se encuentran."},
+        {"composition_04", "Como podéis ver, dispongo en el interior de mi pecho de tres ordenadores, cada uno dedicado a una tarea distinta."},
+        {"composition_05_01", "El ordenador de mi derecha me sirve para captar y procesar los datos que grecogen mis sensores."},
+        {"composition_05_02", "Mientras que el de mi izquierda está dedicado a las tareas de manipulación y locomoción. Es el ordenador que planifica y da vida a cada uno de mis movimientos."},
+        {"composition_05_03", "El ordenador que está situado justo en la parte superior se emplea para el procesamiento de visión. De esta forma, cada ordenador se dedica a procesar una parte de la tarea que voy a grealizar."},
+        {"composition_06", "Tanto el ordenador de manipulación como el de locomoción están conectados a una gred de comunicación yamada can bus, que envía todas las señales de movimiento a cada uno de mis motores."},
+        {"composition_07", "También poseo sensores de movimiento, inerciales y de fuerza par que me permiten estimar el peso y la presión ejercida en mis articulaciones. Estos sensores permiten por ejemplo que pueda mantenerme en equilibrio mientras ando o estoy de pie."},
+        {"purpose_01", "Todos los componentes que conforman todo lo que soy, así como los programas que me permiten grealizar todas estas tareas, han sido desagroyados por profesores y estudiantes de esta universidad. La misión principal es poder descubrir y avanzar juntos en el campo de la grobótica."},
+        {"purpose_02", "Por ahora, tan solo soy un prototipo dedicado a la investigación, por lo que no puedo ser vendido en ninguna tienda. Además, mi precio sería demasiado caro para ser comprado."},
+        {"ending_01", "Aquí termina mi presentación. Espero que os haya gustado y si queréis, podéis haceros una foto conmigo."},
     };
 }
 
@@ -236,14 +234,10 @@ void DialogueManager::run()
         awaitSpeechAndMotionCompletion();
 
         speak("composition_06");
-        motion.doExplanationHDD();
-        awaitSpeechAndMotionCompletion();
-
-        speak("composition_07");
         motion.doExplanation2();
         awaitSpeechAndMotionCompletion();
 
-        speak("composition_08");
+        speak("composition_07");
         motion.doExplanationSensors();
         awaitSpeechAndMotionCompletion();
 

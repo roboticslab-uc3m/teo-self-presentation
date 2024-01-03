@@ -12,7 +12,6 @@ service SelfPresentationCommands
     oneway void doExplanationRightPC();
     oneway void doExplanationLeftPC();
     oneway void doExplanationInsidePC();
-    oneway void doExplanationHDD();
     oneway void doExplanationSensors();
     bool checkMotionDone();
     bool stop();
