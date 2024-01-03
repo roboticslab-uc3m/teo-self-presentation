@@ -15,7 +15,7 @@
 
     <module>
         <name>dialogueManager</name>
-        <parameters>--language spanish</parameters>
+        <parameters>--language spanish --backend espeak</parameters>
         <node>localhost</node>
     </module>
 
