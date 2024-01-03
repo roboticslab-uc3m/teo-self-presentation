@@ -96,11 +96,6 @@ bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
 
 bool BodyExecution::close()
 {
-    if (int numAxes; !iEncoders->getAxes(&numAxes) || !iPositionControl->setRefSpeeds(std::vector(numAxes, DEFAULT_REF_SPEED).data()))
-    {
-        yWarning() << "Failed to restore reference speeds";
-    }
-
     serverPort.close();
     robotDevice.close();
     return true;
@@ -109,6 +104,12 @@ bool BodyExecution::close()
 bool BodyExecution::interruptModule()
 {
     serverPort.interrupt();
+
+    if (int numAxes; !iEncoders->getAxes(&numAxes) || !iPositionControl->setRefSpeeds(std::vector(numAxes, DEFAULT_REF_SPEED).data()))
+    {
+        yWarning() << "Failed to restore reference speeds";
+    }
+
     return stop();
 }
 
