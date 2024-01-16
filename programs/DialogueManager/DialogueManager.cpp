@@ -48,6 +48,7 @@ bool DialogueManager::configure(yarp::os::ResourceFinder & rf)
         yInfo("\t--help (this help)\t--from [file.ini]\t--context [path]");
         yInfo("\t--language: %s [%s]", language.c_str(), DEFAULT_LANGUAGE);
         yInfo("\t--backend: %s [%s]", backend.c_str(), DEFAULT_BACKEND);
+        yInfo("\t--model: (specific for the chosen language and backend)");
         return false;
     }
 
@@ -73,7 +74,7 @@ bool DialogueManager::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
-    voice = group.find("model").asString();
+    model = rf.check("model", group.find("model"), "voice model").asString();
 
     for (const auto & label : sentenceLabels)
     {
@@ -172,9 +173,9 @@ bool DialogueManager::close()
 
 bool DialogueManager::threadInit()
 {
-    if (!tts.setLanguage(voice))
+    if (!tts.setLanguage(model))
     {
-        yError() << "Unable to set voice to" << voice;
+        yError() << "Unable to set model to" << model;
         return false;
     }
 

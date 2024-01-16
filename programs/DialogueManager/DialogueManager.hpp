@@ -51,7 +51,7 @@ private:
     yarp::os::RpcClient speechPort;
     yarp::os::RpcClient motionPort;
 
-    std::string voice;
+    std::string model;
     std::unordered_map<std::string, std::string> sentences;
 
     std::atomic<bool> demoCompleted {false};
