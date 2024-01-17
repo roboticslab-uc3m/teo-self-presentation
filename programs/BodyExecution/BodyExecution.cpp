@@ -175,24 +175,37 @@ bool BodyExecution::sendMotionCommand(const std::vector<double> & targets)
         return std::abs(target - current);
     });
 
-    double maxDelta = *std::max_element(deltas.cbegin(), deltas.cend());
-
-    std::vector<double> refSpeeds(targets.size());
-
-    std::transform(deltas.cbegin(), deltas.cend(), refSpeeds.begin(), [maxDelta](auto delta) {
-        return DEFAULT_REF_SPEED * delta / maxDelta; // isochronous
-    });
-
-    if (!iPositionControl->setRefSpeeds(refSpeeds.data()))
+    if (double maxDelta = *std::max_element(deltas.cbegin(), deltas.cend()); maxDelta != 0.0)
     {
-        yWarning() << "Failed to set reference speeds";
-        return false;
+        std::vector<int> indices;
+        std::vector<double> refSpeeds;
+        std::vector<double> groupTargets;
+
+        for (auto i = 0; i < deltas.size(); i++)
+        {
+            if (deltas[i] != 0.0)
+            {
+                indices.push_back(i);
+                refSpeeds.push_back(DEFAULT_REF_SPEED * deltas[i] / maxDelta); // isochronous motion
+                groupTargets.push_back(targets[i]);
+            }
+        }
+
+        if (!iPositionControl->setRefSpeeds(indices.size(), indices.data(), refSpeeds.data()))
+        {
+            yWarning() << "Failed to set reference speeds";
+            return false;
+        }
+
+        if (!iPositionControl->positionMove(indices.size(), indices.data(), groupTargets.data()))
+        {
+            yWarning() << "Failed to send motion command";
+            return false;
+        }
     }
-
-    if (!iPositionControl->positionMove(targets.data()))
+    else
     {
-        yWarning() << "Failed to send motion command";
-        return false;
+        yWarning() << "No motion to perform, already on target";
     }
 
     return true;
