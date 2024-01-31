@@ -1,8 +1,8 @@
-# Teo-self-presentation
+# TEO self presentation
 
-Demonstration of the humanoid robot TEO presenting itself ([video](https://www.youtube.com/watch?v=flyQq09S5GI)).
+Demonstration of the humanoid robot TEO presenting itself ([video](https://www.youtube.com/watch?v=VSNGP9K1_YQ)).
 
-[![IMAGE ALT TEXT](http://i3.ytimg.com/vi/flyQq09S5GI/maxresdefault.jpg)](https://www.youtube.com/watch?v=flyQq09S5GI "Teo Self Presentation")
+[![IMAGE ALT TEXT](http://i3.ytimg.com/vi/VSNGP9K1_YQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=VSNGP9K1_YQ "Teo Self Presentation")
 
 ## Installation
 
