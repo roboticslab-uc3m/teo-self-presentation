@@ -12,11 +12,11 @@ Installation instructions for installing from source can be found [here](doc/teo
 
 Refer to the [demo procedure guide](https://robots.uc3m.es/teo-developer-manual/demo-procedure.html) for the initial robot setup steps.
 
-In manipulation PC run `launchCanBus --from manipulation-noHead-demo.ini`.
-In head PC run `espeakServer --port /teo/tts/rpc:s`.
-In your local PC run `bodyExecution --robot /teo`.
-In your local PC run `dialogueManager --language spanish --backend sespeak`.
-In your local PC run `yarpmanager`, in the yarpmanager GUI go to Apllication/teo-self-presentation_spanish_App. Click `Connect All` button to start the presentation.
+1. In manipulation PC run `launchCanBus --from manipulation-noHead-demo.ini`.
+2. In head PC run `speechSynthesis --backend piper --model es_ES-davefx-medium --prefix /tts`. If you want to use the english voice use `en_US-lessac-medium` instead.
+3. In your local PC run `bodyExecution --robot /teo`.
+4. In your local PC run `dialogueManager --language spanish --backend piper`.
+5. In your local PC run `yarpmanager`, in the yarpmanager GUI go to `Apllication/teo-self-presentation_spanish_App` and click `Connect All` button to start the presentation.
 
 Once installed, run `yarpmanager` and look for the language version of the launcher XML file you are most interested in (teo-self-presentation_*language*.xml). If not present, you can manually add this application by means of the "Open File" or "Import Folder" buttons.
 
