@@ -334,12 +334,19 @@ double DialogueManager::speak(const std::string & sentenceId)
 
 void DialogueManager::awaitSpeechCompletion(double expiry)
 {
-    const auto delay = expiry - yarp::os::SystemClock::nowSystem();
+    // use motionPort's connection status to determine early exit (previously we had a dedicated
+    // port for TTS, now commands go through a NWC device)
 
-    if (delay > 0.0)
+    do
     {
-        yarp::os::SystemClock::delaySystem(delay);
+        if (yarp::os::Thread::isStopping())
+        {
+            throw ThreadTerminator();
+        }
+
+        yarp::os::SystemClock::delaySystem(0.1);
     }
+    while (motionPort.getOutputCount() > 0 && expiry > yarp::os::SystemClock::nowSystem());
 }
 
 void DialogueManager::awaitMotionCompletion()
