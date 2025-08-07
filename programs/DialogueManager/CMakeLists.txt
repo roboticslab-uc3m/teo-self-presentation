@@ -1,9 +1,5 @@
-if(NOT TARGET ROBOTICSLAB::SpeechIDL AND (NOT DEFINED ENABLE_dialogueManager OR ENABLE_dialogueManager))
-    message(WARNING "ROBOTICSLAB::SpeechIDL target not found, disabling dialogueManager")
-endif()
-
 cmake_dependent_option(ENABLE_dialogueManager "Choose if you want to compile dialogueManager" ON
-                       "ENABLE_SelfPresentationCommandsIDL;TARGET ROBOTICSLAB::SpeechIDL" OFF)
+                       "ENABLE_SelfPresentationCommandsIDL" OFF)
 
 IF(ENABLE_dialogueManager)
 
@@ -13,7 +9,7 @@ IF(ENABLE_dialogueManager)
 
     target_link_libraries(dialogueManager YARP::YARP_os
                                           YARP::YARP_init
-                                          ROBOTICSLAB::SpeechIDL
+                                          YARP::YARP_dev
                                           ROBOTICSLAB::SelfPresentationCommandsIDL)
 
     install(TARGETS dialogueManager)

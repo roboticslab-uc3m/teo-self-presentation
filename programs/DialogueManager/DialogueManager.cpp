@@ -34,6 +34,7 @@ namespace
 }
 
 constexpr auto DEFAULT_PREFIX = "/dialogueManager";
+constexpr auto DEFAULT_TTS_PORT = "/tts";
 constexpr auto DEFAULT_LANGUAGE = "spanish";
 constexpr auto DEFAULT_BACKEND = "espeak";
 
@@ -89,9 +90,21 @@ bool DialogueManager::configure(yarp::os::ResourceFinder & rf)
         sentences[label] = value.asString();
     }
 
-    if (!speechPort.open(std::string(DEFAULT_PREFIX) + "/tts/rpc:c"))
+    yarp::os::Property ttsDeviceOptions {
+        {"device", yarp::os::Value("speechSynthesizer_nwc_yarp")},
+        {"local", yarp::os::Value(DEFAULT_PREFIX + std::string("/tts"))},
+        {"remote", rf.check("remote", yarp::os::Value(DEFAULT_TTS_PORT), "TTS remote port")},
+    };
+
+    if (!ttsDevice.open(ttsDeviceOptions))
     {
-        yError() << "Unable to open RPC TTS port" << speechPort.getName();
+        yError() << "Unable to open TTS client device";
+        return false;
+    }
+
+    if (!ttsDevice.view(tts))
+    {
+        yError() << "Unable to view TTS interface";
         return false;
     }
 
@@ -101,9 +114,7 @@ bool DialogueManager::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
-    tts.yarp().attachAsClient(speechPort);
     motion.yarp().attachAsClient(motionPort);
-
     return true;
 }
 
@@ -116,11 +127,11 @@ bool DialogueManager::updateModule()
 {
     static const auto throttle = 1.0; // [s]
 
-    if (speechPort.getOutputCount() == 0)
+    if (motionPort.getOutputCount() == 0)
     {
         if (yarp::os::Thread::isRunning())
         {
-            yInfo() << "Port disconnected, forcing presentation stop";
+            yInfo() << "Motion port disconnected, forcing presentation stop";
 
             if (!yarp::os::Thread::stop())
             {
@@ -130,7 +141,7 @@ bool DialogueManager::updateModule()
         }
         else
         {
-            yDebugThrottle(throttle) << "Waiting for" << speechPort.getName() << "to be connected to TTS server";
+            yDebugThrottle(throttle) << "Waiting for" << motionPort.getName() << "to be connected to motion server";
             demoCompleted = false;
         }
     }
@@ -152,7 +163,7 @@ bool DialogueManager::updateModule()
         }
         else
         {
-            yDebugThrottle(throttle) << "Presentation has ended, reconnect TTS port" << speechPort.getName() << "to start again";
+            yDebugThrottle(throttle) << "Presentation has ended, reconnect motion port" << motionPort.getName() << "to start again";
         }
     }
 
@@ -166,14 +177,15 @@ bool DialogueManager::interruptModule()
 
 bool DialogueManager::close()
 {
-    speechPort.close();
+    ttsDevice.close();
+    tts = nullptr;
     motionPort.close();
     return true;
 }
 
 bool DialogueManager::threadInit()
 {
-    if (!tts.setLanguage(model))
+    if (!tts->setLanguage(model))
     {
         yError() << "Unable to set model to" << model;
         return false;
@@ -184,11 +196,6 @@ bool DialogueManager::threadInit()
 
 void DialogueManager::threadRelease()
 {
-    if (!tts.stop())
-    {
-        yWarning() << "Unable to stop speech";
-    }
-
     if (!motion.stop())
     {
         yWarning() << "Unable to stop motion";
@@ -201,73 +208,104 @@ void DialogueManager::run()
 
     try
     {
-        speak("presentation_01");
-        motion.doGreet();
-        awaitMotionCompletion();
-        motion.doHoming();
-        awaitSpeechAndMotionCompletion();
+        {
+            const auto expiry = speak("presentation_01");
+            motion.doGreet();
+            awaitMotionCompletion();
+            motion.doHoming();
+            awaitSpeechAndMotionCompletion(expiry);
+        }
 
         yarp::os::SystemClock::delaySystem(0.5);
 
-        speak("presentation_02");
-        motion.doExplanation2();
-        awaitSpeechAndMotionCompletion();
+        {
+            const auto expiry = speak("presentation_02");
+            motion.doExplanation2();
+            awaitSpeechAndMotionCompletion(expiry);
+        }
 
         yarp::os::SystemClock::delaySystem(1.0);
 
-        speak("composition_01");
-        motion.doExplanation1();
-        awaitSpeechCompletion();
-        yarp::os::SystemClock::delaySystem(2.0);
-        speak("composition_02");
-        awaitMotionCompletion();
-        yarp::os::SystemClock::delaySystem(1.0);
-        motion.doExplanation3();
-        awaitSpeechAndMotionCompletion();
-
-        speak("composition_03");
-        motion.doExplanationHead();
-        awaitSpeechAndMotionCompletion();
-
-        speak("composition_04");
-        motion.doExplanationRightPC();
-        awaitSpeechCompletion();
-        speak("composition_05_01");
-        awaitSpeechAndMotionCompletion();
-
-        speak("composition_05_02");
-        motion.doExplanationLeftPC();
-        awaitSpeechAndMotionCompletion();
-
-        speak("composition_05_03");
-        motion.doExplanationInsidePC();
-        awaitSpeechAndMotionCompletion();
-
-        speak("composition_06");
-        motion.doExplanation2();
-        awaitSpeechAndMotionCompletion();
-
-        speak("composition_07");
-        motion.doExplanationSensors();
-        awaitSpeechAndMotionCompletion();
-
-        yarp::os::SystemClock::delaySystem(1.0);
-
-        speak("purpose_01");
-        motion.doExplanation1();
-        awaitSpeechAndMotionCompletion();
-
-        yarp::os::SystemClock::delaySystem(1.0);
-
-        speak("purpose_02");
-        motion.doExplanation4();
-        awaitSpeechAndMotionCompletion();
+        {
+            const auto expiry = speak("composition_01");
+            motion.doExplanation1();
+            awaitSpeechCompletion(expiry);
+        }
 
         yarp::os::SystemClock::delaySystem(2.0);
 
-        speak("ending_01");
-        motion.doHoming();
-        awaitSpeechAndMotionCompletion();
+        {
+            const auto expiry = speak("composition_02");
+            awaitMotionCompletion();
+            yarp::os::SystemClock::delaySystem(1.0);
+            motion.doExplanation3();
+            awaitSpeechAndMotionCompletion(expiry);
+        }
+
+        {
+            const auto expiry = speak("composition_03");
+            motion.doExplanationHead();
+            awaitSpeechAndMotionCompletion(expiry);
+        }
+
+        {
+            const auto expiry = speak("composition_04");
+            motion.doExplanationRightPC();
+            awaitSpeechCompletion(expiry);
+        }
+
+        {
+            const auto expiry = speak("composition_05_01");
+            awaitSpeechAndMotionCompletion(expiry);
+        }
+
+        {
+            const auto expiry = speak("composition_05_02");
+            motion.doExplanationLeftPC();
+            awaitSpeechAndMotionCompletion(expiry);
+        }
+
+        {
+            const auto expiry = speak("composition_05_03");
+            motion.doExplanationInsidePC();
+            awaitSpeechAndMotionCompletion(expiry);
+        }
+
+        {
+            const auto expiry = speak("composition_06");
+            motion.doExplanation2();
+            awaitSpeechAndMotionCompletion(expiry);
+        }
+
+        {
+            const auto expiry = speak("composition_07");
+            motion.doExplanationSensors();
+            awaitSpeechAndMotionCompletion(expiry);
+        }
+
+        yarp::os::SystemClock::delaySystem(1.0);
+
+        {
+            const auto expiry = speak("purpose_01");
+            motion.doExplanation1();
+            awaitSpeechAndMotionCompletion(expiry);
+        }
+
+        yarp::os::SystemClock::delaySystem(1.0);
+
+        {
+            const auto expiry = speak("purpose_02");
+            motion.doExplanation4();
+            awaitSpeechAndMotionCompletion(expiry);
+        }
+
+        yarp::os::SystemClock::delaySystem(2.0);
+
+        {
+            const auto expiry = speak("ending_01");
+            motion.doHoming();
+            awaitSpeechAndMotionCompletion(expiry);
+        }
     }
     catch (const ThreadTerminator & terminator)
     {
@@ -279,28 +317,29 @@ void DialogueManager::run()
     demoCompleted = true;
 }
 
-void DialogueManager::speak(const std::string & sentenceId)
+double DialogueManager::speak(const std::string & sentenceId)
 {
     yInfo() << sentenceId << "->" << sentences[sentenceId];
 
-    if (!tts.say(sentences[sentenceId]))
+    if (yarp::sig::Sound sound; !tts->synthesize(sentences[sentenceId], sound))
     {
         yWarning() << "Unable to say" << sentenceId;
+        return yarp::os::SystemClock::nowSystem();
+    }
+    else
+    {
+        return yarp::os::SystemClock::nowSystem() + sound.getDuration();
     }
 }
 
-void DialogueManager::awaitSpeechCompletion()
+void DialogueManager::awaitSpeechCompletion(double expiry)
 {
-    do
-    {
-        if (yarp::os::Thread::isStopping())
-        {
-            throw ThreadTerminator();
-        }
+    const auto delay = expiry - yarp::os::SystemClock::nowSystem();
 
-        yarp::os::SystemClock::delaySystem(0.1);
+    if (delay > 0.0)
+    {
+        yarp::os::SystemClock::delaySystem(delay);
     }
-    while (speechPort.getOutputCount() > 0 && !tts.checkSayDone());
 }
 
 void DialogueManager::awaitMotionCompletion()
@@ -317,8 +356,8 @@ void DialogueManager::awaitMotionCompletion()
     while (motionPort.getOutputCount() > 0 && !motion.checkMotionDone());
 }
 
-void DialogueManager::awaitSpeechAndMotionCompletion()
+void DialogueManager::awaitSpeechAndMotionCompletion(double speechExpiry)
 {
-    awaitSpeechCompletion();
+    awaitSpeechCompletion(speechExpiry);
     awaitMotionCompletion();
 }

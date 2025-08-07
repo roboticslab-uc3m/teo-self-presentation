@@ -11,7 +11,8 @@
 #include <yarp/os/RpcClient.h>
 #include <yarp/os/Thread.h>
 
-#include <SpeechSynthesis.h>
+#include <yarp/dev/PolyDriver.h>
+#include <yarp/dev/ISpeechSynthesizer.h>
 
 #include "SelfPresentationCommands.h"
 
@@ -26,7 +27,7 @@ class DialogueManager : public yarp::os::RFModule,
                         public yarp::os::Thread
 {
 public:
-    ~DialogueManager()
+    ~DialogueManager() override
     { close(); }
 
     bool configure(yarp::os::ResourceFinder & rf) override;
@@ -40,15 +41,15 @@ public:
     void run() override;
 
 private:
-    void speak(const std::string & sentenceId);
-    void awaitSpeechCompletion();
+    double speak(const std::string & sentenceId);
+    void awaitSpeechCompletion(double expiry);
     void awaitMotionCompletion();
-    void awaitSpeechAndMotionCompletion();
+    void awaitSpeechAndMotionCompletion(double speechExpiry);
 
-    SpeechSynthesis tts;
+    yarp::dev::PolyDriver ttsDevice;
+    yarp::dev::ISpeechSynthesizer * tts {nullptr};
+
     SelfPresentationCommands motion;
-
-    yarp::os::RpcClient speechPort;
     yarp::os::RpcClient motionPort;
 
     std::string model;

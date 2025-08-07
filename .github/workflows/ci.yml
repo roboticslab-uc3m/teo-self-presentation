@@ -66,12 +66,6 @@ jobs:
         ref: ${{matrix.robotology.yarp}}
         path: .deps/yarp
 
-    - name: Check out speech
-      uses: actions/checkout@v4
-      with:
-        repository: roboticslab-uc3m/speech
-        path: .deps/speech
-
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v2
       with:
@@ -98,12 +92,6 @@ jobs:
         cmake -S .deps/yarp -B .deps/yarp/build -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON
         cmake --build .deps/yarp/build
         sudo cmake --install .deps/yarp/build
-
-    - name: Build speech
-      run: |
-        cmake -S .deps/speech -B .deps/speech/build
-        cmake --build .deps/speech/build
-        sudo cmake --install .deps/speech/build
 
     - name: Configure main project
       run: cmake -S . -B build
