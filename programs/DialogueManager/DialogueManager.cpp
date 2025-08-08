@@ -185,9 +185,9 @@ bool DialogueManager::close()
 
 bool DialogueManager::threadInit()
 {
-    if (!tts->setLanguage(model))
+    if (!tts->setVoice(model))
     {
-        yError() << "Unable to set model to" << model;
+        yError() << "Unable to set voice model to" << model;
         return false;
     }
 

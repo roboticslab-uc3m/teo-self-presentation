@@ -8,14 +8,29 @@
     </module>
 
     <module>
-        <name>espeakServer</name>
+        <name>deviceBundler</name>
+        <parameters>
+            --wrapper_device AudioPlayerWrapper
+            --attached_device portaudioPlayer
+            --playback_network_buffer_size 0.1
+            --AUDIO_BASE::samples 320000
+            --start true
+            --name /player
+        </parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>PiperSynthesizer</name>
         <parameters>--name /tts</parameters>
         <node>localhost</node>
+        <deployer>yarpdev</deployer>
     </module>
 
     <module>
         <name>dialogueManager</name>
-        <parameters>--language english --backend espeak</parameters>
+        <parameters>--language english --backend piper</parameters>
         <node>localhost</node>
     </module>
 
@@ -31,8 +46,8 @@
     </connection>
 
     <connection>
-        <from>/dialogueManager/tts/rpc:c</from>
-        <to>/tts/rpc:s</to>
+        <from>/tts/sound:o</from>
+        <to>/player/audio:i</to>
     </connection>
 
 </application>
