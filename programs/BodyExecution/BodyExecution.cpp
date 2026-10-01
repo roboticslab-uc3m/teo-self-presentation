@@ -7,6 +7,8 @@
 #include <algorithm> // std::max_element, std::transform
 #include <vector>
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 
@@ -67,19 +69,31 @@ bool BodyExecution::configure(yarp::os::ResourceFinder & rf)
         return false;
     }
 
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+    if (!iControlMode->setControlModes(std::vector(axesNames.size(), yarp::dev::SelectableControlModeEnum::VOCAB_CM_POSITION)))
+#else
     if (!iControlMode->setControlModes(std::vector(axesNames.size(), VOCAB_CM_POSITION).data()))
+#endif
     {
         yError() << "Failed to set position control mode";
         return false;
     }
 
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+    if (!iPositionControl->setTrajSpeeds(std::vector(axesNames.size(), DEFAULT_REF_SPEED).data()))
+#else
     if (!iPositionControl->setRefSpeeds(std::vector(axesNames.size(), DEFAULT_REF_SPEED).data()))
+#endif
     {
         yError() << "Failed to set reference speeds";
         return false;
     }
 
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+    if (!iPositionControl->setTrajAccelerations(std::vector(axesNames.size(), DEFAULT_REF_ACCELERATION).data()))
+#else
     if (!iPositionControl->setRefAccelerations(std::vector(axesNames.size(), DEFAULT_REF_ACCELERATION).data()))
+#endif
     {
         // might not be available in certain implementations, e.g. OpenRAVE
         yWarning() << "Failed to set reference accelerations";
@@ -105,7 +119,11 @@ bool BodyExecution::interruptModule()
 {
     serverPort.interrupt();
 
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+    if (std::size_t numAxes; !iEncoders->getAxes(numAxes) || !iPositionControl->setTrajSpeeds(std::vector(numAxes, DEFAULT_REF_SPEED).data()))
+#else
     if (int numAxes; !iEncoders->getAxes(&numAxes) || !iPositionControl->setRefSpeeds(std::vector(numAxes, DEFAULT_REF_SPEED).data()))
+#endif
     {
         yWarning() << "Failed to restore reference speeds";
     }
@@ -122,7 +140,11 @@ bool BodyExecution::updateModule()
 {
     bool isMotionDone = true;
 
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+    if (!iPositionControl->checkMotionDone(isMotionDone))
+#else
     if (!iPositionControl->checkMotionDone(&isMotionDone))
+#endif
     {
         yWarning() << "Unable to check motion state";
     }
@@ -191,7 +213,11 @@ bool BodyExecution::sendMotionCommand(const std::vector<double> & targets)
             }
         }
 
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
+        if (!iPositionControl->setTrajSpeeds(indices.size(), indices.data(), refSpeeds.data()))
+#else
         if (!iPositionControl->setRefSpeeds(indices.size(), indices.data(), refSpeeds.data()))
+#endif
         {
             yWarning() << "Failed to set reference speeds";
             return false;
